@@ -4,6 +4,12 @@
 #include "Application.h"
 
 #include "application/Window.h"
+#include "core/Vertex.h"
+#include "data/Container.h"
+#include "data/Material.h"
+#include "data/Mesh.h"
+#include "data/MeshFactory.h"
+#include "data/Texture.h"
 #include "rendering/Renderer.h"
 
 #include <glad/gl.h>
@@ -33,12 +39,19 @@ Application::Application()
     }
 
     m_renderer = std::make_unique<Renderer>();
+
+    // Demo
+    auto container = std::make_unique<Container>();
+    container->meshes["cube"] = MeshFactory::createCubePrimitive("cube");
+    container->meshes["sphere"] = MeshFactory::createCubePrimitive("sphere");
+
+    m_renderer->setAssets(std::move(container));
 }
 
 Application::~Application()
 {
     m_renderer.reset(nullptr);
-    
+
     glfwTerminate();
 }
 

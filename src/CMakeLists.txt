@@ -14,6 +14,14 @@ PRIVATE
     core/Vertex.h
     data/Box.cpp
     data/Box.h
+    data/Container.h
+    data/Material.h
+    data/Mesh.cpp
+    data/Mesh.h
+    data/MeshFactory.cpp
+    data/MeshFactory.h
+    data/Texture.cpp
+    data/Texture.h
     rendering/Buffer.h
     rendering/Renderer.cpp
     rendering/Renderer.h
