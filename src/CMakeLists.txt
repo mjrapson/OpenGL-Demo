@@ -5,6 +5,17 @@ PRIVATE
 	${CMAKE_SOURCE_DIR}/3rd/glad/include/glad/gl.h
     ${CMAKE_SOURCE_DIR}/3rd/glad/include/KHR/khrplatform.h
     ${CMAKE_SOURCE_DIR}/3rd/glad/src/gl.c
+    application/Application.cpp
+    application/Application.h
+    application/Window.cpp
+    application/Window.h
+    core/FileSystem.cpp
+    core/FileSystem.h
+    rendering/Buffer.h
+    rendering/Renderer.cpp
+    rendering/Renderer.h
+    rendering/Shader.cpp
+    rendering/Shader.h
 	main.cpp
 )
 
