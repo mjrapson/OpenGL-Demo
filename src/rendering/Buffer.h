@@ -21,6 +21,12 @@ class Buffer
             glDeleteBuffers(1, &m_handle);
         }
 
+        Buffer(const Buffer& other) = delete;
+        Buffer(Buffer&& other) = delete;
+
+        Buffer& operator=(const Buffer& other) = delete;
+        Buffer& operator=(Buffer&& other) = delete;
+
     private:
         GLuint m_handle{0};
 };

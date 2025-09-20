@@ -16,8 +16,8 @@ class Shader
         Shader(const Shader& other) = delete;
         Shader(Shader&& other) = delete;
 
-        Shader operator=(const Shader& other) = delete;
-        Shader operator=(Shader&& other) = delete;
+        Shader& operator=(const Shader& other) = delete;
+        Shader& operator=(Shader&& other) = delete;
 
         void bind() const;
         void unbind() const;

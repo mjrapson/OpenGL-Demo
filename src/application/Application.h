@@ -17,8 +17,8 @@ class Application
         Application(const Application& other) = delete;
         Application(Application&& other) = delete;
 
-        Application operator=(const Application& other) = delete;
-        Application operator=(Application&& other) = delete;
+        Application& operator=(const Application& other) = delete;
+        Application& operator=(Application&& other) = delete;
 
         void run();
 
