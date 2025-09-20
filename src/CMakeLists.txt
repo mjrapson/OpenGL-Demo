@@ -11,6 +11,7 @@ PRIVATE
     application/Window.h
     core/FileSystem.cpp
     core/FileSystem.h
+    core/Vertex.h
     rendering/Buffer.h
     rendering/Renderer.cpp
     rendering/Renderer.h
