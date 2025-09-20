@@ -12,6 +12,8 @@ PRIVATE
     core/FileSystem.cpp
     core/FileSystem.h
     core/Vertex.h
+    data/Box.cpp
+    data/Box.h
     rendering/Buffer.h
     rendering/Renderer.cpp
     rendering/Renderer.h
