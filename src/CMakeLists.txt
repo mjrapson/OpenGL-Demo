@@ -23,6 +23,8 @@ PRIVATE
     data/Texture.cpp
     data/Texture.h
     rendering/Buffer.h
+    rendering/Framebuffer.cpp
+    rendering/Framebuffer.h
     rendering/Renderer.cpp
     rendering/Renderer.h
     rendering/Shader.cpp

@@ -9,7 +9,10 @@
 #include "data/Material.h"
 #include "data/Mesh.h"
 #include "data/Texture.h"
+#include "rendering/Framebuffer.h"
 #include "rendering/Shader.h"
+
+constexpr auto maxPointLights = 32;
 
 const auto boxIndices = std::vector<GLuint>{0, 1, 1, 3, 3, 2, 2, 0, 4, 5, 5, 7, 7, 6, 6, 4, 0, 4, 1, 5, 2, 6, 3, 7};
 
@@ -20,6 +23,8 @@ const auto quadVertices =
  Renderer::Renderer()
  {
     loadShaders();
+
+    createFramebuffers();
  }
 
 Renderer::~Renderer() = default;
@@ -65,7 +70,21 @@ void Renderer::resizeDisplay(GLuint width, GLuint height)
     m_width = width;
     m_height = height;
 
-    rebuildFramebuffers();
+    rebuildFramebufferImages();
+}
+
+void Renderer::createFramebuffers()
+{
+    m_shadowFrameBuffer = std::make_unique<Framebuffer>();
+    m_shadowFrameBuffer->setDrawBuffer(GL_NONE);
+    m_shadowFrameBuffer->setReadBuffer(GL_NONE);
+
+    m_shadowPointLightFrameBuffer = std::make_unique<Framebuffer>();
+    m_shadowPointLightFrameBuffer->setDrawBuffer(GL_NONE);
+    m_shadowPointLightFrameBuffer->setReadBuffer(GL_NONE);
+
+    m_mainFramebuffer = std::make_unique<Framebuffer>();
+    m_mainFramebuffer->setDrawBuffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2});
 }
 
 void Renderer::rebuildBuffers()
@@ -114,7 +133,42 @@ void Renderer::rebuildBuffers()
     m_screenVertexBuffer = std::make_unique<Buffer<float>>(quadVertices);
 }
 
-void Renderer::rebuildFramebuffers()
+void Renderer::rebuildFramebufferImages()
 {
+    constexpr auto shadowMapWidth = 2048;
+    constexpr auto shadowMapHeight = 2048;
 
+    m_shadowMapDepthImage = std::make_unique<Texture2D>(GL_DEPTH_COMPONENT24, shadowMapWidth, shadowMapHeight);
+    m_shadowMapDepthImage->setMinFilter(GL_NEAREST);
+    m_shadowMapDepthImage->setMagFilter(GL_NEAREST);
+    m_shadowMapDepthImage->setWrapS(GL_CLAMP_TO_BORDER);
+    m_shadowMapDepthImage->setWrapT(GL_CLAMP_TO_BORDER);
+    m_shadowMapDepthImage->setBorderColor(glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
+    m_shadowMapDepthImage->setComparisonMode(GL_COMPARE_REF_TO_TEXTURE);
+    m_shadowMapDepthImage->setComparisonFunction(GL_LEQUAL);
+
+    m_pointLightDepthImage = std::make_unique<TextureCubeMapArray>(GL_DEPTH_COMPONENT32F, shadowMapWidth, shadowMapHeight, 6 * maxPointLights);
+    m_pointLightDepthImage->setMinFilter(GL_NEAREST);
+    m_pointLightDepthImage->setMagFilter(GL_NEAREST);
+    m_pointLightDepthImage->setWrapS(GL_CLAMP_TO_EDGE);
+    m_pointLightDepthImage->setWrapT(GL_CLAMP_TO_EDGE);
+    m_pointLightDepthImage->setWrapR(GL_CLAMP_TO_EDGE);
+
+    m_mainColorImage = std::make_unique<Texture2D>(GL_RGBA8, m_width, m_height);
+    m_mainColorImage->setMinFilter(GL_LINEAR);
+    m_mainColorImage->setMagFilter(GL_LINEAR);
+
+    m_mainNormalImage = std::make_unique<Texture2D>(GL_RGBA16F, m_width, m_height);
+    m_mainNormalImage->setMinFilter(GL_LINEAR);
+    m_mainNormalImage->setMagFilter(GL_LINEAR);
+
+    m_mainPositionImage = std::make_unique<Texture2D>(GL_RGBA32F, m_width, m_height);
+    m_mainPositionImage->setMinFilter(GL_NEAREST);
+    m_mainPositionImage->setMagFilter(GL_NEAREST);
+
+    m_mainDepthImage = std::make_unique<Texture2D>(GL_DEPTH_COMPONENT24, m_width, m_height);
+
+    m_finalColourImage = std::make_unique<Texture2D>(GL_RGBA8, m_width, m_height);
+    m_finalColourImage->setMinFilter(GL_LINEAR);
+    m_finalColourImage->setMagFilter(GL_LINEAR);
 }

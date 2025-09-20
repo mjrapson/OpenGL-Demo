@@ -10,8 +10,11 @@
 #include <memory>
 #include <unordered_map>
 
+class Framebuffer;
 class Mesh;
 class Shader;
+class Texture2D;
+class TextureCubeMapArray;
 
 struct Container;
 struct Vertex;
@@ -44,8 +47,9 @@ class Renderer
         void resizeDisplay(GLuint width, GLuint height);
 
     private:
+        void createFramebuffers();
         void rebuildBuffers();
-        void rebuildFramebuffers();
+        void rebuildFramebufferImages();
 
     private:
         std::unique_ptr<Shader> m_meshShadowShader{nullptr};
@@ -53,6 +57,20 @@ class Renderer
         std::unique_ptr<Shader> m_meshDeferredShader{nullptr};
         std::unique_ptr<Shader> m_lightingShader{nullptr};
         std::unique_ptr<Shader> m_overlayShader{nullptr};
+
+        std::unique_ptr<Framebuffer> m_mainFramebuffer{nullptr};
+        std::unique_ptr<Framebuffer> m_shadowFrameBuffer{nullptr};
+        std::unique_ptr<Framebuffer> m_shadowPointLightFrameBuffer{nullptr};
+        std::unique_ptr<Framebuffer> m_lightingFramebuffer{nullptr};
+        std::unique_ptr<Framebuffer> m_overlayFramebuffer{nullptr};
+
+        std::unique_ptr<Texture2D> m_mainColorImage{nullptr};
+        std::unique_ptr<Texture2D> m_mainNormalImage{nullptr};
+        std::unique_ptr<Texture2D> m_mainDepthImage{nullptr};
+        std::unique_ptr<Texture2D> m_mainPositionImage{nullptr};
+        std::unique_ptr<Texture2D> m_finalColourImage{nullptr};
+        std::unique_ptr<Texture2D> m_shadowMapDepthImage{nullptr};
+        std::unique_ptr<TextureCubeMapArray> m_pointLightDepthImage{nullptr};
 
         std::unique_ptr<Buffer<Vertex>> m_meshVertexBuffer{nullptr};
         std::unique_ptr<Buffer<GLuint>> m_meshIndexBuffer{nullptr};

@@ -5,11 +5,13 @@
 
 #include <glad/gl.h>
 
+#include <glm/glm.hpp>
+
 class Texture
 {
     public:
-        Texture(GLenum format, GLsizei width, GLsizei height);
-        ~Texture();
+        explicit Texture(GLenum type);
+        virtual ~Texture();
 
         Texture(const Texture& other) = delete;
         Texture(Texture&& other) = delete;
@@ -17,6 +19,33 @@ class Texture
         Texture& operator=(const Texture& other) = delete;
         Texture& operator=(Texture&& other) = delete;
 
+        void setMinFilter(GLenum value);
+        void setMagFilter(GLenum value);
+        void setWrapS(GLenum value);
+        void setWrapT(GLenum value);
+        void setBorderColor(const glm::vec4& color);
+        void setComparisonMode(GLenum value);
+        void setComparisonFunction(GLenum value);
+        
+        inline GLuint handle() const 
+        {
+            return m_handle;
+        }
+
     private:
         GLuint m_handle{0};
+};
+
+class Texture2D : public Texture
+{
+    public:
+        Texture2D(GLenum format, GLsizei width, GLsizei height);
+};
+
+class TextureCubeMapArray : public Texture
+{
+    public:
+        TextureCubeMapArray(GLenum format, GLsizei width, GLsizei height, GLsizei depth);
+
+        void setWrapR(GLenum value);
 };
