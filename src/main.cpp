@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Mark Rapson
 
+#include <glad/gl.h>
+
 #include <GLFW/glfw3.h>
 
 #include <chrono>
@@ -51,6 +53,13 @@ int main(int /* argc */, char** /* argv */)
     glfwSwapInterval(0);
     glfwSwapBuffers(window);
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
+
+    if (gladLoadGL(glfwGetProcAddress) == 0)
+    {
+        glfwDestroyWindow(window);
+        glfwTerminate();
+        throw std::runtime_error("Failed to load OpenGL");
+    }
 
     auto deltaTime = 0.0f;
     auto currTime = 0.0f;
