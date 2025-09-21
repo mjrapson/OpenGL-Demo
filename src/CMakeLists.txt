@@ -15,11 +15,13 @@ PRIVATE
     data/Box.cpp
     data/Box.h
     data/Container.h
+    data/DirectionalLight.h
     data/Material.h
     data/Mesh.cpp
     data/Mesh.h
     data/MeshFactory.cpp
     data/MeshFactory.h
+    data/PointLight.h
     data/Texture.cpp
     data/Texture.h
     rendering/Buffer.h
