@@ -4,11 +4,13 @@
 #pragma once
 
 #include "rendering/Buffer.h"
+#include "rendering/DrawCommand.h"
 
 #include <glm/glm.hpp>
 
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 class Camera;
 class Framebuffer;
@@ -94,4 +96,7 @@ class Renderer
         GLuint m_height;
 
         std::unordered_map<Mesh*, MeshBufferInfo> m_meshBufferTable;
+        
+        std::vector<DrawCommand> m_meshDrawQueue;
+        std::vector<DrawCommand> m_meshHighlightDrawQueue;
 };

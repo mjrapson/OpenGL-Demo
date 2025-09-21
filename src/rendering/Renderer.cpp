@@ -6,12 +6,18 @@
 #include "core/FileSystem.h"
 #include "core/Vertex.h"
 #include "data/Container.h"
+#include "data/DirectionalLight.h"
 #include "data/Material.h"
 #include "data/Mesh.h"
+#include "data/PointLight.h"
 #include "data/Texture.h"
 #include "rendering/Framebuffer.h"
 #include "rendering/Shader.h"
 #include "rendering/VertexLayout.h"
+#include "scene/Scene.h"
+#include "scene/Scene3DModel.h"
+#include "scene/SceneDirectionalLightObject.h"
+#include "scene/ScenePointLightObject.h"
 
 constexpr auto maxPointLights = 32;
 
@@ -49,7 +55,28 @@ void Renderer::resizeDisplay(GLuint width, GLuint height)
 
 void Renderer::drawScene(const Scene& scene, const Camera& camera)
 {
-    
+    for (const auto& [name, object] : scene.getScene3DModels())
+    {
+        const auto hovered = object->hovered();
+        const auto selected = object->selected();
+
+        for (const auto& instance : object->meshInstances())
+        {
+            auto cmd = DrawCommand{
+                .instance = instance, 
+                .transform = object->transformMatrix()
+            };
+
+            if(hovered || selected)
+            {
+                m_meshHighlightDrawQueue.push_back(cmd);
+            }
+            else
+            {
+                m_meshDrawQueue.push_back(cmd);
+            }
+        }
+    }
 }
 
 void Renderer::loadShaders()

@@ -105,6 +105,8 @@ void Application::run()
 
         glfwPollEvents();
 
+        m_renderer->drawScene(*m_scene.get(), *m_camera.get());
+
         m_window->swapBuffers();
 
         const auto frameFinishTime = std::chrono::high_resolution_clock::now();

@@ -33,6 +33,7 @@ PRIVATE
     rendering/Buffer.h
     rendering/Camera.cpp
     rendering/Camera.h
+    rendering/DrawCommand.h
     rendering/Framebuffer.cpp
     rendering/Framebuffer.h
     rendering/Renderer.cpp
