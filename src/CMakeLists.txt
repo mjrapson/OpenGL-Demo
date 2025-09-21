@@ -23,6 +23,8 @@ PRIVATE
     data/MeshFactory.h
     data/MeshInstance.h
     data/PointLight.h
+    data/Sphere.cpp
+    data/Sphere.h
     data/Texture.cpp
     data/Texture.h
     rendering/Buffer.h
