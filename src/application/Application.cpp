@@ -37,7 +37,7 @@ Application::Application()
 
     glfwSetTime(0);
 
-    m_window = std::make_unique<Window>("OpenGL Demo", 800, 600);
+    m_window = std::make_unique<Window>("OpenGL Demo", 1280, 720);
     m_window->makeCurrent();
 
     if (gladLoadGL(glfwGetProcAddress) == 0)
@@ -68,7 +68,7 @@ Application::Application()
     });
 
     m_renderer = std::make_unique<Renderer>();
-    m_renderer->resizeDisplay(800, 600);
+    m_renderer->resizeDisplay(1280, 720);
 
     // Demo assets
     auto container = std::make_unique<Container>();
