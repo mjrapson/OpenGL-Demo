@@ -27,6 +27,11 @@ class Buffer
         Buffer& operator=(const Buffer& other) = delete;
         Buffer& operator=(Buffer&& other) = delete;
 
+        inline GLuint handle() const
+        {
+            return m_handle;
+        }
+
     private:
         GLuint m_handle{0};
 };

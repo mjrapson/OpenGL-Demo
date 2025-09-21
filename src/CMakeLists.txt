@@ -29,6 +29,8 @@ PRIVATE
     rendering/Renderer.h
     rendering/Shader.cpp
     rendering/Shader.h
+    rendering/VertexLayout.cpp
+    rendering/VertexLayout.h
 	main.cpp
 )
 

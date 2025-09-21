@@ -11,6 +11,7 @@
 #include "data/Texture.h"
 #include "rendering/Framebuffer.h"
 #include "rendering/Shader.h"
+#include "rendering/VertexLayout.h"
 
 constexpr auto maxPointLights = 32;
 
@@ -28,6 +29,21 @@ const auto quadVertices =
  }
 
 Renderer::~Renderer() = default;
+
+void Renderer::setAssets(std::unique_ptr<Container> assets)
+{
+    m_assets = std::move(assets);
+
+    rebuildBuffers();
+}
+
+void Renderer::resizeDisplay(GLuint width, GLuint height)
+{
+    m_width = width;
+    m_height = height;
+
+    rebuildFramebufferImages();
+}
 
 void Renderer::loadShaders()
 {
@@ -58,21 +74,6 @@ void Renderer::loadShaders()
     );
 }
 
-void Renderer::setAssets(std::unique_ptr<Container> assets)
-{
-    m_assets = std::move(assets);
-
-    rebuildBuffers();
-}
-
-void Renderer::resizeDisplay(GLuint width, GLuint height)
-{
-    m_width = width;
-    m_height = height;
-
-    rebuildFramebufferImages();
-}
-
 void Renderer::createFramebuffers()
 {
     m_shadowFrameBuffer = std::make_unique<Framebuffer>();
@@ -85,6 +86,21 @@ void Renderer::createFramebuffers()
 
     m_mainFramebuffer = std::make_unique<Framebuffer>();
     m_mainFramebuffer->setDrawBuffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2});
+}
+
+void Renderer::createVertexLayouts()
+{
+    m_meshVertexLayout = std::make_unique<VertexLayout>();
+    m_meshVertexLayout->registerAttribute(0, 3, GL_FLOAT, offsetof(Vertex, position));
+    m_meshVertexLayout->registerAttribute(1, 2, GL_FLOAT, offsetof(Vertex, textureUV));
+    m_meshVertexLayout->registerAttribute(2, 3, GL_FLOAT, offsetof(Vertex, normal));
+
+    m_quadVertexLayout = std::make_unique<VertexLayout>();
+    m_quadVertexLayout->registerAttribute(0, 2, GL_FLOAT, 0);
+    m_quadVertexLayout->registerAttribute(1, 2, GL_FLOAT, 2 * sizeof(float));
+
+    m_overlayVertexLayout = std::make_unique<VertexLayout>();
+    m_overlayVertexLayout->registerAttribute(0, 3, GL_FLOAT, 0);
 }
 
 void Renderer::rebuildBuffers()
@@ -131,6 +147,14 @@ void Renderer::rebuildBuffers()
     m_overlayVertexBuffer = std::make_unique<Buffer<glm::vec3>>(bbVertices);
     m_overlayIndexBuffer = std::make_unique<Buffer<GLuint>>(boxIndices);
     m_screenVertexBuffer = std::make_unique<Buffer<float>>(quadVertices);
+
+    m_meshVertexLayout->bindVertexBuffer(0, m_meshVertexBuffer->handle(), 0, sizeof(Vertex));
+    m_meshVertexLayout->bindElementBuffer(m_meshIndexBuffer->handle());
+
+    m_overlayVertexLayout->bindVertexBuffer(0, m_overlayVertexBuffer->handle(), 0, sizeof(Vertex));
+    m_overlayVertexLayout->bindElementBuffer(m_overlayIndexBuffer->handle());
+
+    m_quadVertexLayout->bindVertexBuffer(0, m_screenVertexBuffer->handle(), 0, 4 * sizeof(float));
 }
 
 void Renderer::rebuildFramebufferImages()

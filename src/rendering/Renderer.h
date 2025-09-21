@@ -15,6 +15,7 @@ class Mesh;
 class Shader;
 class Texture2D;
 class TextureCubeMapArray;
+class VertexLayout;
 
 struct Container;
 struct Vertex;
@@ -38,16 +39,17 @@ class Renderer
         Renderer(Renderer&& other) = delete;
 
         Renderer& operator=(const Renderer& other) = delete;
-        Renderer& operator=(Renderer&& other) = delete;
-
-        void loadShaders();
+        Renderer& operator=(Renderer&& other) = delete;   
 
         void setAssets(std::unique_ptr<Container> assets);
 
         void resizeDisplay(GLuint width, GLuint height);
 
     private:
+        void loadShaders();
         void createFramebuffers();
+        void createVertexLayouts();
+        
         void rebuildBuffers();
         void rebuildFramebufferImages();
 
@@ -63,6 +65,10 @@ class Renderer
         std::unique_ptr<Framebuffer> m_shadowPointLightFrameBuffer{nullptr};
         std::unique_ptr<Framebuffer> m_lightingFramebuffer{nullptr};
         std::unique_ptr<Framebuffer> m_overlayFramebuffer{nullptr};
+
+        std::unique_ptr<VertexLayout> m_meshVertexLayout{nullptr};
+        std::unique_ptr<VertexLayout> m_quadVertexLayout{nullptr};
+        std::unique_ptr<VertexLayout> m_overlayVertexLayout{nullptr};
 
         std::unique_ptr<Texture2D> m_mainColorImage{nullptr};
         std::unique_ptr<Texture2D> m_mainNormalImage{nullptr};
