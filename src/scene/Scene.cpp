@@ -3,6 +3,7 @@
 
 #include "Scene.h"
 
+#include "data/Ray.h"
 #include "scene/Scene3DModel.h"
 #include "scene/SceneDirectionalLightObject.h"
 #include "scene/ScenePointLightObject.h"
@@ -22,7 +23,7 @@ void Scene::setDirectionalLight(std::unique_ptr<SceneDirectionalLightObject> dir
 
 void Scene::add3DModel(std::unique_ptr<Scene3DModel> meshObject)
 {
-    // m_renderableTree.insertNode(meshObject.get());
+    m_renderableTree.insertNode(meshObject.get());
 
     m_meshObjects[meshObject->objectName()] = std::move(meshObject);
 
@@ -54,38 +55,38 @@ SceneSelection* Scene::getSceneSelection() const
     return m_sceneSelection.get();
 }
 
-// Scene3DModel* Scene::pickWithRay(const Ray& ray) const
-// {
-//     std::vector<SceneTree::RayQueryResult> results;
-//     m_renderableTree.queryNodesInRange(results, ray);
+Scene3DModel* Scene::pickWithRay(const Ray& ray) const
+{
+    std::vector<SceneTree::RayQueryResult> results;
+    m_renderableTree.queryNodesInRange(results, ray);
 
-//     if (results.empty())
-//     {
-//         return nullptr;
-//     }
+    if (results.empty())
+    {
+        return nullptr;
+    }
 
-//     auto smallestDistance = std::numeric_limits<float>::infinity();
-//     Scene3DModel* closestObject = nullptr;
+    auto smallestDistance = std::numeric_limits<float>::infinity();
+    Scene3DModel* closestObject = nullptr;
 
-//     for (const auto& hit : results)
-//     {
-//         if (hit.distance < smallestDistance)
-//         {
-//             smallestDistance = hit.distance;
-//             closestObject = hit.object;
-//         }
-//     }
+    for (const auto& hit : results)
+    {
+        if (hit.distance < smallestDistance)
+        {
+            smallestDistance = hit.distance;
+            closestObject = hit.object;
+        }
+    }
 
-//     return closestObject;
-// }
+    return closestObject;
+}
 
 void Scene::rebuildTree()
 {
-    // std::vector<Scene3DModel*> meshObjects;
-    // for (auto& object : m_meshObjects)
-    // {
-    //     meshObjects.push_back(object.second.get());
-    // }
+    std::vector<Scene3DModel*> meshObjects;
+    for (auto& object : m_meshObjects)
+    {
+        meshObjects.push_back(object.second.get());
+    }
 
-    // m_renderableTree.rebuild(meshObjects);
+    m_renderableTree.rebuild(meshObjects);
 }

@@ -3,12 +3,14 @@
 
 #pragma once
 
+#include "scene/SceneTree.h"
+
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-// class Ray;
+class Ray;
 class SceneDirectionalLightObject;
 class Scene3DModel;
 class ScenePointLightObject;
@@ -28,7 +30,7 @@ class Scene
         SceneDirectionalLightObject* getDirectionalLight() const;
         const std::vector<std::unique_ptr<ScenePointLightObject>>& getPointLights() const;
 
-        // Scene3DModel* pickWithRay(const Ray& ray) const;
+        Scene3DModel* pickWithRay(const Ray& ray) const;
 
         SceneSelection* getSceneSelection() const;
 
@@ -41,5 +43,5 @@ class Scene
         std::vector<std::unique_ptr<ScenePointLightObject>> m_pointLights;
         std::unique_ptr<SceneSelection> m_sceneSelection{nullptr};
 
-        // SceneTree m_renderableTree;
+        SceneTree m_renderableTree;
 };

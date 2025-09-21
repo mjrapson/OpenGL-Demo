@@ -23,10 +23,13 @@ PRIVATE
     data/MeshFactory.h
     data/MeshInstance.h
     data/PointLight.h
+    data/Ray.h
     data/Sphere.cpp
     data/Sphere.h
     data/Texture.cpp
     data/Texture.h
+    physics/Collision.cpp
+    physics/Collision.h
     rendering/Buffer.h
     rendering/Camera.cpp
     rendering/Camera.h
@@ -52,6 +55,7 @@ PRIVATE
     scene/ScenePointLightObject.h
     scene/SceneSelection.cpp
     scene/SceneSelection.h
+    scene/SceneTree.h
 	main.cpp
 )
 
