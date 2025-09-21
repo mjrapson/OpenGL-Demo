@@ -103,10 +103,10 @@ glm::mat4 getLightSpaceMatrix(const glm::vec3& lightDirection)
 {
     // Directional lights have no position, so make a pretend one along its direction vector
     const auto normalisedDirection = glm::normalize(lightDirection);
-    const auto lightPos = -normalisedDirection * 10.0f;
+    const auto lightPos = -normalisedDirection * 50.0f;
 
     // Create a projection and view from the pretend light point of view
-    const auto lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 500.0f);
+    const auto lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, 1.0f, 200.0f);
     const auto lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0, 1, 0));
 
     return lightProjection * lightView;

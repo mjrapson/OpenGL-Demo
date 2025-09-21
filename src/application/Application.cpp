@@ -142,7 +142,7 @@ Application::Application()
 
     auto sun = std::make_unique<SceneDirectionalLightObject>();
     sun->setObjectName("Sun");
-    sun->setDirection(glm::vec3{1.0f, 0.0f, 0.0f});
+    sun->setDirection(glm::normalize(glm::vec3{-1.0f, -1.0f, -1.0f}));
     sun->setColor(glm::vec3{1.0f, 1.0f, 1.0f});
 
     m_scene = std::make_unique<Scene>();
