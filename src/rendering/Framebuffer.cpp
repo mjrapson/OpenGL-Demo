@@ -42,3 +42,13 @@ void Framebuffer::setReadBuffer(GLenum buffer) const
 {
     glNamedFramebufferReadBuffer(m_handle, buffer);
 }
+
+void Framebuffer::bind() const
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
+}
+
+void Framebuffer::unbind() const
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}

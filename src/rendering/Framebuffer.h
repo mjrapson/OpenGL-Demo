@@ -28,6 +28,9 @@ class Framebuffer
         void setDrawBuffer(GLenum buffer) const;
         void setReadBuffer(GLenum buffer) const;
 
+        void bind() const;
+        void unbind() const;
+
     private:
         GLuint m_handle{0};
 };
