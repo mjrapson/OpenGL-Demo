@@ -155,7 +155,7 @@ Application::Application()
 
     // Demo camera
     m_camera = std::make_unique<Camera>();
-    m_camera->setPitch(-30.0f);
+    m_camera->setPitch(-15.0f);
     m_camera->setPosition(glm::vec3{-20.0f, 10.0f, 0.0f});
 
     m_renderer->setAssets(std::move(container));
@@ -184,6 +184,8 @@ void Application::run()
         lastTime = currTime;
 
         glfwPollEvents();
+
+        updateCamera(deltaTime);
 
         glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -219,4 +221,37 @@ void Application::mouseButtonPressCallback(int button, int action, int modifiers
 
 void Application::keyPressCallback(int key, int scancode, int action, int mods)
 {
+    if(action == GLFW_PRESS)
+    {
+        m_keyState[key] = true;
+    }
+    else if(action == GLFW_RELEASE)
+    {
+        m_keyState[key] = false;
+    }
+
+    if(m_keyState[GLFW_KEY_R])
+    {
+        std::cout << "Reloading shaders\n";
+        m_renderer->reloadShaders();
+    }
+}
+
+void Application::updateCamera(float deltaTime)
+{
+    const auto speed = 10.0f;
+    glm::vec3 movement(0.0f);
+
+    if (m_keyState[GLFW_KEY_W]) movement += m_camera->front();
+    if (m_keyState[GLFW_KEY_S]) movement -= m_camera->front();
+    if (m_keyState[GLFW_KEY_A]) movement -= glm::normalize(glm::cross(m_camera->front(), m_camera->up()));
+    if (m_keyState[GLFW_KEY_D]) movement += glm::normalize(glm::cross(m_camera->front(), m_camera->up()));
+    if (m_keyState[GLFW_KEY_E]) movement += m_camera->up();
+    if (m_keyState[GLFW_KEY_Q]) movement -= m_camera->up();
+
+    if (glm::length(movement) > 0.0f)
+    {
+        movement = glm::normalize(movement) * speed * deltaTime;
+        m_camera->setPosition(m_camera->position() + movement);
+    }
 }

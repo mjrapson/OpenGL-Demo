@@ -4,6 +4,7 @@
 #pragma once
 
 #include <memory>
+#include <unordered_map>
 
 class Camera;
 class Renderer;
@@ -30,9 +31,13 @@ class Application
         void mouseButtonPressCallback(int button, int action, int modifiers);
         void keyPressCallback(int key, int scancode, int action, int mods);
 
+        void updateCamera(float deltaTime);
+
     private:
         std::unique_ptr<Window> m_window{nullptr};
         std::unique_ptr<Renderer> m_renderer{nullptr};
         std::unique_ptr<Scene> m_scene{nullptr};
         std::unique_ptr<Camera> m_camera{nullptr};
+
+        std::unordered_map<int, bool> m_keyState;
 };

@@ -192,6 +192,11 @@ void Renderer::drawScene(const Scene& scene, const Camera& camera)
     render(camera, dirLight, pointLights);
 }
 
+void Renderer::reloadShaders()
+{
+    loadShaders();
+}
+
 void Renderer::loadShaders()
 {
     const auto shaderDir = GetShaderDir();

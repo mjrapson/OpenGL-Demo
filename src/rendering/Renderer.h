@@ -53,6 +53,8 @@ class Renderer
 
         void drawScene(const Scene& scene, const Camera& camera);
 
+        void reloadShaders();
+
     private:
         void loadShaders();
         void createFramebuffers();
