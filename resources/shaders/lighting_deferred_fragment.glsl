@@ -51,23 +51,14 @@ void main()
     // Convert fragment position into light space
     vec3 fragmentWorldPos = texture(positionTexture, fragmentTextureUV).xyz;
     vec4 fragmentPositionInLightSpace = dirLightSpaceMatrix * vec4(fragmentWorldPos, 1.0);
+
     // Project light space fragment position into UV coordinates ([0, 1]) to lookup on shadow map texture
     vec3 projectedCoords = fragmentPositionInLightSpace.xyz / fragmentPositionInLightSpace.w;
     projectedCoords = projectedCoords * 0.5 + 0.5;
-    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
+    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.005);
     projectedCoords.z -= bias;
     
-    //float shadow = texture(directionalShadowMap, projectedCoords.xyz);
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(directionalShadowMap, 0);
-    for(int x = -1; x <= 1; ++x) {
-        for(int y = -1; y <= 1; ++y) {
-            vec2 offset = vec2(x, y) * texelSize;
-            shadow += texture(directionalShadowMap, vec3(projectedCoords.xy + offset, projectedCoords.z));
-        }
-    }
-    shadow /= 9.0;
-
+    float shadow = texture(directionalShadowMap, projectedCoords.xyz);
     diffuse *= shadow;
 
     // Calculate point light contributions

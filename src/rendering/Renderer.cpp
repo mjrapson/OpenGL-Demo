@@ -336,8 +336,8 @@ void Renderer::rebuildBuffers()
 void Renderer::rebuildFramebufferImages()
 {
     m_shadowMapDepthImage = std::make_unique<Texture2D>(GL_DEPTH_COMPONENT24, shadowMapWidth, shadowMapHeight);
-    m_shadowMapDepthImage->setMinFilter(GL_NEAREST);
-    m_shadowMapDepthImage->setMagFilter(GL_NEAREST);
+    m_shadowMapDepthImage->setMinFilter(GL_LINEAR);
+    m_shadowMapDepthImage->setMagFilter(GL_LINEAR);
     m_shadowMapDepthImage->setWrapS(GL_CLAMP_TO_BORDER);
     m_shadowMapDepthImage->setWrapT(GL_CLAMP_TO_BORDER);
     m_shadowMapDepthImage->setBorderColor(glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
