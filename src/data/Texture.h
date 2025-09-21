@@ -26,6 +26,8 @@ class Texture
         void setBorderColor(const glm::vec4& color);
         void setComparisonMode(GLenum value);
         void setComparisonFunction(GLenum value);
+
+        void writeImageData(GLsizei width, GLsizei height, const void* data);
         
         inline GLuint handle() const 
         {

@@ -28,6 +28,8 @@ PRIVATE
     data/Sphere.h
     data/Texture.cpp
     data/Texture.h
+    loaders/TextureLoader.cpp
+    loaders/TextureLoader.h
     physics/Collision.cpp
     physics/Collision.h
     rendering/Buffer.h
@@ -76,6 +78,7 @@ PRIVATE
 
 add_custom_target(post_build ALL 
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/shaders ${CMAKE_CURRENT_BINARY_DIR}/resources/shaders
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/textures ${CMAKE_CURRENT_BINARY_DIR}/resources/textures
 )
 
 add_dependencies(post_build OpenGLDemo)

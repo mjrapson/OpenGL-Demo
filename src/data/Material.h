@@ -8,7 +8,7 @@
 #include <string>
 #include <optional>
 
-class Texture2D;
+class Texture;
 
 struct Material
 {
@@ -16,5 +16,5 @@ struct Material
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
-    std::optional<Texture2D*> diffuseTexture;
+    std::optional<Texture*> diffuseTexture;
 };

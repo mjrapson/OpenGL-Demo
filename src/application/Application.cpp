@@ -4,12 +4,14 @@
 #include "Application.h"
 
 #include "application/Window.h"
+#include "core/FileSystem.h"
 #include "core/Vertex.h"
 #include "data/Container.h"
 #include "data/Material.h"
 #include "data/Mesh.h"
 #include "data/MeshFactory.h"
 #include "data/Texture.h"
+#include "loaders/TextureLoader.h"
 #include "rendering/Camera.h"
 #include "rendering/Renderer.h"
 #include "scene/Scene.h"
@@ -72,6 +74,9 @@ Application::Application()
     auto container = std::make_unique<Container>();
     container->meshes["cube"] = MeshFactory::createCubePrimitive("cube");
     container->meshes["sphere"] = MeshFactory::createSpherePrimitive("sphere");
+    container->meshes["plane"] = MeshFactory::createPlanePrimitive("plane");
+
+    container->textures["checkerboard"] = loadTexture(GetTexturesDir() / "checkerboard.png");
 
     auto redMaterial = std::make_unique<Material>();
     redMaterial->name = "redMaterial";
@@ -87,6 +92,11 @@ Application::Application()
     blueMaterial->name = "blueMaterial";
     blueMaterial->diffuse = glm::vec3{0.0f, 0.0f, 1.0f};
     container->materials["blueMaterial"] = std::move(blueMaterial);
+
+    auto checkerboardMaterial = std::make_unique<Material>();
+    checkerboardMaterial->name = "blueMaterial";
+    checkerboardMaterial->diffuseTexture = container->textures.at("checkerboard").get();
+    container->materials["checkerboardMaterial"] = std::move(checkerboardMaterial);
 
     // Demo scene
     auto cube1 = std::make_unique<Scene3DModel>();
@@ -121,6 +131,15 @@ Application::Application()
         .mesh = container->meshes.at("sphere").get()}
     );
 
+    auto floor = std::make_unique<Scene3DModel>();
+    floor->setObjectName("Ground");
+    floor->setPosition(glm::vec3{0.0f, -1.0f, 0.0f});
+    floor->setScale(glm::vec3{100.0, 1.0, 100.0});
+    floor->addMeshInstance(MeshInstance{
+        .material = container->materials.at("checkerboardMaterial").get(), 
+        .mesh = container->meshes.at("plane").get()}
+    );
+
     auto sun = std::make_unique<SceneDirectionalLightObject>();
     sun->setObjectName("Sun");
     sun->setDirection(glm::vec3{1.0f, 0.0f, 0.0f});
@@ -131,6 +150,7 @@ Application::Application()
     m_scene->add3DModel(std::move(cube2));
     m_scene->add3DModel(std::move(cube3));
     m_scene->add3DModel(std::move(sphere1));
+    m_scene->add3DModel(std::move(floor));
     m_scene->setDirectionalLight(std::move(sun));
 
     // Demo camera

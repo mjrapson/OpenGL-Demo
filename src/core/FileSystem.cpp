@@ -47,3 +47,8 @@ std::filesystem::path GetShaderDir()
 {
     return GetResourceDir() / "shaders";
 }
+
+std::filesystem::path GetTexturesDir()
+{
+    return GetResourceDir() / "textures";
+}

@@ -48,6 +48,12 @@ void Texture::setComparisonFunction(GLenum value)
     glTextureParameteri(handle(), GL_TEXTURE_COMPARE_FUNC, value);
 }
 
+void Texture::writeImageData(GLsizei width, GLsizei height, const void* data)
+{
+    glTextureSubImage2D(m_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateTextureMipmap(m_handle);
+}
+
 Texture2D::Texture2D(GLenum format, GLsizei width, GLsizei height)
     : Texture(GL_TEXTURE_2D)
 {

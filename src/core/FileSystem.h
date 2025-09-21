@@ -8,3 +8,4 @@
 std::filesystem::path GetRootDir();
 std::filesystem::path GetResourceDir();
 std::filesystem::path GetShaderDir();
+std::filesystem::path GetTexturesDir();
