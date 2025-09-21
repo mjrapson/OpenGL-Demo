@@ -3,6 +3,8 @@
 
 #include "Shader.h"
 
+#include "data/Texture.h"
+
 #include <fstream>
 #include <stdexcept>
 #include <sstream>
@@ -95,8 +97,14 @@ void Shader::registerTextureSampler(const std::string& name, GLuint index)
 
 void Shader::writeUniformData(const std::string& name, GLsizeiptr size, const void* data)
 {
-    auto ubo = m_uniformBuffers.at(name);
+    const auto ubo = m_uniformBuffers.at(name);
     glNamedBufferSubData(ubo, 0, size, data);
+}
+
+void Shader::bindTexture(const std::string& name, Texture* texture)
+{
+    const auto slot = m_textureSamplers.at(name);
+    glBindTextureUnit(slot, texture->handle());
 }
 
 void Shader::bind() const

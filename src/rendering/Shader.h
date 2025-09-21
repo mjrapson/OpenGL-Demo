@@ -9,6 +9,8 @@
 #include <string>
 #include <unordered_map>
 
+class Texture;
+
 class Shader
 {
     public:
@@ -24,6 +26,7 @@ class Shader
         void registerUniformBuffer(const std::string& name, GLsizeiptr size, GLuint index);
         void registerTextureSampler(const std::string& name, GLuint index);
         void writeUniformData(const std::string& name, GLsizeiptr size, const void* data);
+        void bindTexture(const std::string& name, Texture* texture);
 
         void bind() const;
         void unbind() const;
