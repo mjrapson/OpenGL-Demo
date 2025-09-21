@@ -430,15 +430,11 @@ void Renderer::shadowMapRenderPass(const DirectionalLight& directionalLight, con
 
     m_shadowPointLightFrameBuffer->bind();
     m_meshPointLightShadowShader->bind();
-    m_shadowPointLightFrameBuffer->attachTexture(GL_DEPTH_ATTACHMENT, *m_pointLightDepthImage.get(), 0);
 
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-    glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 
     const float farPlane = 50.0f;
 
@@ -450,6 +446,9 @@ void Renderer::shadowMapRenderPass(const DirectionalLight& directionalLight, con
         for (auto i = 0; i < 6; ++i)
         {
             m_shadowPointLightFrameBuffer->attachTextureLayer(GL_DEPTH_ATTACHMENT, *m_pointLightDepthImage.get(), 0, (6 * lightIndex) + i);
+            glViewport(0, 0, shadowMapWidth, shadowMapHeight);
+            glClear(GL_DEPTH_BUFFER_BIT);
+
 
             const auto lightPosUbo = LightPositionUbo{.lightPosition = glm::vec3{light.position.x, light.position.y, light.position.z}};
             m_meshPointLightShadowShader->writeUniformData("LightPositionBlock", sizeof(LightPositionUbo), &lightPosUbo);
