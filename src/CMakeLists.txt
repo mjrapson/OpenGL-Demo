@@ -25,6 +25,8 @@ PRIVATE
     data/Texture.cpp
     data/Texture.h
     rendering/Buffer.h
+    rendering/Camera.cpp
+    rendering/Camera.h
     rendering/Framebuffer.cpp
     rendering/Framebuffer.h
     rendering/Renderer.cpp
