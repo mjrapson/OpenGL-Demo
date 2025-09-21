@@ -25,6 +25,11 @@ class Window
 
         void swapBuffers() const;
 
+        inline GLFWwindow* handle() const
+        {
+            return m_window;
+        }
+
     private:
         GLFWwindow* m_window{nullptr};
 };

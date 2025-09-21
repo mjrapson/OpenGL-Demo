@@ -25,6 +25,12 @@ class Application
         void run();
 
     private:
+        void framebufferResizeCallback(int width, int height);
+        void cursorPosChangeCallback(double x, double y);
+        void mouseButtonPressCallback(int button, int action, int modifiers);
+        void keyPressCallback(int key, int scancode, int action, int mods);
+
+    private:
         std::unique_ptr<Window> m_window{nullptr};
         std::unique_ptr<Renderer> m_renderer{nullptr};
         std::unique_ptr<Scene> m_scene{nullptr};

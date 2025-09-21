@@ -43,7 +43,30 @@ Application::Application()
         throw std::runtime_error("Failed to load OpenGL");
     }
 
+    glfwSetWindowUserPointer(m_window->handle(), this);
+
+    glfwSetFramebufferSizeCallback(m_window->handle(), [](GLFWwindow* window, int width, int height) {
+        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+        app->framebufferResizeCallback(width, height);
+    });
+
+    glfwSetCursorPosCallback(m_window->handle(), [](GLFWwindow* window, double x, double y) {
+        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+        app->cursorPosChangeCallback(x, y);
+    });
+
+    glfwSetMouseButtonCallback(m_window->handle(), [](GLFWwindow* window, int button, int action, int modifiers) {
+        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+        app->mouseButtonPressCallback(button, action, modifiers);
+    });
+
+    glfwSetKeyCallback(m_window->handle(), [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+        app->keyPressCallback(key, scancode, action, mods);
+    });
+
     m_renderer = std::make_unique<Renderer>();
+    m_renderer->resizeDisplay(800, 600);
 
     // Demo assets
     auto container = std::make_unique<Container>();
@@ -118,4 +141,21 @@ void Application::run()
             std::this_thread::sleep_for(sleepTime);
         }
     }
+}
+
+void Application::framebufferResizeCallback(int width, int height)
+{
+    m_renderer->resizeDisplay(width, height);
+}
+
+void Application::cursorPosChangeCallback(double x, double y)
+{
+}
+
+void Application::mouseButtonPressCallback(int button, int action, int modifiers)
+{
+}
+
+void Application::keyPressCallback(int key, int scancode, int action, int mods)
+{
 }
