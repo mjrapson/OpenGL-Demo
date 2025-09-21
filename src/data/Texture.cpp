@@ -35,17 +35,17 @@ void Texture::setWrapT(GLenum value)
 
 void Texture::setBorderColor(const glm::vec4& color)
 {
-    glSamplerParameterfv(handle(), GL_TEXTURE_BORDER_COLOR, &color[0]);
+    glTextureParameterfv(handle(), GL_TEXTURE_BORDER_COLOR, &color[0]);
 }
 
 void Texture::setComparisonMode(GLenum value)
 {
-    glSamplerParameteri(handle(), GL_TEXTURE_COMPARE_MODE, value);
+    glTextureParameteri(handle(), GL_TEXTURE_COMPARE_MODE, value);
 }
 
 void Texture::setComparisonFunction(GLenum value)
 {
-    glSamplerParameteri(handle(), GL_TEXTURE_COMPARE_FUNC, value);
+    glTextureParameteri(handle(), GL_TEXTURE_COMPARE_FUNC, value);
 }
 
 Texture2D::Texture2D(GLenum format, GLsizei width, GLsizei height)
