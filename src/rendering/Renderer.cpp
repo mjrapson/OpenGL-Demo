@@ -230,3 +230,61 @@ void Renderer::rebuildFramebufferImages()
     m_finalColourImage->setMinFilter(GL_LINEAR);
     m_finalColourImage->setMagFilter(GL_LINEAR);
 }
+
+void Renderer::render(const Camera& camera, const DirectionalLight& directionalLight, const std::vector<PointLight>& lights)
+{
+    shadowMapRenderPass(directionalLight, lights);
+
+    gBufferRenderPass(camera);
+
+    lightingRenderPass(directionalLight, lights);
+
+    overlayRenderPass(camera);
+
+    present();
+
+    m_meshDrawQueue.clear();
+    m_meshHighlightDrawQueue.clear();
+}
+
+void Renderer::shadowMapRenderPass(const DirectionalLight& directionalLight, const std::vector<PointLight>& lights)
+{
+
+}
+
+void Renderer::gBufferRenderPass(const Camera& camera)
+{
+
+}
+
+void Renderer::lightingRenderPass(const DirectionalLight& directionalLight, const std::vector<PointLight>& lights)
+{
+
+}
+
+void Renderer::overlayRenderPass(const Camera& camera)
+{
+
+}
+
+void Renderer::present()
+{
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_mainFramebuffer->handle());
+
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+    glBlitFramebuffer(
+        0,
+        0,
+        m_width,
+        m_height,
+        0,
+        0,
+        m_width,
+        m_height,
+        GL_COLOR_BUFFER_BIT,
+        GL_NEAREST);
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+}

@@ -31,6 +31,11 @@ class Framebuffer
         void bind() const;
         void unbind() const;
 
+        inline GLuint handle() const
+        {
+            return m_handle;
+        }
+
     private:
         GLuint m_handle{0};
 };

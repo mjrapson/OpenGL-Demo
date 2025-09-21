@@ -22,6 +22,8 @@ class TextureCubeMapArray;
 class VertexLayout;
 
 struct Container;
+struct DirectionalLight;
+struct PointLight;
 struct Vertex;
 
 class Renderer
@@ -58,6 +60,13 @@ class Renderer
         
         void rebuildBuffers();
         void rebuildFramebufferImages();
+
+        void render(const Camera& camera, const DirectionalLight& directionalLight, const std::vector<PointLight>& lights);
+        void shadowMapRenderPass(const DirectionalLight& directionalLight, const std::vector<PointLight>& lights);
+        void gBufferRenderPass(const Camera& camera);
+        void lightingRenderPass(const DirectionalLight& directionalLight, const std::vector<PointLight>& lights);
+        void overlayRenderPass(const Camera& camera);
+        void present();
 
     private:
         std::unique_ptr<Shader> m_meshShadowShader{nullptr};
