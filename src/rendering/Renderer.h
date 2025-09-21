@@ -10,8 +10,10 @@
 #include <memory>
 #include <unordered_map>
 
+class Camera;
 class Framebuffer;
 class Mesh;
+class Scene;
 class Shader;
 class Texture2D;
 class TextureCubeMapArray;
@@ -44,6 +46,8 @@ class Renderer
         void setAssets(std::unique_ptr<Container> assets);
 
         void resizeDisplay(GLuint width, GLuint height);
+
+        void drawScene(const Scene& scene, const Camera& camera);
 
     private:
         void loadShaders();

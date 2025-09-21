@@ -8,7 +8,7 @@
 class Sphere
 {
     public:
-        Sphere(float x, float y, float z, float radius);
+        Sphere(const glm::vec3& center, float radius);
 
         const glm::vec3& centerPoint() const;
         float radius() const;

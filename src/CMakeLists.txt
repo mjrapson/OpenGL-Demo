@@ -38,6 +38,20 @@ PRIVATE
     rendering/Shader.h
     rendering/VertexLayout.cpp
     rendering/VertexLayout.h
+    scene/Scene.cpp
+    scene/Scene.h
+    scene/Scene3DModel.cpp
+    scene/Scene3DModel.h
+    scene/Scene3DTransformObject.cpp
+    scene/Scene3DTransformObject.h
+    scene/SceneDirectionalLightObject.cpp
+    scene/SceneDirectionalLightObject.h
+    scene/SceneObject.cpp
+    scene/SceneObject.h
+    scene/ScenePointLightObject.cpp
+    scene/ScenePointLightObject.h
+    scene/SceneSelection.cpp
+    scene/SceneSelection.h
 	main.cpp
 )
 

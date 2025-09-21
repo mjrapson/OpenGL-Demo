@@ -47,6 +47,11 @@ void Renderer::resizeDisplay(GLuint width, GLuint height)
     rebuildFramebufferImages();
 }
 
+void Renderer::drawScene(const Scene& scene, const Camera& camera)
+{
+    
+}
+
 void Renderer::loadShaders()
 {
     const auto shaderDir = GetShaderDir();

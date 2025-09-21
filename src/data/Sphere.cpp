@@ -3,8 +3,8 @@
 
 #include "Sphere.h"
 
-Sphere::Sphere(float x, float y, float z, float radius)
-    : m_center(glm::vec3{x, y, z}),
+Sphere::Sphere(const glm::vec3& center, float radius)
+    : m_center(center),
       m_radius(radius)
 {
 }
