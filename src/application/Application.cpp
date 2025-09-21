@@ -94,7 +94,7 @@ Application::Application()
     container->materials["blueMaterial"] = std::move(blueMaterial);
 
     auto checkerboardMaterial = std::make_unique<Material>();
-    checkerboardMaterial->name = "blueMaterial";
+    checkerboardMaterial->name = "checkerboardMaterial";
     checkerboardMaterial->diffuseTexture = container->textures.at("checkerboard").get();
     container->materials["checkerboardMaterial"] = std::move(checkerboardMaterial);
 
