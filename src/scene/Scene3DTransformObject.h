@@ -16,16 +16,19 @@ class Scene3DTransformObject : public SceneObject
         const glm::vec3& rotation() const;
         const glm::vec3& scale() const;
         bool hovered() const;
+        bool selected() const;
         glm::mat4 transformMatrix() const;
 
         void setPosition(const glm::vec3& position);
         void setRotation(const glm::vec3& rotation);
         void setScale(const glm::vec3& scale);
         void setHovered(bool isHovered);
+        void setSelected(bool isSelected);
 
     private:
         glm::vec3 m_position{0.0f, 0.0f, 0.0f};
         glm::vec3 m_rotation{0.0f, 0.0f, 0.0f};
         glm::vec3 m_scale{1.0f, 1.0f, 1.0f};
         bool m_isHovered{false};
+        bool m_isSelected{false};
 };

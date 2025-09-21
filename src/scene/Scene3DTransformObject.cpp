@@ -27,6 +27,11 @@ bool Scene3DTransformObject::hovered() const
     return m_isHovered;
 }
 
+bool Scene3DTransformObject::selected() const
+{
+    return m_isSelected;
+}
+
 glm::mat4 Scene3DTransformObject::transformMatrix() const
 {
     auto transform = glm::mat4(1.0f);
@@ -65,4 +70,9 @@ void Scene3DTransformObject::setScale(const glm::vec3& scale)
 void Scene3DTransformObject::setHovered(bool isHovered)
 {
     m_isHovered = isHovered;
+}
+
+void Scene3DTransformObject::setSelected(bool isSelected)
+{
+    m_isSelected = isSelected;
 }
