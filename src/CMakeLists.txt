@@ -21,6 +21,7 @@ PRIVATE
     data/Mesh.h
     data/MeshFactory.cpp
     data/MeshFactory.h
+    data/MeshInstance.h
     data/PointLight.h
     data/Texture.cpp
     data/Texture.h

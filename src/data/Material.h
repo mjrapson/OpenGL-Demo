@@ -6,6 +6,9 @@
 #include <glm/glm.hpp>
 
 #include <string>
+#include <optional>
+
+class Texture2D;
 
 struct Material
 {
@@ -13,5 +16,5 @@ struct Material
     glm::vec4 ambient;
     glm::vec4 diffuse;
     glm::vec4 specular;
-    std::string diffuseTextureId;
+    std::optional<Texture2D*> diffuseTexture;
 };
