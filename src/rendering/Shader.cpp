@@ -74,9 +74,39 @@ Shader::~Shader()
     glDeleteProgram(m_programHandle);
 }
 
+void Shader::registerUniformBuffer(const std::string& name, GLsizeiptr size, GLuint index)
+{
+    auto ubo = GLuint{0};
+    glCreateBuffers(1, &ubo);
+    glNamedBufferData(ubo, size, nullptr, GL_DYNAMIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, index, ubo);
+
+    const auto blockIndex = glGetUniformBlockIndex(m_programHandle, name.c_str());
+    glUniformBlockBinding(m_programHandle, blockIndex, index);
+
+    m_uniformBuffers[name] = ubo;
+    m_uniformSlots[index] = ubo;
+}
+
+void Shader::registerTextureSampler(const std::string& name, GLuint index)
+{
+    m_textureSamplers[name] = index;
+}
+
+void Shader::writeUniformData(const std::string& name, GLsizeiptr size, const void* data)
+{
+    auto ubo = m_uniformBuffers.at(name);
+    glNamedBufferSubData(ubo, 0, size, data);
+}
+
 void Shader::bind() const
 {
     glUseProgram(m_programHandle);
+
+    for (const auto& [slot, ubo] : m_uniformSlots)
+    {
+        glBindBufferBase(GL_UNIFORM_BUFFER, slot, ubo);
+    }
 }
 
 void Shader::unbind() const

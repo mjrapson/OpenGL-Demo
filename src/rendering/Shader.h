@@ -6,6 +6,8 @@
 #include <glad/gl.h>
 
 #include <filesystem>
+#include <string>
+#include <unordered_map>
 
 class Shader
 {
@@ -19,6 +21,10 @@ class Shader
         Shader& operator=(const Shader& other) = delete;
         Shader& operator=(Shader&& other) = delete;
 
+        void registerUniformBuffer(const std::string& name, GLsizeiptr size, GLuint index);
+        void registerTextureSampler(const std::string& name, GLuint index);
+        void writeUniformData(const std::string& name, GLsizeiptr size, const void* data);
+
         void bind() const;
         void unbind() const;
 
@@ -26,4 +32,7 @@ class Shader
         GLuint m_programHandle{0};
         GLuint m_vsHandle{0};
         GLuint m_fsHandle{0};
+        std::unordered_map<std::string, GLuint> m_uniformBuffers;
+        std::unordered_map<GLuint, GLuint> m_uniformSlots;
+        std::unordered_map<std::string, GLuint> m_textureSamplers;
 };
