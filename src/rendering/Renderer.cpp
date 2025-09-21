@@ -26,6 +26,8 @@ const auto quadVertices =
     loadShaders();
 
     createFramebuffers();
+
+    createVertexLayouts();
  }
 
 Renderer::~Renderer() = default;
