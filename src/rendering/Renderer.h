@@ -101,8 +101,8 @@ class Renderer
 
         std::unique_ptr<Container> m_assets{nullptr};
 
-        GLuint m_width;
-        GLuint m_height;
+        GLuint m_width{0};
+        GLuint m_height{0};
 
         std::unordered_map<Mesh*, MeshBufferInfo> m_meshBufferTable;
         

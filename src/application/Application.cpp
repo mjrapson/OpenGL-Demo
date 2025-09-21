@@ -128,6 +128,9 @@ void Application::run()
 
         glfwPollEvents();
 
+        glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         m_renderer->drawScene(*m_scene.get(), *m_camera.get());
 
         m_window->swapBuffers();

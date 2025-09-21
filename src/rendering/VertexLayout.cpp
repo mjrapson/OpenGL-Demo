@@ -39,4 +39,3 @@ void VertexLayout::unbind() const
 {
     glBindVertexArray(0);
 }
-
