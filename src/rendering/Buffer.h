@@ -14,7 +14,7 @@ class Buffer
         Buffer(const std::vector<DataType>& data)
         {
             glCreateBuffers(1, &m_handle);
-            glNamedBufferStorage(m_handle, data.size() * sizeof(DataType), data.data(), GL_DYNAMIC_DRAW);
+            glNamedBufferStorage(m_handle, data.size() * sizeof(DataType), data.data(), GL_DYNAMIC_STORAGE_BIT);
         }
         ~Buffer()
         {
