@@ -10,7 +10,12 @@
 #include "data/Mesh.h"
 #include "data/MeshFactory.h"
 #include "data/Texture.h"
+#include "rendering/Camera.h"
 #include "rendering/Renderer.h"
+#include "scene/Scene.h"
+#include "scene/Scene3DModel.h"
+#include "scene/SceneDirectionalLightObject.h"
+#include "scene/ScenePointLightObject.h"
 
 #include <glad/gl.h>
 
@@ -40,16 +45,45 @@ Application::Application()
 
     m_renderer = std::make_unique<Renderer>();
 
-    // Demo
+    // Demo assets
     auto container = std::make_unique<Container>();
     container->meshes["cube"] = MeshFactory::createCubePrimitive("cube");
     container->meshes["sphere"] = MeshFactory::createCubePrimitive("sphere");
+
+    auto redMaterial = std::make_unique<Material>();
+    redMaterial->name = "redMaterial";
+    redMaterial->diffuse = glm::vec3{1.0f, 0.0f, 0.0f};
+    container->materials["redMaterial"] = std::move(redMaterial);
+
+    // Demo scene
+    auto cube1 = std::make_unique<Scene3DModel>();
+    cube1->setObjectName("Cube 1");
+    cube1->setPosition(glm::vec3{1.0f, 1.0f, 0.0f});
+    cube1->addMeshInstance(MeshInstance{
+        .material = container->materials.at("redMaterial").get(), 
+        .mesh = container->meshes.at("cube").get()}
+    );
+
+    auto sun = std::make_unique<SceneDirectionalLightObject>();
+    sun->setObjectName("Sun");
+    sun->setDirection(glm::vec3{1.0f, 0.0f, 0.0f});
+    sun->setColor(glm::vec3{1.0f, 1.0f, 1.0f});
+
+    m_scene = std::make_unique<Scene>();
+    m_scene->add3DModel(std::move(cube1));
+    m_scene->setDirectionalLight(std::move(sun));
+
+    // Demo camera
+    m_camera = std::make_unique<Camera>();
+    m_camera->setPitch(-30.0f);
+    m_camera->setPosition(glm::vec3{-20.0f, 10.0f, 0.0f});
 
     m_renderer->setAssets(std::move(container));
 }
 
 Application::~Application()
 {
+    m_scene.reset(nullptr);
     m_renderer.reset(nullptr);
 
     glfwTerminate();

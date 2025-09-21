@@ -5,7 +5,9 @@
 
 #include <memory>
 
+class Camera;
 class Renderer;
+class Scene;
 class Window;
 
 class Application
@@ -25,4 +27,6 @@ class Application
     private:
         std::unique_ptr<Window> m_window{nullptr};
         std::unique_ptr<Renderer> m_renderer{nullptr};
+        std::unique_ptr<Scene> m_scene{nullptr};
+        std::unique_ptr<Camera> m_camera{nullptr};
 };

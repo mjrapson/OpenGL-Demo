@@ -13,8 +13,8 @@ class Texture2D;
 struct Material
 {
     std::string name;
-    glm::vec4 ambient;
-    glm::vec4 diffuse;
-    glm::vec4 specular;
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
     std::optional<Texture2D*> diffuseTexture;
 };
