@@ -71,20 +71,54 @@ Application::Application()
     // Demo assets
     auto container = std::make_unique<Container>();
     container->meshes["cube"] = MeshFactory::createCubePrimitive("cube");
-    container->meshes["sphere"] = MeshFactory::createCubePrimitive("sphere");
+    container->meshes["sphere"] = MeshFactory::createSpherePrimitive("sphere");
 
     auto redMaterial = std::make_unique<Material>();
     redMaterial->name = "redMaterial";
     redMaterial->diffuse = glm::vec3{1.0f, 0.0f, 0.0f};
     container->materials["redMaterial"] = std::move(redMaterial);
 
+    auto yellowMaterial = std::make_unique<Material>();
+    yellowMaterial->name = "yellowMaterial";
+    yellowMaterial->diffuse = glm::vec3{1.0f, 1.0f, 0.0f};
+    container->materials["yellowMaterial"] = std::move(yellowMaterial);
+
+    auto blueMaterial = std::make_unique<Material>();
+    blueMaterial->name = "blueMaterial";
+    blueMaterial->diffuse = glm::vec3{0.0f, 0.0f, 1.0f};
+    container->materials["blueMaterial"] = std::move(blueMaterial);
+
     // Demo scene
     auto cube1 = std::make_unique<Scene3DModel>();
     cube1->setObjectName("Cube 1");
-    cube1->setPosition(glm::vec3{1.0f, 1.0f, 0.0f});
+    cube1->setPosition(glm::vec3{0.0f, 0.0f, 0.0f});
     cube1->addMeshInstance(MeshInstance{
         .material = container->materials.at("redMaterial").get(), 
         .mesh = container->meshes.at("cube").get()}
+    );
+
+    auto cube2 = std::make_unique<Scene3DModel>();
+    cube2->setObjectName("Cube 2");
+    cube2->setPosition(glm::vec3{2.0f, 0.0f, 0.0f});
+    cube2->addMeshInstance(MeshInstance{
+        .material = container->materials.at("yellowMaterial").get(), 
+        .mesh = container->meshes.at("cube").get()}
+    );
+
+    auto cube3 = std::make_unique<Scene3DModel>();
+    cube3->setObjectName("Cube 3");
+    cube3->setPosition(glm::vec3{0.0f, 0.0f, 2.0f});
+    cube3->addMeshInstance(MeshInstance{
+        .material = container->materials.at("blueMaterial").get(), 
+        .mesh = container->meshes.at("cube").get()}
+    );
+
+    auto sphere1 = std::make_unique<Scene3DModel>();
+    sphere1->setObjectName("Sphere 1");
+    sphere1->setPosition(glm::vec3{10.0f, 2.0f, 5.0f});
+    sphere1->addMeshInstance(MeshInstance{
+        .material = container->materials.at("blueMaterial").get(), 
+        .mesh = container->meshes.at("sphere").get()}
     );
 
     auto sun = std::make_unique<SceneDirectionalLightObject>();
@@ -94,6 +128,9 @@ Application::Application()
 
     m_scene = std::make_unique<Scene>();
     m_scene->add3DModel(std::move(cube1));
+    m_scene->add3DModel(std::move(cube2));
+    m_scene->add3DModel(std::move(cube3));
+    m_scene->add3DModel(std::move(sphere1));
     m_scene->setDirectionalLight(std::move(sun));
 
     // Demo camera
@@ -148,6 +185,7 @@ void Application::run()
 
 void Application::framebufferResizeCallback(int width, int height)
 {
+    m_camera->setAspectRatio(width / height);
     m_renderer->resizeDisplay(width, height);
 }
 
