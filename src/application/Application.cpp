@@ -133,8 +133,8 @@ Application::Application()
 
     auto floor = std::make_unique<Scene3DModel>();
     floor->setObjectName("Ground");
-    floor->setPosition(glm::vec3{0.0f, -1.0f, 0.0f});
-    floor->setScale(glm::vec3{100.0, 1.0, 100.0});
+    floor->setPosition(glm::vec3{-8.0f, -0.5f, -8.0f});
+    floor->setScale(glm::vec3{100.0f, 1.0f, 100.0f});
     floor->addMeshInstance(MeshInstance{
         .material = container->materials.at("checkerboardMaterial").get(), 
         .mesh = container->meshes.at("plane").get()}
@@ -143,7 +143,25 @@ Application::Application()
     auto sun = std::make_unique<SceneDirectionalLightObject>();
     sun->setObjectName("Sun");
     sun->setDirection(glm::normalize(glm::vec3{-1.0f, -1.0f, -1.0f}));
-    sun->setColor(glm::vec3{1.0f, 1.0f, 1.0f});
+    sun->setColor(glm::vec3{0.8f, 0.8f, 0.8f});
+
+    auto lamp1 = std::make_unique<ScenePointLightObject>();
+    lamp1->setObjectName("Lamp 1");
+    lamp1->setPosition(glm::vec3{0.0f, 2.0f, 3.0f});
+    lamp1->setColor(glm::vec3{0.8f, 0.8f, 0.8f});
+    lamp1->setRadius(4.0f);
+
+    auto lamp2 = std::make_unique<ScenePointLightObject>();
+    lamp2->setObjectName("Lamp 2");
+    lamp2->setPosition(glm::vec3{-1.0f, 2.0f, -4.0f});
+    lamp2->setColor(glm::vec3{0.8f, 0.3f, 0.8f});
+    lamp2->setRadius(2.0f);
+
+    auto lamp3 = std::make_unique<ScenePointLightObject>();
+    lamp3->setObjectName("Lamp 3");
+    lamp3->setPosition(glm::vec3{9.0f, 5.0f, 6.0f});
+    lamp3->setColor(glm::vec3{0.8f, 0.8f, 0.8f});
+    lamp3->setRadius(4.0f);
 
     m_scene = std::make_unique<Scene>();
     m_scene->add3DModel(std::move(cube1));
@@ -152,11 +170,14 @@ Application::Application()
     m_scene->add3DModel(std::move(sphere1));
     m_scene->add3DModel(std::move(floor));
     m_scene->setDirectionalLight(std::move(sun));
+    m_scene->addPointLight(std::move(lamp1));
+    m_scene->addPointLight(std::move(lamp2));
+    m_scene->addPointLight(std::move(lamp3));
 
     // Demo camera
     m_camera = std::make_unique<Camera>();
     m_camera->setPitch(-15.0f);
-    m_camera->setPosition(glm::vec3{-20.0f, 10.0f, 0.0f});
+    m_camera->setPosition(glm::vec3{-15.0f, 8.0f, 0.0f});
 
     m_renderer->setAssets(std::move(container));
 }
