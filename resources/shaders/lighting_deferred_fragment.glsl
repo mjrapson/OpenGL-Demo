@@ -37,13 +37,12 @@ void main()
 {
     // Sample the G-buffer textures
     vec3 color = texture(colorTexture, fragmentTextureUV).rgb;
-    vec3 normal = texture(normalTexture, fragmentTextureUV).rgb;
+    vec3 normal = normalize(texture(normalTexture, fragmentTextureUV).rgb);
 
     // Normalize the normal vector
-    normal = normalize(normal * 2.0 - 1.0);
 
     // Calculate diffuse lighting
-    vec3 lightDir = normalize(dirLightDirection);
+    vec3 lightDir = normalize(-dirLightDirection);
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = diff * dirLightDiffuseColor.rgb * color;
 
@@ -91,11 +90,10 @@ void main()
         float pointlightBias = max(0.05 * (1.0 - dot(normal, lightToFragment)), 0.005);
         float pointLightShadow = 1.0; //(lightDepth - pointlightBias > closestDepth) ? 1.0 : 0.0;
 
-        totalPointLightColor += (1.0 - pointLightShadow) * pointLightDiffuse * attenuation;
+        //totalPointLightColor += (1.0 - pointLightShadow) * pointLightDiffuse * attenuation;
         totalPointLightColor += pointLightDiffuse * attenuation;
     }
 
     // Final color calculation
-    vec3 ambient = 0.2 * color;
-    FragColor = vec4(diffuse + totalPointLightColor + ambient, 1.0);
+    FragColor = vec4(diffuse + totalPointLightColor, 1.0);
 }
