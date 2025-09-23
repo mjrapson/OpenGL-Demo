@@ -11,6 +11,7 @@
 #include "data/Mesh.h"
 #include "data/MeshFactory.h"
 #include "data/Texture.h"
+#include "loaders/GltfLoader.h"
 #include "loaders/TextureLoader.h"
 #include "rendering/Camera.h"
 #include "rendering/Renderer.h"
@@ -40,10 +41,13 @@ Application::Application()
     m_window = std::make_unique<Window>("OpenGL Demo", 1280, 720);
     m_window->makeCurrent();
 
-    if (gladLoadGL(glfwGetProcAddress) == 0)
+    const auto version = gladLoadGL(glfwGetProcAddress);
+    if (version == 0)
     {
         throw std::runtime_error("Failed to load OpenGL");
     }
+
+    std::cout << "Loaded OpenGL version: " << version << "\n";
 
     glfwSetWindowUserPointer(m_window->handle(), this);
 
@@ -76,6 +80,14 @@ Application::Application()
     container->meshes["sphere"] = MeshFactory::createSpherePrimitive("sphere");
     container->meshes["plane"] = MeshFactory::createPlanePrimitive("plane");
 
+    auto wolf = loadGLTFModel(GetResourceDir() / "data/wolf/Wolf-Blender-2.82a.gltf", *container.get());
+    if(wolf)
+    {
+        wolf->setObjectName("Wolf 1");
+        wolf->setScale(glm::vec3{5.0f, 5.0f, 5.0f});
+        wolf->setPosition(glm::vec3{0.0f, 0.0f, -2.0f});
+        wolf->setRotation(glm::vec3{0.0f, -45.0f, 0.0f});
+    }
     container->textures["checkerboard"] = loadTexture(GetTexturesDir() / "checkerboard.png");
 
     auto redMaterial = std::make_unique<Material>();
@@ -142,7 +154,7 @@ Application::Application()
 
     auto sun = std::make_unique<SceneDirectionalLightObject>();
     sun->setObjectName("Sun");
-    sun->setDirection(glm::normalize(glm::vec3{-1.0f, -1.0f, -1.0f}));
+    sun->setDirection(glm::normalize(glm::vec3{1.0f, -1.0f, 1.0f}));
     sun->setColor(glm::vec3{0.8f, 0.8f, 0.8f});
 
     auto lamp1 = std::make_unique<ScenePointLightObject>();
@@ -168,6 +180,10 @@ Application::Application()
     m_scene->add3DModel(std::move(cube2));
     m_scene->add3DModel(std::move(cube3));
     m_scene->add3DModel(std::move(sphere1));
+    if(wolf)
+    {
+        m_scene->add3DModel(std::move(wolf));
+    }
     m_scene->add3DModel(std::move(floor));
     m_scene->setDirectionalLight(std::move(sun));
     m_scene->addPointLight(std::move(lamp1));

@@ -3,6 +3,8 @@ Lightweight and modern 3D demo with OpenGL
 
 This is a hobby 3D graphics project, primarily for learning more about rendering, developed on Linux.
 
+![scene_image](demo.png)
+
 ## Requirements
 - OpenGL 4.5+
 
@@ -10,6 +12,7 @@ This is a hobby 3D graphics project, primarily for learning more about rendering
 - Modern OpenGL backend using Direct State Access (DSA)
 - Efficient rendering pipeline with shared buffer access and draw batching to limit state switching
 - Multiple rendering passes for deferring lighting and shadows
+- GLTF model support with tinygltf (WIP)
 
 ## Building
 This project uses CMake without any special requirements, and can be built for example:
@@ -34,7 +37,6 @@ The is a long term ongoing personal project, I would like to reach the following
 - Particle effects
 - Advanced lighting effects
 - Animations
-- Additional 3D model format imports
 
 
 ## License

@@ -28,6 +28,8 @@ PRIVATE
     data/Sphere.h
     data/Texture.cpp
     data/Texture.h
+    loaders/GltfLoader.cpp
+    loaders/GltfLoader.h
     loaders/TextureLoader.cpp
     loaders/TextureLoader.h
     physics/Collision.cpp
