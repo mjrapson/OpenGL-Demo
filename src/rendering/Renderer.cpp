@@ -27,7 +27,7 @@
 
 #include <array>
 
-constexpr auto maxPointLights = 32;
+constexpr auto maxPointLights = 8;
 constexpr auto shadowMapWidth = 2048;
 constexpr auto shadowMapHeight = 2048;
 
@@ -97,7 +97,25 @@ struct alignas(16) PointLightUbo
         float _padding[3];
         AlignedPointLight lights[maxPointLights];
 };
-static_assert(sizeof(PointLightUbo) == 1040);
+static_assert(sizeof(PointLightUbo) == 16 + (32 * maxPointLights));
+
+void GLAPIENTRY MessageCallback(
+    GLenum source,
+    GLenum type,
+    GLuint id,
+    GLenum severity,
+    GLsizei length,
+    const GLchar* message,
+    const void* userParam)
+{
+    fprintf(
+        stderr,
+        "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n\n",
+        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+        type,
+        severity,
+        message);
+}
 
 glm::mat4 getLightSpaceMatrix(const glm::vec3& lightDirection)
 {
@@ -128,6 +146,11 @@ std::array<glm::mat4, 6> getPointLightShadowTransforms(const glm::vec3& position
 
  Renderer::Renderer()
  {
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(MessageCallback, 0);
+    glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0, NULL, GL_FALSE);
+    glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_PERFORMANCE, GL_DONT_CARE, 0, NULL, GL_FALSE);
+
     loadShaders();
 
     createFramebuffers();
@@ -344,9 +367,9 @@ void Renderer::rebuildFramebufferImages()
     m_shadowMapDepthImage->setComparisonMode(GL_COMPARE_REF_TO_TEXTURE);
     m_shadowMapDepthImage->setComparisonFunction(GL_LEQUAL);
 
-    m_pointLightDepthImage = std::make_unique<TextureCubeMapArray>(GL_DEPTH_COMPONENT32F, shadowMapWidth, shadowMapHeight, 6 * maxPointLights);
-    m_pointLightDepthImage->setMinFilter(GL_NEAREST);
-    m_pointLightDepthImage->setMagFilter(GL_NEAREST);
+    m_pointLightDepthImage = std::make_unique<TextureCubeMapArray>(GL_DEPTH_COMPONENT24, shadowMapWidth, shadowMapHeight, 6 * maxPointLights);
+    m_pointLightDepthImage->setMinFilter(GL_LINEAR);
+    m_pointLightDepthImage->setMagFilter(GL_LINEAR);
     m_pointLightDepthImage->setWrapS(GL_CLAMP_TO_EDGE);
     m_pointLightDepthImage->setWrapT(GL_CLAMP_TO_EDGE);
     m_pointLightDepthImage->setWrapR(GL_CLAMP_TO_EDGE);
