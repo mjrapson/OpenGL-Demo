@@ -5,6 +5,9 @@ This is a hobby 3D graphics project, primarily for learning more about rendering
 
 ![scene_image](demo.png)
 
+* Wolf in demo by Dennis Haupt. used under personal use license for demo showcase and not included as part of this repository
+[Downloaded from here](https://free3d.com/3d-model/wolf-rigged-and-game-ready-42808.html)
+
 ## Requirements
 - OpenGL 4.5+
 
