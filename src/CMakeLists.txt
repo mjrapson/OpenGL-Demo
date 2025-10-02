@@ -34,14 +34,28 @@ PRIVATE
     loaders/TextureLoader.h
     physics/Collision.cpp
     physics/Collision.h
+    rendering/renderpasses/DirectionalShadowRenderPass.cpp
+    rendering/renderpasses/DirectionalShadowRenderPass.h
+    rendering/renderpasses/GBufferRenderPass.cpp
+    rendering/renderpasses/GBufferRenderPass.h
+    rendering/renderpasses/LightingRenderPass.cpp
+    rendering/renderpasses/LightingRenderPass.h
+    rendering/renderpasses/PointLightShadowRenderPass.cpp
+    rendering/renderpasses/PointLightShadowRenderPass.h
     rendering/Buffer.h
     rendering/Camera.cpp
     rendering/Camera.h
     rendering/DrawCommand.h
     rendering/Framebuffer.cpp
     rendering/Framebuffer.h
+    rendering/LightTransform.cpp
+    rendering/LightTransform.h
+    rendering/MeshBuffer.cpp
+    rendering/MeshBuffer.h
     rendering/Renderer.cpp
     rendering/Renderer.h
+    rendering/RenderPass.h
+    rendering/SceneData.h
     rendering/Shader.cpp
     rendering/Shader.h
     rendering/VertexLayout.cpp

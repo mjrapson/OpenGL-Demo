@@ -266,12 +266,6 @@ void Application::keyPressCallback(int key, int scancode, int action, int mods)
     {
         m_keyState[key] = false;
     }
-
-    if(m_keyState[GLFW_KEY_R])
-    {
-        std::cout << "Reloading shaders\n";
-        m_renderer->reloadShaders();
-    }
 }
 
 void Application::updateCamera(float deltaTime)
