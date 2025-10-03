@@ -64,8 +64,8 @@ PRIVATE
     world/components/MeshRenderingComponent.h
     world/components/PointLightComponent.h
     world/components/TransformComponent.h
-    world/RenderSystem.cpp
-    world/RenderSystem.h
+    world/systems/RenderSystem.cpp
+    world/systems/RenderSystem.h
     world/SpatialTree.cpp
     world/SpatialTree.h
     world/World.h

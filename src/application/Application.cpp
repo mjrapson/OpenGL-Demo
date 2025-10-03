@@ -15,7 +15,7 @@
 #include "loaders/TextureLoader.h"
 #include "rendering/Camera.h"
 #include "rendering/Renderer.h"
-#include "world/RenderSystem.h"
+#include "world/systems/RenderSystem.h"
 #include "world/World.h"
 
 #include <glad/gl.h>
