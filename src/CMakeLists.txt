@@ -28,6 +28,7 @@ PRIVATE
     data/Sphere.h
     data/Texture.cpp
     data/Texture.h
+    input/InputHandler.h
     loaders/GltfLoader.cpp
     loaders/GltfLoader.h
     loaders/TextureLoader.cpp

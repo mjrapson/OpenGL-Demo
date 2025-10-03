@@ -4,9 +4,9 @@
 #pragma once
 
 #include <memory>
-#include <unordered_map>
 
 class Camera;
+class InputHandler;
 class Renderer;
 class RenderSystem;
 class Window;
@@ -39,8 +39,6 @@ class Application
         std::unique_ptr<Renderer> m_renderer{nullptr};
         std::unique_ptr<Camera> m_camera{nullptr};
         std::unique_ptr<World> m_world{nullptr};
-
+        std::unique_ptr<InputHandler> m_inputHandler{nullptr};
         std::unique_ptr<RenderSystem> m_renderSystem{nullptr};
-
-        std::unordered_map<int, bool> m_keyState;
 };

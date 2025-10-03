@@ -11,6 +11,7 @@
 #include "data/Mesh.h"
 #include "data/MeshFactory.h"
 #include "data/Texture.h"
+#include "input/InputHandler.h"
 #include "loaders/GltfLoader.h"
 #include "loaders/TextureLoader.h"
 #include "rendering/Camera.h"
@@ -28,6 +29,7 @@
 #include <thread>
 
 Application::Application()
+    : m_inputHandler{std::make_unique<InputHandler>()}
 {
     if (!glfwInit())
     {
@@ -254,11 +256,11 @@ void Application::keyPressCallback(int key, int scancode, int action, int mods)
 {
     if(action == GLFW_PRESS)
     {
-        m_keyState[key] = true;
+        m_inputHandler->keyState[key] = true;
     }
     else if(action == GLFW_RELEASE)
     {
-        m_keyState[key] = false;
+        m_inputHandler->keyState[key] = false;
     }
 }
 
@@ -267,12 +269,12 @@ void Application::updateCamera(float deltaTime)
     const auto speed = 10.0f;
     glm::vec3 movement(0.0f);
 
-    if (m_keyState[GLFW_KEY_W]) movement += m_camera->front();
-    if (m_keyState[GLFW_KEY_S]) movement -= m_camera->front();
-    if (m_keyState[GLFW_KEY_A]) movement -= glm::normalize(glm::cross(m_camera->front(), m_camera->up()));
-    if (m_keyState[GLFW_KEY_D]) movement += glm::normalize(glm::cross(m_camera->front(), m_camera->up()));
-    if (m_keyState[GLFW_KEY_E]) movement += m_camera->up();
-    if (m_keyState[GLFW_KEY_Q]) movement -= m_camera->up();
+    if (m_inputHandler->keyState[GLFW_KEY_W]) movement += m_camera->front();
+    if (m_inputHandler->keyState[GLFW_KEY_S]) movement -= m_camera->front();
+    if (m_inputHandler->keyState[GLFW_KEY_A]) movement -= glm::normalize(glm::cross(m_camera->front(), m_camera->up()));
+    if (m_inputHandler->keyState[GLFW_KEY_D]) movement += glm::normalize(glm::cross(m_camera->front(), m_camera->up()));
+    if (m_inputHandler->keyState[GLFW_KEY_E]) movement += m_camera->up();
+    if (m_inputHandler->keyState[GLFW_KEY_Q]) movement -= m_camera->up();
 
     if (glm::length(movement) > 0.0f)
     {
