@@ -4,6 +4,7 @@
 #include "Application.h"
 
 #include "application/Window.h"
+#include "behaviours/CameraMoveBehaviour.h"
 #include "core/FileSystem.h"
 #include "core/Vertex.h"
 #include "data/Container.h"
@@ -16,6 +17,7 @@
 #include "loaders/TextureLoader.h"
 #include "rendering/Camera.h"
 #include "rendering/Renderer.h"
+#include "world/systems/BehaviourSystem.h"
 #include "world/systems/RenderSystem.h"
 #include "world/World.h"
 
@@ -185,14 +187,25 @@ Application::Application()
     m_world->addComponent<TransformComponent>(lamp3)
         .setPosition(9.0f, 5.0f, 6.0f);
 
-    m_renderSystem = std::make_unique<RenderSystem>(*m_renderer, *m_world);
-
     // Demo camera
-    m_camera = std::make_unique<Camera>();
-    m_camera->setPitch(-15.0f);
-    m_camera->setPosition(glm::vec3{-15.0f, 8.0f, 0.0f});
+    auto camera = std::make_unique<Camera>();
+    camera->setPitch(-15.0f);
+    camera->setPosition(glm::vec3{-15.0f, 8.0f, 0.0f});
+
+    // Player controller
+    auto player = m_world->createEntity();
+
+    auto& cameraComponent = m_world->addComponent<CameraComponent>(player);
+    cameraComponent.camera.setPitch(-15.0f);
+    cameraComponent.camera.setPosition(glm::vec3{-15.0f, 8.0f, 0.0f});
+
+    m_world->addComponent<BehaviourComponent>(player)
+        .addBehaviour(std::make_unique<CameraMoveBehaviour>());
 
     m_renderer->setAssets(std::move(container));
+
+    m_renderSystem = std::make_unique<RenderSystem>(*m_renderer, *m_world);
+    m_behaviourSystem = std::make_unique<BehaviourSystem>(*m_inputHandler, *m_world);
 }
 
 Application::~Application()
@@ -218,12 +231,12 @@ void Application::run()
 
         glfwPollEvents();
 
-        updateCamera(deltaTime);
+        m_behaviourSystem->update(deltaTime);
 
         glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        m_renderSystem->draw(*m_camera);
+        m_renderSystem->draw();
 
         m_window->swapBuffers();
 
@@ -240,8 +253,12 @@ void Application::run()
 
 void Application::framebufferResizeCallback(int width, int height)
 {
-    m_camera->setAspectRatio(width / height);
     m_renderer->resizeDisplay(width, height);
+
+    for(auto& [entity, cameraComponent] : m_world->getAllComponents<CameraComponent>())
+    {
+        cameraComponent.camera.setAspectRatio(width / height);
+    }
 }
 
 void Application::cursorPosChangeCallback(double x, double y)
@@ -256,29 +273,10 @@ void Application::keyPressCallback(int key, int scancode, int action, int mods)
 {
     if(action == GLFW_PRESS)
     {
-        m_inputHandler->keyState[key] = true;
+        m_inputHandler->setKeyPressed(key);
     }
     else if(action == GLFW_RELEASE)
     {
-        m_inputHandler->keyState[key] = false;
-    }
-}
-
-void Application::updateCamera(float deltaTime)
-{
-    const auto speed = 10.0f;
-    glm::vec3 movement(0.0f);
-
-    if (m_inputHandler->keyState[GLFW_KEY_W]) movement += m_camera->front();
-    if (m_inputHandler->keyState[GLFW_KEY_S]) movement -= m_camera->front();
-    if (m_inputHandler->keyState[GLFW_KEY_A]) movement -= glm::normalize(glm::cross(m_camera->front(), m_camera->up()));
-    if (m_inputHandler->keyState[GLFW_KEY_D]) movement += glm::normalize(glm::cross(m_camera->front(), m_camera->up()));
-    if (m_inputHandler->keyState[GLFW_KEY_E]) movement += m_camera->up();
-    if (m_inputHandler->keyState[GLFW_KEY_Q]) movement -= m_camera->up();
-
-    if (glm::length(movement) > 0.0f)
-    {
-        movement = glm::normalize(movement) * speed * deltaTime;
-        m_camera->setPosition(m_camera->position() + movement);
+        m_inputHandler->setKeyReleased(key);
     }
 }

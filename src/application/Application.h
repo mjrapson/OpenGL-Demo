@@ -5,7 +5,7 @@
 
 #include <memory>
 
-class Camera;
+class BehaviourSystem;
 class InputHandler;
 class Renderer;
 class RenderSystem;
@@ -31,14 +31,12 @@ class Application
         void cursorPosChangeCallback(double x, double y);
         void mouseButtonPressCallback(int button, int action, int modifiers);
         void keyPressCallback(int key, int scancode, int action, int mods);
-
-        void updateCamera(float deltaTime);
-
+        
     private:
         std::unique_ptr<Window> m_window{nullptr};
         std::unique_ptr<Renderer> m_renderer{nullptr};
-        std::unique_ptr<Camera> m_camera{nullptr};
         std::unique_ptr<World> m_world{nullptr};
         std::unique_ptr<InputHandler> m_inputHandler{nullptr};
         std::unique_ptr<RenderSystem> m_renderSystem{nullptr};
+        std::unique_ptr<BehaviourSystem> m_behaviourSystem{nullptr};
 };

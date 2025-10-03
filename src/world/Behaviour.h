@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include "world/Entity.h"
+
+class InputHandler;
 class World;
 
 class Behaviour
@@ -10,5 +13,5 @@ class Behaviour
     public:
         virtual ~Behaviour() {}
 
-        virtual void update(World& world, float deltaTime) const = 0;
+        virtual void update(Entity entity, World& world, float deltaTime, const InputHandler& inputHandler) const = 0;
 };

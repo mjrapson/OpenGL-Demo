@@ -4,11 +4,11 @@
 #include "BehaviourSystem.h"
 
 #include "world/Behaviour.h"
-
 #include "world/World.h"
 
-BehaviourSystem::BehaviourSystem(World& world)
-    : m_world{world}
+BehaviourSystem::BehaviourSystem(const InputHandler& inputHandler, World& world)
+    : m_inputHandler{inputHandler}
+    , m_world{world}
 {
 }
 
@@ -18,7 +18,7 @@ void BehaviourSystem::update(float deltaTime) const
     {
         for(const auto& script : behaviourComponent.behaviours)
         {
-            script->update(m_world, deltaTime);
+            script->update(entity, m_world, deltaTime, m_inputHandler);
         }
     }
 }

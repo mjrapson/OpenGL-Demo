@@ -3,15 +3,17 @@
 
 #pragma once
 
+class InputHandler;
 class World;
 
 class BehaviourSystem
 {
     public:
-        explicit BehaviourSystem(World& world);
+        BehaviourSystem(const InputHandler& inputHandler, World& world);
 
         void update(float deltaTime) const;
 
     private:
+        const InputHandler& m_inputHandler;
         World& m_world;
 };

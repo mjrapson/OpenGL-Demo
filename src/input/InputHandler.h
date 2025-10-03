@@ -5,7 +5,14 @@
 
 #include <unordered_map>
 
-struct InputHandler
+class InputHandler
 {
-    std::unordered_map<int, bool> keyState;
+    public:
+        void setKeyPressed(int key);
+        void setKeyReleased(int key);
+
+        bool isKeyPressed(int key) const;
+
+    private:
+        mutable std::unordered_map<int, bool> m_keyState;
 };

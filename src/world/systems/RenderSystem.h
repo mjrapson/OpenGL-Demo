@@ -3,7 +3,6 @@
 
 #pragma once
 
-class Camera;
 class Renderer;
 class World;
 
@@ -12,7 +11,7 @@ class RenderSystem
     public:
         RenderSystem(const Renderer& renderer, World& world);
 
-        void draw(const Camera& camera) const;
+        void draw() const;
 
     private:
         const Renderer& m_renderer;

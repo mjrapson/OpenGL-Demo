@@ -20,11 +20,25 @@ RenderSystem::RenderSystem(const Renderer& renderer, World& world)
 {
 }
 
-void RenderSystem::draw(const Camera& camera) const
+void RenderSystem::draw() const
 {
     auto commandQueue = std::vector<DrawCommand>{};
     auto sceneData = SceneData{};
-    sceneData.camera = &camera;
+    
+    const auto cameraComponents = m_world.getAllComponents<CameraComponent>();
+    if(cameraComponents.empty())
+    {
+        return;
+    }
+
+    for(auto& [entity, cameraComponent] : cameraComponents)
+    {
+        if(cameraComponent.active)
+        {
+            sceneData.camera = &cameraComponent.camera;
+            break;
+        }
+    }
 
     const auto worldLightComponents = m_world.getAllComponents<DirectionalLightComponent>();
     if(worldLightComponents.empty())

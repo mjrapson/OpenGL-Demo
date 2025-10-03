@@ -3,17 +3,16 @@
 
 #pragma once
 
+#include "Entity.h"
 #include "world/components/BehaviourComponent.h"
+#include "world/components/CameraComponent.h"
 #include "world/components/DirectionalLightComponent.h"
 #include "world/components/MeshRenderingComponent.h"
 #include "world/components/PointLightComponent.h"
 #include "world/components/TransformComponent.h"
 
-#include <cstdint>
 #include <stdexcept>
 #include <unordered_map>
-
-using Entity = uint32_t;
 
 class World
 {
@@ -26,6 +25,7 @@ class World
         void destroyEntity(Entity entity)
         {
             m_behaviourComponents.erase(entity);
+            m_cameraComponents.erase(entity);
             m_directionalLightComponents.erase(entity);
             m_meshRendererComponents.erase(entity);
             m_pointLightComponents.erase(entity);
@@ -51,7 +51,7 @@ class World
         }
 
         template<typename Component>
-        const auto& getAllComponents()
+        auto& getAllComponents()
         {
             return getStorage<Component>();
         }
@@ -63,6 +63,10 @@ class World
             if constexpr(std::is_same_v<Component, BehaviourComponent>)
             {
                 return m_behaviourComponents;
+            }
+            if constexpr(std::is_same_v<Component, CameraComponent>)
+            {
+                return m_cameraComponents;
             }
             if constexpr(std::is_same_v<Component, DirectionalLightComponent>)
             {
@@ -86,6 +90,7 @@ class World
 
     private:
         std::unordered_map<Entity, BehaviourComponent> m_behaviourComponents;
+        std::unordered_map<Entity, CameraComponent> m_cameraComponents;
         std::unordered_map<Entity, DirectionalLightComponent> m_directionalLightComponents;
         std::unordered_map<Entity, MeshRendererComponent> m_meshRendererComponents;
         std::unordered_map<Entity, PointLightComponent> m_pointLightComponents;

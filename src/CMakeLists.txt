@@ -9,6 +9,8 @@ PRIVATE
     application/Application.h
     application/Window.cpp
     application/Window.h
+    behaviours/CameraMoveBehaviour.cpp
+    behaviours/CameraMoveBehaviour.h
     core/FileSystem.cpp
     core/FileSystem.h
     core/Vertex.h
@@ -28,6 +30,7 @@ PRIVATE
     data/Sphere.h
     data/Texture.cpp
     data/Texture.h
+    input/InputHandler.cpp
     input/InputHandler.h
     loaders/GltfLoader.cpp
     loaders/GltfLoader.h
@@ -62,6 +65,7 @@ PRIVATE
     rendering/VertexLayout.cpp
     rendering/VertexLayout.h
     world/components/BehaviourComponent.h
+    world/components/CameraComponent.h
     world/components/DirectionalLightComponent.h
     world/components/MeshRenderingComponent.h
     world/components/PointLightComponent.h
@@ -71,6 +75,7 @@ PRIVATE
     world/systems/RenderSystem.cpp
     world/systems/RenderSystem.h
     world/Behaviour.h
+    world/Entity.h
     world/SpatialTree.cpp
     world/SpatialTree.h
     world/World.h
