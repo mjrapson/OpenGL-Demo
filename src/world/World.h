@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "world/components/BehaviourComponent.h"
 #include "world/components/DirectionalLightComponent.h"
 #include "world/components/MeshRenderingComponent.h"
 #include "world/components/PointLightComponent.h"
@@ -24,6 +25,7 @@ class World
 
         void destroyEntity(Entity entity)
         {
+            m_behaviourComponents.erase(entity);
             m_directionalLightComponents.erase(entity);
             m_meshRendererComponents.erase(entity);
             m_pointLightComponents.erase(entity);
@@ -58,6 +60,10 @@ class World
         template<typename Component>
         auto& getStorage()
         {
+            if constexpr(std::is_same_v<Component, BehaviourComponent>)
+            {
+                return m_behaviourComponents;
+            }
             if constexpr(std::is_same_v<Component, DirectionalLightComponent>)
             {
                 return m_directionalLightComponents;
@@ -79,6 +85,7 @@ class World
         }
 
     private:
+        std::unordered_map<Entity, BehaviourComponent> m_behaviourComponents;
         std::unordered_map<Entity, DirectionalLightComponent> m_directionalLightComponents;
         std::unordered_map<Entity, MeshRendererComponent> m_meshRendererComponents;
         std::unordered_map<Entity, PointLightComponent> m_pointLightComponents;
