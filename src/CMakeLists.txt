@@ -60,6 +60,10 @@ PRIVATE
     rendering/Shader.h
     rendering/VertexLayout.cpp
     rendering/VertexLayout.h
+    world/components/DirectionalLightComponent.h
+    world/components/MeshRenderingComponent.h
+    world/components/PointLightComponent.h
+    world/components/TransformComponent.h
     world/RenderSystem.cpp
     world/RenderSystem.h
     world/SpatialTree.cpp

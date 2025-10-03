@@ -3,99 +3,16 @@
 
 #pragma once
 
-#include "data/Box.h"
-#include "data/MeshInstance.h"
+#include "world/components/DirectionalLightComponent.h"
+#include "world/components/MeshRenderingComponent.h"
+#include "world/components/PointLightComponent.h"
+#include "world/components/TransformComponent.h"
 
 #include <cstdint>
 #include <stdexcept>
 #include <unordered_map>
-#include <vector>
-
-#include <glm/glm.hpp>
 
 using Entity = uint32_t;
-
-struct MeshRendererComponent
-{
-    std::vector<MeshInstance> meshInstances;
-
-    MeshRendererComponent& addMeshInstance(Material* material, Mesh* mesh)
-    {
-        auto instance = MeshInstance{};
-        instance.material = material;
-        instance.mesh = mesh;
-        meshInstances.push_back(instance);
-
-        return *this;
-    }
-
-    MeshRendererComponent& addMeshInstances(const std::vector<MeshInstance>& instances)
-    {
-        meshInstances.insert(meshInstances.end(), instances.begin(), instances.end());
-        return *this;
-    }
-};
-
-struct TransformComponent
-{
-    glm::vec3 position{0.0f};
-    glm::vec3 rotation{0.0f};
-    glm::vec3 scale{1.0f};
-
-    TransformComponent& setPosition(float x, float y, float z)
-    {
-        position = glm::vec3{x, y, z};
-        return *this;
-    }
-
-    TransformComponent& setRotation(float x, float y, float z)
-    {
-        rotation = glm::vec3{x, y, z};
-        return *this;
-    }
-
-    TransformComponent& setScale(float x, float y, float z)
-    {
-        scale = glm::vec3{x, y, z};
-        return *this;
-    }
-};
-
-struct DirectionalLightComponent
-{
-    glm::vec3 direction{0.0f};
-    glm::vec3 color{1.0f};
-
-    DirectionalLightComponent& setDirection(float x, float y, float z)
-    {
-        direction = glm::vec3{x, y, z};
-        return *this;
-    }
-
-    DirectionalLightComponent& setColor(float r, float g, float b)
-    {
-        color = glm::vec3{r, g, b};
-        return *this;
-    }
-};
-
-struct PointLightComponent
-{
-    glm::vec3 color{1.0f};
-    float radius{1.0f};
-
-    PointLightComponent& setColor(float r, float g, float b)
-    {
-        color = glm::vec3{r, g, b};
-        return *this;
-    }
-
-    PointLightComponent& setRadius(float r)
-    {
-        radius = r;
-        return *this;
-    }
-};
 
 class World
 {
