@@ -6,26 +6,16 @@
 #include "rendering/Buffer.h"
 #include "rendering/DrawCommand.h"
 
-#include <glm/glm.hpp>
-
 #include <memory>
-#include <vector>
 
-class Camera;
 class DirectionalShadowRenderPass;
-class Framebuffer;
 class GBufferRenderPass;
 class LightingRenderPass;
-class Mesh;
 class MeshBuffer;
 class PointLightShadowRenderPass;
-class Scene;
-class VertexLayout;
 
 struct Container;
-struct DirectionalLight;
-struct PointLight;
-struct Vertex;
+struct SceneData;
 
 class Renderer
 {
@@ -43,14 +33,11 @@ class Renderer
 
         void resizeDisplay(GLuint width, GLuint height);
 
-        void drawScene(const Scene& scene, const Camera& camera);
+        void render(const std::vector<DrawCommand>& commands, const SceneData& sceneData) const;
 
     private:
         void rebuildBuffers();
-
-        void render(const Camera& camera, const DirectionalLight& directionalLight, const std::vector<PointLight>& lights);
-        void lightingRenderPass(const DirectionalLight& directionalLight, const std::vector<PointLight>& lights);
-        void present();
+        void present() const;
 
     private:
         std::unique_ptr<DirectionalShadowRenderPass> m_directionalShadowRenderPass{nullptr};
@@ -64,6 +51,4 @@ class Renderer
 
         GLuint m_width{0};
         GLuint m_height{0};
-        
-        std::vector<DrawCommand> m_meshDrawQueue;
 };

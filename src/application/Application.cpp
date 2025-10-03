@@ -15,10 +15,8 @@
 #include "loaders/TextureLoader.h"
 #include "rendering/Camera.h"
 #include "rendering/Renderer.h"
-#include "scene/Scene.h"
-#include "scene/Scene3DModel.h"
-#include "scene/SceneDirectionalLightObject.h"
-#include "scene/ScenePointLightObject.h"
+#include "world/RenderSystem.h"
+#include "world/World.h"
 
 #include <glad/gl.h>
 
@@ -80,14 +78,8 @@ Application::Application()
     container->meshes["sphere"] = MeshFactory::createSpherePrimitive("sphere");
     container->meshes["plane"] = MeshFactory::createPlanePrimitive("plane");
 
-    auto wolf = loadGLTFModel(GetResourceDir() / "data/wolf/Wolf-Blender-2.82a.gltf", *container.get());
-    if(wolf)
-    {
-        wolf->setObjectName("Wolf 1");
-        wolf->setScale(glm::vec3{5.0f, 5.0f, 5.0f});
-        wolf->setPosition(glm::vec3{0.0f, 0.0f, -2.0f});
-        wolf->setRotation(glm::vec3{0.0f, -45.0f, 0.0f});
-    }
+    auto wolfMeshInstances = loadGLTFModel(GetResourceDir() / "data/wolf/Wolf-Blender-2.82a.gltf", *container.get());
+
     container->textures["checkerboard"] = loadTexture(GetTexturesDir() / "checkerboard.png");
 
     auto redMaterial = std::make_unique<Material>();
@@ -110,85 +102,88 @@ Application::Application()
     checkerboardMaterial->diffuseTexture = container->textures.at("checkerboard").get();
     container->materials["checkerboardMaterial"] = std::move(checkerboardMaterial);
 
+    m_world = std::make_unique<World>();
+
     // Demo scene
-    auto cube1 = std::make_unique<Scene3DModel>();
-    cube1->setObjectName("Cube 1");
-    cube1->setPosition(glm::vec3{0.0f, 0.0f, 0.0f});
-    cube1->addMeshInstance(MeshInstance{
-        .material = container->materials.at("redMaterial").get(), 
-        .mesh = container->meshes.at("cube").get()}
-    );
+    auto cube = m_world->createEntity();
+    m_world->addComponent<TransformComponent>(cube)
+        .setPosition(0.0f, 0.0f, 0.0f);
+    m_world->addComponent<MeshRendererComponent>(cube)
+        .addMeshInstance(
+            container->materials.at("redMaterial").get(), 
+            container->meshes.at("cube").get());
 
-    auto cube2 = std::make_unique<Scene3DModel>();
-    cube2->setObjectName("Cube 2");
-    cube2->setPosition(glm::vec3{2.0f, 0.0f, 0.0f});
-    cube2->addMeshInstance(MeshInstance{
-        .material = container->materials.at("yellowMaterial").get(), 
-        .mesh = container->meshes.at("cube").get()}
-    );
+    auto cube2 = m_world->createEntity();
+    m_world->addComponent<TransformComponent>(cube2)
+        .setPosition(2.0f, 0.0f, 0.0f);
+    m_world->addComponent<MeshRendererComponent>(cube2)
+        .addMeshInstance(
+            container->materials.at("yellowMaterial").get(), 
+            container->meshes.at("cube").get());
 
-    auto cube3 = std::make_unique<Scene3DModel>();
-    cube3->setObjectName("Cube 3");
-    cube3->setPosition(glm::vec3{0.0f, 0.0f, 2.0f});
-    cube3->addMeshInstance(MeshInstance{
-        .material = container->materials.at("blueMaterial").get(), 
-        .mesh = container->meshes.at("cube").get()}
-    );
+    auto cube3 = m_world->createEntity();
+    m_world->addComponent<TransformComponent>(cube3)
+        .setPosition(0.0f, 0.0f, 2.0f);
+    m_world->addComponent<MeshRendererComponent>(cube3)
+        .addMeshInstance(
+            container->materials.at("blueMaterial").get(), 
+            container->meshes.at("cube").get());
 
-    auto sphere1 = std::make_unique<Scene3DModel>();
-    sphere1->setObjectName("Sphere 1");
-    sphere1->setPosition(glm::vec3{10.0f, 2.0f, 5.0f});
-    sphere1->addMeshInstance(MeshInstance{
-        .material = container->materials.at("blueMaterial").get(), 
-        .mesh = container->meshes.at("sphere").get()}
-    );
+    auto sphere = m_world->createEntity();
+    m_world->addComponent<TransformComponent>(sphere)
+        .setPosition(10.0f, 2.0f, 5.0f);
+    m_world->addComponent<MeshRendererComponent>(sphere)
+        .addMeshInstance(
+            container->materials.at("blueMaterial").get(), 
+            container->meshes.at("sphere").get());
 
-    auto floor = std::make_unique<Scene3DModel>();
-    floor->setObjectName("Ground");
-    floor->setPosition(glm::vec3{-8.0f, -0.5f, -8.0f});
-    floor->setScale(glm::vec3{100.0f, 1.0f, 100.0f});
-    floor->addMeshInstance(MeshInstance{
-        .material = container->materials.at("checkerboardMaterial").get(), 
-        .mesh = container->meshes.at("plane").get()}
-    );
+    auto floor = m_world->createEntity();
+    m_world->addComponent<TransformComponent>(floor)
+        .setPosition(-8.0f, -0.5f, -8.0f)
+        .setScale(100.0f, 1.0f, 100.0f);
+    m_world->addComponent<MeshRendererComponent>(floor)
+        .addMeshInstance(
+            container->materials.at("checkerboardMaterial").get(), 
+            container->meshes.at("plane").get());
 
-    auto sun = std::make_unique<SceneDirectionalLightObject>();
-    sun->setObjectName("Sun");
-    sun->setDirection(glm::normalize(glm::vec3{1.0f, -1.0f, 1.0f}));
-    sun->setColor(glm::vec3{0.8f, 0.8f, 0.8f});
-
-    auto lamp1 = std::make_unique<ScenePointLightObject>();
-    lamp1->setObjectName("Lamp 1");
-    lamp1->setPosition(glm::vec3{0.0f, 2.0f, 3.0f});
-    lamp1->setColor(glm::vec3{0.8f, 0.8f, 0.8f});
-    lamp1->setRadius(4.0f);
-
-    auto lamp2 = std::make_unique<ScenePointLightObject>();
-    lamp2->setObjectName("Lamp 2");
-    lamp2->setPosition(glm::vec3{-1.0f, 2.0f, -4.0f});
-    lamp2->setColor(glm::vec3{0.8f, 0.3f, 0.8f});
-    lamp2->setRadius(2.0f);
-
-    auto lamp3 = std::make_unique<ScenePointLightObject>();
-    lamp3->setObjectName("Lamp 3");
-    lamp3->setPosition(glm::vec3{9.0f, 5.0f, 6.0f});
-    lamp3->setColor(glm::vec3{0.8f, 0.8f, 0.8f});
-    lamp3->setRadius(4.0f);
-
-    m_scene = std::make_unique<Scene>();
-    m_scene->add3DModel(std::move(cube1));
-    m_scene->add3DModel(std::move(cube2));
-    m_scene->add3DModel(std::move(cube3));
-    m_scene->add3DModel(std::move(sphere1));
-    if(wolf)
+    if(!wolfMeshInstances.empty()) 
     {
-        m_scene->add3DModel(std::move(wolf));
+        auto wolf = m_world->createEntity();
+        m_world->addComponent<TransformComponent>(wolf)
+            .setPosition(0.0f, 0.0f, -2.0f)
+            .setRotation(0.0f, -45.0f, 0.0f)
+            .setScale(5.0f, 5.0f, 5.0f);
+        m_world->addComponent<MeshRendererComponent>(wolf)
+            .addMeshInstances(wolfMeshInstances);
     }
-    m_scene->add3DModel(std::move(floor));
-    m_scene->setDirectionalLight(std::move(sun));
-    m_scene->addPointLight(std::move(lamp1));
-    m_scene->addPointLight(std::move(lamp2));
-    m_scene->addPointLight(std::move(lamp3));
+
+    auto sun = m_world->createEntity();
+    m_world->addComponent<DirectionalLightComponent>(sun)
+        .setDirection(1.0f, -1.0f, 1.0f)
+        .setColor(0.8f, 0.8f, 0.8f);
+
+    auto lamp1 = m_world->createEntity();
+    m_world->addComponent<PointLightComponent>(lamp1)
+        .setColor(0.8f, 0.8f, 0.8f)
+        .setRadius(4.0f);
+    m_world->addComponent<TransformComponent>(lamp1)
+        .setPosition(0.0f, 2.0f, 3.0f);
+
+    auto lamp2 = m_world->createEntity();
+    m_world->addComponent<PointLightComponent>(lamp2)
+        .setColor(0.8f, 0.3f, 0.8f)
+        .setRadius(2.0f);
+    m_world->addComponent<TransformComponent>(lamp2)
+        .setPosition(-1.0f, 2.0f, -4.0f);
+
+    auto lamp3 = m_world->createEntity();
+    m_world->addComponent<PointLightComponent>(lamp3)
+        .setColor(0.8f, 0.8f, 0.8f)
+        .setRadius(4.0f);
+    m_world->addComponent<TransformComponent>(lamp3)
+        .setPosition(9.0f, 5.0f, 6.0f);
+
+    m_renderSystem = std::make_unique<RenderSystem>(*m_renderer, *m_world);
 
     // Demo camera
     m_camera = std::make_unique<Camera>();
@@ -200,7 +195,6 @@ Application::Application()
 
 Application::~Application()
 {
-    m_scene.reset(nullptr);
     m_renderer.reset(nullptr);
 
     glfwTerminate();
@@ -227,7 +221,7 @@ void Application::run()
         glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        m_renderer->drawScene(*m_scene.get(), *m_camera.get());
+        m_renderSystem->draw(*m_camera);
 
         m_window->swapBuffers();
 

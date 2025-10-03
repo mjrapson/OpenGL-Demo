@@ -106,9 +106,9 @@ void LightingRenderPass::execute(const std::vector<DrawCommand>& drawQueue,
     m_shader->bindTexture("pointLightShadowMap", inputs.pointLightShadowMapImage);
 
     auto directionalLightUbo = DirectionalLightUbo{};
-    directionalLightUbo.dirLightDiffuseColor = glm::vec4{sceneData.directionalLight->color, 1.0f};
-    directionalLightUbo.dirLightDirection = sceneData.directionalLight->direction;
-    directionalLightUbo.dirLightSpaceMatrix = getLightSpaceMatrix(sceneData.directionalLight->direction);
+    directionalLightUbo.dirLightDiffuseColor = glm::vec4{sceneData.directionalLight.color, 1.0f};
+    directionalLightUbo.dirLightDirection = sceneData.directionalLight.direction;
+    directionalLightUbo.dirLightSpaceMatrix = getLightSpaceMatrix(sceneData.directionalLight.direction);
     m_shader->writeUniformData("DirectionalLightBlock", sizeof(DirectionalLightUbo), &directionalLightUbo);
 
     const auto farPlaneUbo = FarPlaneUbo{.farPlane = 50.0f};

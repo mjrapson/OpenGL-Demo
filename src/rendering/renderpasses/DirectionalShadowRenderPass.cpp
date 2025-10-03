@@ -76,7 +76,7 @@ void DirectionalShadowRenderPass::execute(const std::vector<DrawCommand>& drawQu
     buffer.bindToVertexLayout(*m_vertexLayout);
 
     auto lightTransformUbo = LightTransformUbo{};
-    lightTransformUbo.lightSpaceMatrix = getLightSpaceMatrix(sceneData.directionalLight->direction);
+    lightTransformUbo.lightSpaceMatrix = getLightSpaceMatrix(sceneData.directionalLight.direction);
 
     for (const auto& drawCommand : drawQueue)
     {

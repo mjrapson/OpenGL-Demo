@@ -4,7 +4,6 @@
 #include "Renderer.h"
 
 #include "data/Container.h"
-#include "data/DirectionalLight.h"
 #include "data/Material.h"
 #include "data/Mesh.h"
 #include "data/Texture.h"
@@ -15,10 +14,6 @@
 #include "rendering/renderpasses/GBufferRenderPass.h"
 #include "rendering/renderpasses/LightingRenderPass.h"
 #include "rendering/renderpasses/PointLightShadowRenderPass.h"
-#include "scene/Scene.h"
-#include "scene/Scene3DModel.h"
-#include "scene/SceneDirectionalLightObject.h"
-#include "scene/ScenePointLightObject.h"
 
 constexpr auto maxPointLights = 8;
 
@@ -86,33 +81,14 @@ void Renderer::resizeDisplay(GLuint width, GLuint height)
     m_lightingRenderPass->onViewportResize(width, height);
 }
 
-void Renderer::drawScene(const Scene& scene, const Camera& camera)
+void Renderer::render(const std::vector<DrawCommand>& commands, const SceneData& sceneData) const
 {
-    for (const auto& [name, object] : scene.getScene3DModels())
-    {
-        for (const auto& instance : object->meshInstances())
-        {
-            auto cmd = DrawCommand{};
-            cmd.instance = instance;
-            cmd.transform = object->transformMatrix();
+    m_directionalShadowRenderPass->execute(commands, sceneData, *m_meshBuffer);
+    m_pointLightShadowRenderPass->execute(commands, sceneData, *m_meshBuffer);
+    m_gbufferRenderPass->execute(commands, sceneData, *m_meshBuffer);
+    m_lightingRenderPass->execute(commands, sceneData, *m_meshBuffer);
 
-            m_meshDrawQueue.push_back(cmd);
-        }
-    }
-
-    auto dirLight = DirectionalLight{};
-    if(scene.getDirectionalLight())
-    {
-        dirLight = scene.getDirectionalLight()->toLightData();
-    }
-
-    auto pointLights = std::vector<PointLight>{};
-    for(const auto& light: scene.getPointLights())
-    {
-        pointLights.push_back(light->toLightData());
-    }
-
-    render(camera, dirLight, pointLights);
+    present();
 }
 
 void Renderer::rebuildBuffers()
@@ -128,25 +104,7 @@ void Renderer::rebuildBuffers()
     m_meshBuffer = std::make_unique<MeshBuffer>(meshes);
 }
 
-void Renderer::render(const Camera& camera, const DirectionalLight& directionalLight, const std::vector<PointLight>& lights)
-{
-    auto sceneData = SceneData{
-        .camera = &camera, 
-        .directionalLight = &directionalLight,
-        .pointLights = lights
-    };
-
-    m_directionalShadowRenderPass->execute(m_meshDrawQueue, sceneData, *m_meshBuffer);
-    m_pointLightShadowRenderPass->execute(m_meshDrawQueue, sceneData, *m_meshBuffer);
-    m_gbufferRenderPass->execute(m_meshDrawQueue, sceneData, *m_meshBuffer);
-    m_lightingRenderPass->execute(m_meshDrawQueue, sceneData, *m_meshBuffer);
-
-    present();
-
-    m_meshDrawQueue.clear();
-}
-
-void Renderer::present()
+void Renderer::present() const
 {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_lightingRenderPass->framebufferHandle());
 

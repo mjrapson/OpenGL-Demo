@@ -3,10 +3,11 @@
 
 #pragma once
 
+#include "data/MeshInstance.h"
+
 #include <filesystem>
-#include <memory>
+#include <vector>
 
 class Container;
-class Scene3DModel;
 
-std::unique_ptr<Scene3DModel> loadGLTFModel(const std::filesystem::path& path, Container& container);
+std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, Container& container);

@@ -9,13 +9,12 @@
 #include "data/Mesh.h"
 #include "data/Texture.h"
 #include "loaders/TextureLoader.h"
-#include "scene/Scene3DModel.h"
 
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_gltf.h>
 
-std::unique_ptr<Scene3DModel> loadGLTFModel(const std::filesystem::path& path, Container& container)
+std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, Container& container)
 {
     tinygltf::Model model;
     tinygltf::TinyGLTF loader;
@@ -37,12 +36,12 @@ std::unique_ptr<Scene3DModel> loadGLTFModel(const std::filesystem::path& path, C
     if (!ret) 
     {
         printf("Failed to parse glTF\n");
-        return nullptr;
+        return{};
     }
 
     auto folder = path.parent_path();
 
-    auto internalModel = std::make_unique<Scene3DModel>();
+    auto instances = std::vector<MeshInstance>{};
 
     for(auto& image : model.images)
     {
@@ -142,8 +141,8 @@ std::unique_ptr<Scene3DModel> loadGLTFModel(const std::filesystem::path& path, C
         
 
         container.meshes[mesh.name] = std::make_unique<Mesh>(std::move(meshData));
-        internalModel->addMeshInstance(MeshInstance{.material= container.materials[model.materials[prim.material].name].get(), .mesh=container.meshes[mesh.name].get()});
+        instances.push_back(MeshInstance{.material= container.materials[model.materials[prim.material].name].get(), .mesh=container.meshes[mesh.name].get()});
     }
 
-    return internalModel;
+    return instances;
 }

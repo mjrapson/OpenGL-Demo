@@ -3,15 +3,16 @@
 
 #pragma once
 
+#include "data/DirectionalLight.h"
+#include "data/PointLight.h"
+
 #include <vector>
 
 class Camera;
-struct DirectionalLight;
-struct PointLight;
 
 struct SceneData
 {
     const Camera* camera;
-    const DirectionalLight* directionalLight;
+    DirectionalLight directionalLight;
     std::vector<PointLight> pointLights;
 };

@@ -8,8 +8,9 @@
 
 class Camera;
 class Renderer;
-class Scene;
+class RenderSystem;
 class Window;
+class World;
 
 class Application
 {
@@ -36,8 +37,10 @@ class Application
     private:
         std::unique_ptr<Window> m_window{nullptr};
         std::unique_ptr<Renderer> m_renderer{nullptr};
-        std::unique_ptr<Scene> m_scene{nullptr};
         std::unique_ptr<Camera> m_camera{nullptr};
+        std::unique_ptr<World> m_world{nullptr};
+
+        std::unique_ptr<RenderSystem> m_renderSystem{nullptr};
 
         std::unordered_map<int, bool> m_keyState;
 };
