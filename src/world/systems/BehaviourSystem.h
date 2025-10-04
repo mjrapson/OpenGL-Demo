@@ -11,7 +11,8 @@ class BehaviourSystem
     public:
         BehaviourSystem(const InputHandler& inputHandler, World& world);
 
-        void update(float deltaTime) const;
+        void init();
+        void update(float deltaTime);
 
     private:
         const InputHandler& m_inputHandler;

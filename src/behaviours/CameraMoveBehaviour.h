@@ -8,5 +8,5 @@
 class CameraMoveBehaviour : public Behaviour
 {
     public:
-        void update(Entity entity, World& world, float deltaTime, const InputHandler& inputHandler) const override; 
+        void update(Entity entity, World& world, float deltaTime, const InputHandler& inputHandler) override; 
 };

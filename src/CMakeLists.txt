@@ -11,6 +11,8 @@ PRIVATE
     application/Window.h
     behaviours/CameraMoveBehaviour.cpp
     behaviours/CameraMoveBehaviour.h
+    behaviours/OscillationAnimationBehaviour.cpp
+    behaviours/OscillationAnimationBehaviour.h
     core/FileSystem.cpp
     core/FileSystem.h
     core/Vertex.h

@@ -13,5 +13,7 @@ class Behaviour
     public:
         virtual ~Behaviour() {}
 
-        virtual void update(Entity entity, World& world, float deltaTime, const InputHandler& inputHandler) const = 0;
+        virtual void init(Entity entity, World& world) {};
+
+        virtual void update(Entity entity, World& world, float deltaTime, const InputHandler& inputHandler) = 0;
 };

@@ -9,7 +9,7 @@
 
 #include <GLFW/glfw3.h>
 
-void CameraMoveBehaviour::update(Entity entity, World& world, float deltaTime, const InputHandler& inputHandler) const 
+void CameraMoveBehaviour::update(Entity entity, World& world, float deltaTime, const InputHandler& inputHandler) 
 {
     auto cameraComponent = world.getComponent<CameraComponent>(entity);
     if(!cameraComponent)

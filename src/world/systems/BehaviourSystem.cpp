@@ -12,7 +12,18 @@ BehaviourSystem::BehaviourSystem(const InputHandler& inputHandler, World& world)
 {
 }
 
-void BehaviourSystem::update(float deltaTime) const
+void BehaviourSystem::init()
+{
+    for(auto& [entity, behaviourComponent] : m_world.getAllComponents<BehaviourComponent>())
+    {
+        for(const auto& script : behaviourComponent.behaviours)
+        {
+            script->init(entity, m_world);
+        }
+    }
+}
+
+void BehaviourSystem::update(float deltaTime)
 {
     for(auto& [entity, behaviourComponent] : m_world.getAllComponents<BehaviourComponent>())
     {

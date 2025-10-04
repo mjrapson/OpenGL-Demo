@@ -5,6 +5,7 @@
 
 #include "application/Window.h"
 #include "behaviours/CameraMoveBehaviour.h"
+#include "behaviours/OscillationAnimationBehaviour.h"
 #include "core/FileSystem.h"
 #include "core/Vertex.h"
 #include "data/Container.h"
@@ -15,7 +16,6 @@
 #include "input/InputHandler.h"
 #include "loaders/GltfLoader.h"
 #include "loaders/TextureLoader.h"
-#include "rendering/Camera.h"
 #include "rendering/Renderer.h"
 #include "world/systems/BehaviourSystem.h"
 #include "world/systems/RenderSystem.h"
@@ -140,6 +140,8 @@ Application::Application()
         .addMeshInstance(
             container->materials.at("blueMaterial").get(), 
             container->meshes.at("sphere").get());
+    m_world->addComponent<BehaviourComponent>(sphere)
+        .addBehaviour(std::make_unique<OscillationAnimationBehaviour>());
 
     auto floor = m_world->createEntity();
     m_world->addComponent<TransformComponent>(floor)
@@ -187,11 +189,6 @@ Application::Application()
     m_world->addComponent<TransformComponent>(lamp3)
         .setPosition(9.0f, 5.0f, 6.0f);
 
-    // Demo camera
-    auto camera = std::make_unique<Camera>();
-    camera->setPitch(-15.0f);
-    camera->setPosition(glm::vec3{-15.0f, 8.0f, 0.0f});
-
     // Player controller
     auto player = m_world->createEntity();
 
@@ -221,6 +218,8 @@ void Application::run()
     auto currTime = 0.0f;
     auto lastTime = 0.0f;
     constexpr auto maxFps = std::chrono::duration<double, std::milli>(1000.0 / 60);
+
+    m_behaviourSystem->init();
 
     while (!m_window->shouldClose())
     {
