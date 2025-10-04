@@ -3,7 +3,8 @@ Lightweight and modern 3D demo with OpenGL
 
 This is a hobby 3D graphics project, primarily for learning more about rendering, developed on Linux.
 
-![scene_image](demo.png)
+<video src="demo_bounce.mp4" autoplay loop muted playsinline></video>
+
 
 * Wolf in demo by Dennis Haupt. used under personal use license for demo showcase and not included as part of this repository
 [Downloaded from here](https://free3d.com/3d-model/wolf-rigged-and-game-ready-42808.html)
@@ -16,6 +17,8 @@ This is a hobby 3D graphics project, primarily for learning more about rendering
 - Efficient rendering pipeline with shared buffer access and draw batching to limit state switching
 - Multiple rendering passes for deferring lighting and shadows
 - GLTF model support with tinygltf (WIP)
+- ECS architecture
+- Behaviour components for adding scripts to objects
 
 ## Building
 This project uses CMake without any special requirements, and can be built for example:
