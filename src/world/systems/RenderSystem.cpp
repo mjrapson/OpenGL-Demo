@@ -3,10 +3,7 @@
 
 #include "RenderSystem.h"
 
-#include "data/PointLight.h"
-#include "rendering/Camera.h"
 #include "rendering/Renderer.h"
-#include "rendering/SceneData.h"
 #include "world/World.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -14,46 +11,14 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 
-RenderSystem::RenderSystem(const Renderer& renderer, World& world)
+RenderSystem::RenderSystem(Renderer& renderer, World& world)
     : m_renderer{renderer}
     , m_world{world}
 {
 }
 
-void RenderSystem::draw() const
+void RenderSystem::update()
 {
-    auto commandQueue = std::vector<DrawCommand>{};
-    auto sceneData = SceneData{};
-
-    const auto cameraComponents = m_world.getAllComponents<CameraComponent>();
-    if(cameraComponents.empty())
-    {
-        return;
-    }
-
-
-    for(auto& [entity, cameraComponent] : cameraComponents)
-    {
-        if(cameraComponent.active())
-        {
-            sceneData.camera = &cameraComponent.camera();
-            break;
-        }
-    }
-
-    const auto worldLightComponents = m_world.getAllComponents<DirectionalLightComponent>();
-    if(worldLightComponents.empty())
-    {
-        // Currently, we must have a directional light to render, but only one
-        return;
-    }
-
-    for(auto& [entity, lightComponent] : worldLightComponents)
-    {
-        sceneData.directionalLight.color = lightComponent.color;
-        sceneData.directionalLight.direction = lightComponent.direction;
-    }
-
     for(auto& [entity, meshComponent] : m_world.getAllComponents<MeshRendererComponent>())
     {
         auto transformComponent = m_world.getComponent<TransformComponent>(entity);
@@ -71,24 +36,8 @@ void RenderSystem::draw() const
             auto cmd = DrawCommand{};
             cmd.instance = instance;
             cmd.transform = transformMatrix;
-            commandQueue.push_back(cmd);
+            
+            m_renderer.queueDrawCommand(cmd);
         }
     }
-
-    for(auto& [entity, lightComponent] : m_world.getAllComponents<PointLightComponent>())
-    {
-        auto transformComponent = m_world.getComponent<TransformComponent>(entity);
-        if(!transformComponent)
-        {
-            continue;
-        }
-
-        auto pointLight = PointLight{};
-        pointLight.color = lightComponent.color;
-        pointLight.radius = lightComponent.radius;
-        pointLight.position = transformComponent->position;
-        sceneData.pointLights.push_back(pointLight);
-    }
-
-    m_renderer.render(commandQueue, sceneData);
 }

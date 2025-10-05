@@ -9,7 +9,6 @@
 #include "data/Texture.h"
 #include "rendering/Framebuffer.h"
 #include "rendering/LightTransform.h"
-#include "rendering/SceneData.h"
 #include "rendering/Shader.h"
 #include "rendering/VertexLayout.h"
 
@@ -82,7 +81,9 @@ LightingRenderPass::LightingRenderPass()
 LightingRenderPass::~LightingRenderPass() = default;
 
 void LightingRenderPass::execute(const std::vector<DrawCommand>& drawQueue, 
-                                 const SceneData& sceneData, 
+                                 const Camera& camera,
+                                 const DirectionalLight& directionalLight,
+                                 const std::vector<PointLight>& pointLights,
                                  const MeshBuffer& buffer)
 {
     m_shader->bind();
@@ -106,22 +107,22 @@ void LightingRenderPass::execute(const std::vector<DrawCommand>& drawQueue,
     m_shader->bindTexture("pointLightShadowMap", inputs.pointLightShadowMapImage);
 
     auto directionalLightUbo = DirectionalLightUbo{};
-    directionalLightUbo.dirLightDiffuseColor = glm::vec4{sceneData.directionalLight.color, 1.0f};
-    directionalLightUbo.dirLightDirection = sceneData.directionalLight.direction;
-    directionalLightUbo.dirLightSpaceMatrix = getLightSpaceMatrix(sceneData.directionalLight.direction);
+    directionalLightUbo.dirLightDiffuseColor = glm::vec4{directionalLight.color, 1.0f};
+    directionalLightUbo.dirLightDirection = directionalLight.direction;
+    directionalLightUbo.dirLightSpaceMatrix = getLightSpaceMatrix(directionalLight.direction);
     m_shader->writeUniformData("DirectionalLightBlock", sizeof(DirectionalLightUbo), &directionalLightUbo);
 
     const auto farPlaneUbo = FarPlaneUbo{.farPlane = 50.0f};
     m_shader->writeUniformData("FarPlaneBlock", sizeof(FarPlaneUbo), &farPlaneUbo);
 
     auto pointLightUbo = PointLightUbo{};
-    pointLightUbo.numPointLights = static_cast<int>(sceneData.pointLights.size());
+    pointLightUbo.numPointLights = static_cast<int>(pointLights.size());
 
-    for (size_t i = 0; i < sceneData.pointLights.size() && i < maxPointLights; i++)
+    for (size_t i = 0; i < pointLights.size() && i < maxPointLights; i++)
     {
-        pointLightUbo.lights[i].position = sceneData.pointLights[i].position;
-        pointLightUbo.lights[i].color = sceneData.pointLights[i].color;
-        pointLightUbo.lights[i].radius = sceneData.pointLights[i].radius;
+        pointLightUbo.lights[i].position = pointLights[i].position;
+        pointLightUbo.lights[i].color = pointLights[i].color;
+        pointLightUbo.lights[i].radius = pointLights[i].radius;
     }
 
     m_shader->writeUniformData("PointLightBlock", sizeof(PointLightUbo), &pointLightUbo);

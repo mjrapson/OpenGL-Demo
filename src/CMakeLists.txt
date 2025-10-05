@@ -60,7 +60,6 @@ PRIVATE
     rendering/Renderer.cpp
     rendering/Renderer.h
     rendering/RenderPass.h
-    rendering/SceneData.h
     rendering/Shader.cpp
     rendering/Shader.h
     rendering/VertexLayout.cpp
@@ -74,6 +73,8 @@ PRIVATE
     world/components/TransformComponent.h
     world/systems/BehaviourSystem.cpp    
     world/systems/BehaviourSystem.h
+    world/systems/LightingSystem.cpp
+    world/systems/LightingSystem.h
     world/systems/RenderSystem.cpp
     world/systems/RenderSystem.h
     world/Behaviour.h

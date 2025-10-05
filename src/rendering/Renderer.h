@@ -3,17 +3,21 @@
 
 #pragma once
 
+#include "data/DirectionalLight.h"
+#include "data/PointLight.h"
 #include "rendering/Buffer.h"
 #include "rendering/DrawCommand.h"
+#include "rendering/renderpasses/DirectionalShadowRenderPass.h"
+#include "rendering/renderpasses/GBufferRenderPass.h"
+#include "rendering/renderpasses/LightingRenderPass.h"
+#include "rendering/renderpasses/PointLightShadowRenderPass.h"
 
 #include <memory>
+#include <vector>
 
-class DirectionalShadowRenderPass;
-class GBufferRenderPass;
-class LightingRenderPass;
 class MeshBuffer;
-class PointLightShadowRenderPass;
 
+struct Camera;
 struct Container;
 struct SceneData;
 
@@ -33,19 +37,29 @@ class Renderer
 
         void resizeDisplay(GLuint width, GLuint height);
 
-        void render(const std::vector<DrawCommand>& commands, const SceneData& sceneData) const;
+        void setDirectionalLight(const DirectionalLight& light);
+        void addPointLight(const PointLight& light);
+        void queueDrawCommand(const DrawCommand& command);
+
+        void render(const Camera& camera);
+
+        void beginFrame();
+        void endFrame();
 
     private:
         void rebuildBuffers();
         void present() const;
 
     private:
-        std::unique_ptr<DirectionalShadowRenderPass> m_directionalShadowRenderPass{nullptr};
-        std::unique_ptr<PointLightShadowRenderPass> m_pointLightShadowRenderPass{nullptr};
-        std::unique_ptr<GBufferRenderPass> m_gbufferRenderPass{nullptr};
-        std::unique_ptr<LightingRenderPass> m_lightingRenderPass{nullptr};
+        DirectionalShadowRenderPass m_directionalShadowRenderPass;
+        PointLightShadowRenderPass m_pointLightShadowRenderPass;
+        GBufferRenderPass m_gbufferRenderPass;
+        LightingRenderPass m_lightingRenderPass;
         
         std::unique_ptr<MeshBuffer> m_meshBuffer{nullptr};
+        DirectionalLight m_directionalLight;
+        std::vector<PointLight> m_pointLights;
+        std::vector<DrawCommand> m_drawCommands;
 
         std::unique_ptr<Container> m_assets{nullptr};
 

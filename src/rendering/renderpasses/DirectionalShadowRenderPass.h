@@ -20,7 +20,9 @@ class DirectionalShadowRenderPass : public RenderPass
         ~DirectionalShadowRenderPass() override;   
 
         void execute(const std::vector<DrawCommand>& drawQueue, 
-                     const SceneData& sceneData, 
+                     const Camera& camera,
+                     const DirectionalLight& directionalLight,
+                     const std::vector<PointLight>& pointLights,
                      const MeshBuffer& buffer) override;
 
         Texture2D* directionalLightShadowMapImage() const;

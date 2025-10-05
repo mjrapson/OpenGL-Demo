@@ -22,7 +22,9 @@ class GBufferRenderPass : public RenderPass
         ~GBufferRenderPass() override;   
 
         void execute(const std::vector<DrawCommand>& drawQueue, 
-                     const SceneData& sceneData, 
+                     const Camera& camera,
+                     const DirectionalLight& directionalLight,
+                     const std::vector<PointLight>& pointLights,
                      const MeshBuffer& buffer) override;
 
         void onViewportResize(GLuint width, GLuint height);

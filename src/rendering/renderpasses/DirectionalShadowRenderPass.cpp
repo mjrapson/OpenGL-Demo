@@ -11,7 +11,6 @@
 #include "rendering/Framebuffer.h"
 #include "rendering/LightTransform.h"
 #include "rendering/MeshBuffer.h"
-#include "rendering/SceneData.h"
 #include "rendering/Shader.h"
 #include "rendering/VertexLayout.h"
 
@@ -58,7 +57,9 @@ DirectionalShadowRenderPass::DirectionalShadowRenderPass()
 DirectionalShadowRenderPass::~DirectionalShadowRenderPass() = default;
 
 void DirectionalShadowRenderPass::execute(const std::vector<DrawCommand>& drawQueue, 
-                                          const SceneData& sceneData, 
+                                          const Camera& camera,
+                                          const DirectionalLight& directionalLight,
+                                          const std::vector<PointLight>& pointLights,
                                           const MeshBuffer& buffer)
 {
     m_shader->bind();
@@ -76,7 +77,7 @@ void DirectionalShadowRenderPass::execute(const std::vector<DrawCommand>& drawQu
     buffer.bindToVertexLayout(*m_vertexLayout);
 
     auto lightTransformUbo = LightTransformUbo{};
-    lightTransformUbo.lightSpaceMatrix = getLightSpaceMatrix(sceneData.directionalLight.direction);
+    lightTransformUbo.lightSpaceMatrix = getLightSpaceMatrix(directionalLight.direction);
 
     for (const auto& drawCommand : drawQueue)
     {

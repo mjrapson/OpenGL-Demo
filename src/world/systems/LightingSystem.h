@@ -6,10 +6,10 @@
 class Renderer;
 class World;
 
-class RenderSystem
+class LightingSystem
 {
     public:
-        RenderSystem(Renderer& renderer, World& world);
+        LightingSystem(Renderer& renderer, World& world);
 
         void update();
 

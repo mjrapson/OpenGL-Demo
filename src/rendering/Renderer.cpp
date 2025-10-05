@@ -9,11 +9,6 @@
 #include "data/Texture.h"
 #include "rendering/Camera.h"
 #include "rendering/MeshBuffer.h"
-#include "rendering/SceneData.h"
-#include "rendering/renderpasses/DirectionalShadowRenderPass.h"
-#include "rendering/renderpasses/GBufferRenderPass.h"
-#include "rendering/renderpasses/LightingRenderPass.h"
-#include "rendering/renderpasses/PointLightShadowRenderPass.h"
 
 constexpr auto maxPointLights = 8;
 
@@ -41,15 +36,10 @@ Renderer::Renderer()
     glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0, NULL, GL_FALSE);
     glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_PERFORMANCE, GL_DONT_CARE, 0, NULL, GL_FALSE);
 
-    m_directionalShadowRenderPass = std::make_unique<DirectionalShadowRenderPass>();
-    m_pointLightShadowRenderPass = std::make_unique<PointLightShadowRenderPass>();
-    m_gbufferRenderPass = std::make_unique<GBufferRenderPass>();
-    m_lightingRenderPass = std::make_unique<LightingRenderPass>();
-
-    m_lightingRenderPass->setInputBinding([
-        gbuffer = m_gbufferRenderPass.get(),
-        dirShadow = m_directionalShadowRenderPass.get(),
-        plShadow = m_pointLightShadowRenderPass.get()]
+    m_lightingRenderPass.setInputBinding([
+        gbuffer = &m_gbufferRenderPass,
+        dirShadow = &m_directionalShadowRenderPass,
+        plShadow = &m_pointLightShadowRenderPass]
         ()
         {
             auto inputs = LightingRenderPass::Inputs{};
@@ -77,18 +67,45 @@ void Renderer::resizeDisplay(GLuint width, GLuint height)
     m_width = width;
     m_height = height;
 
-    m_gbufferRenderPass->onViewportResize(width, height);
-    m_lightingRenderPass->onViewportResize(width, height);
+    m_gbufferRenderPass.onViewportResize(width, height);
+    m_lightingRenderPass.onViewportResize(width, height);
 }
 
-void Renderer::render(const std::vector<DrawCommand>& commands, const SceneData& sceneData) const
+void Renderer::setDirectionalLight(const DirectionalLight& light)
 {
-    m_directionalShadowRenderPass->execute(commands, sceneData, *m_meshBuffer);
-    m_pointLightShadowRenderPass->execute(commands, sceneData, *m_meshBuffer);
-    m_gbufferRenderPass->execute(commands, sceneData, *m_meshBuffer);
-    m_lightingRenderPass->execute(commands, sceneData, *m_meshBuffer);
+    m_directionalLight = light;
+}
+
+void Renderer::addPointLight(const PointLight& light)
+{
+    m_pointLights.push_back(light);
+}
+
+void Renderer::queueDrawCommand(const DrawCommand& command)
+{
+    m_drawCommands.push_back(command);
+}
+
+void Renderer::render(const Camera& camera)
+{
+    m_directionalShadowRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
+    m_pointLightShadowRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
+    m_gbufferRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
+    m_lightingRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
 
     present();
+}
+
+void Renderer::beginFrame()
+{
+    glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Renderer::endFrame()
+{
+    m_drawCommands.clear();
+    m_pointLights.clear();
 }
 
 void Renderer::rebuildBuffers()
@@ -106,7 +123,7 @@ void Renderer::rebuildBuffers()
 
 void Renderer::present() const
 {
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_lightingRenderPass->framebufferHandle());
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_lightingRenderPass.framebufferHandle());
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 

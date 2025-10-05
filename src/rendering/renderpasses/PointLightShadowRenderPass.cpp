@@ -11,7 +11,6 @@
 #include "rendering/Framebuffer.h"
 #include "rendering/LightTransform.h"
 #include "rendering/MeshBuffer.h"
-#include "rendering/SceneData.h"
 #include "rendering/Shader.h"
 #include "rendering/VertexLayout.h"
 
@@ -72,7 +71,9 @@ PointLightShadowRenderPass::~PointLightShadowRenderPass() = default;
 
 
 void PointLightShadowRenderPass::execute(const std::vector<DrawCommand>& drawQueue, 
-                               const SceneData& sceneData, 
+                               const Camera& camera,
+                               const DirectionalLight& directionalLight,
+                               const std::vector<PointLight>& pointLights,
                                const MeshBuffer& buffer)
 {
     m_shader->bind();
@@ -86,7 +87,7 @@ void PointLightShadowRenderPass::execute(const std::vector<DrawCommand>& drawQue
     const float farPlane = 50.0f;
 
     auto lightIndex = 0;
-    for (const auto& light : sceneData.pointLights)
+    for (const auto& light : pointLights)
     {
         const auto lightTransforms = getPointLightShadowTransforms(light.position, farPlane);
 

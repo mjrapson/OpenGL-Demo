@@ -11,7 +11,6 @@
 #include "rendering/Camera.h"
 #include "rendering/Framebuffer.h"
 #include "rendering/MeshBuffer.h"
-#include "rendering/SceneData.h"
 #include "rendering/Shader.h"
 #include "rendering/VertexLayout.h"
 
@@ -55,7 +54,9 @@ GBufferRenderPass::GBufferRenderPass()
 GBufferRenderPass::~GBufferRenderPass() = default;
 
 void GBufferRenderPass::execute(const std::vector<DrawCommand>& drawQueue, 
-                                const SceneData& sceneData, 
+                                const Camera& camera,
+                                const DirectionalLight& directionalLight,
+                                const std::vector<PointLight>& pointLights,
                                 const MeshBuffer& buffer)
 {
     m_shader->bind();
@@ -80,8 +81,8 @@ void GBufferRenderPass::execute(const std::vector<DrawCommand>& drawQueue,
         const auto* material = drawCommand.instance.material;
 
         auto transformUbo = TransformUbo{};
-        transformUbo.projection = sceneData.camera->projection();
-        transformUbo.view = sceneData.camera->view();
+        transformUbo.projection = camera.projection();
+        transformUbo.view = camera.view();
         transformUbo.model = drawCommand.transform;
 
         auto materialUbo = MaterialUbo{};

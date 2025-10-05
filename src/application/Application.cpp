@@ -18,6 +18,7 @@
 #include "loaders/TextureLoader.h"
 #include "rendering/Renderer.h"
 #include "world/systems/BehaviourSystem.h"
+#include "world/systems/LightingSystem.h"
 #include "world/systems/RenderSystem.h"
 #include "world/World.h"
 
@@ -203,6 +204,7 @@ Application::Application()
 
     m_renderSystem = std::make_unique<RenderSystem>(*m_renderer, *m_world);
     m_behaviourSystem = std::make_unique<BehaviourSystem>(*m_inputHandler, *m_world);
+    m_lightingSystem = std::make_unique<LightingSystem>(*m_renderer, *m_world);
 }
 
 Application::~Application()
@@ -232,10 +234,18 @@ void Application::run()
 
         m_behaviourSystem->update(deltaTime);
 
-        glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        m_renderer->beginFrame();
 
-        m_renderSystem->draw();
+        m_lightingSystem->update();
+
+        m_renderSystem->update();
+
+        for(auto& [entity, cameraComponent] : m_world->getAllComponents<CameraComponent>())
+        {
+            m_renderer->render(cameraComponent.camera());
+        }
+
+        m_renderer->endFrame();
 
         m_window->swapBuffers();
 

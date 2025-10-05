@@ -3,12 +3,15 @@
 
 #pragma once
 
+#include "data/DirectionalLight.h"
+#include "data/PointLight.h"
 #include "rendering/DrawCommand.h"
 
 #include <vector>
 
 class MeshBuffer;
-struct SceneData;
+
+struct Camera;
 
 class RenderPass
 {
@@ -23,6 +26,8 @@ class RenderPass
         RenderPass& operator=(RenderPass&& other) = delete;
 
         virtual void execute(const std::vector<DrawCommand>& drawQueue, 
-                             const SceneData& sceneData, 
+                             const Camera& camera,
+                             const DirectionalLight& directionalLight,
+                             const std::vector<PointLight>& pointLights,
                              const MeshBuffer& buffer) = 0;
 };
