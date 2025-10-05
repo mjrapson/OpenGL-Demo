@@ -5,10 +5,9 @@
 
 #include "data/DirectionalLight.h"
 #include "data/PointLight.h"
+#include "rendering/Camera.h"
 
 #include <vector>
-
-class Camera;
 
 struct SceneData
 {

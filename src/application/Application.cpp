@@ -193,8 +193,8 @@ Application::Application()
     auto player = m_world->createEntity();
 
     auto& cameraComponent = m_world->addComponent<CameraComponent>(player);
-    cameraComponent.camera.setPitch(-15.0f);
-    cameraComponent.camera.setPosition(glm::vec3{-15.0f, 8.0f, 0.0f});
+    cameraComponent.setPitch(-15.0f);
+    cameraComponent.setPosition(glm::vec3{-15.0f, 8.0f, 0.0f});
 
     m_world->addComponent<BehaviourComponent>(player)
         .addBehaviour(std::make_unique<CameraMoveBehaviour>());
@@ -256,7 +256,7 @@ void Application::framebufferResizeCallback(int width, int height)
 
     for(auto& [entity, cameraComponent] : m_world->getAllComponents<CameraComponent>())
     {
-        cameraComponent.camera.setAspectRatio(width / height);
+        cameraComponent.setAspectRatio(static_cast<float>(width) / static_cast<float>(height));
     }
 }
 

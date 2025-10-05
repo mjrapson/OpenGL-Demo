@@ -49,7 +49,6 @@ PRIVATE
     rendering/renderpasses/PointLightShadowRenderPass.cpp
     rendering/renderpasses/PointLightShadowRenderPass.h
     rendering/Buffer.h
-    rendering/Camera.cpp
     rendering/Camera.h
     rendering/DrawCommand.h
     rendering/Framebuffer.cpp
@@ -67,6 +66,7 @@ PRIVATE
     rendering/VertexLayout.cpp
     rendering/VertexLayout.h
     world/components/BehaviourComponent.h
+    world/components/CameraComponent.cpp
     world/components/CameraComponent.h
     world/components/DirectionalLightComponent.h
     world/components/MeshRenderingComponent.h

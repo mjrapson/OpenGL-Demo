@@ -24,18 +24,19 @@ void RenderSystem::draw() const
 {
     auto commandQueue = std::vector<DrawCommand>{};
     auto sceneData = SceneData{};
-    
+
     const auto cameraComponents = m_world.getAllComponents<CameraComponent>();
     if(cameraComponents.empty())
     {
         return;
     }
 
+
     for(auto& [entity, cameraComponent] : cameraComponents)
     {
-        if(cameraComponent.active)
+        if(cameraComponent.active())
         {
-            sceneData.camera = &cameraComponent.camera;
+            sceneData.camera = &cameraComponent.camera();
             break;
         }
     }
