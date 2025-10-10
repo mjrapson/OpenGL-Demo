@@ -6,9 +6,9 @@
 #include "application/Window.h"
 #include "behaviours/CameraMoveBehaviour.h"
 #include "behaviours/OscillationAnimationBehaviour.h"
+#include "core/Container.h"
 #include "core/FileSystem.h"
 #include "core/Vertex.h"
-#include "data/Container.h"
 #include "data/Material.h"
 #include "data/Mesh.h"
 #include "data/MeshFactory.h"
@@ -78,34 +78,30 @@ Application::Application()
     m_renderer->resizeDisplay(1280, 720);
 
     // Demo assets
-    auto container = std::make_unique<Container>();
-    container->meshes["cube"] = MeshFactory::createCubePrimitive("cube");
-    container->meshes["sphere"] = MeshFactory::createSpherePrimitive("sphere");
-    container->meshes["plane"] = MeshFactory::createPlanePrimitive("plane");
+    m_assetDb.meshContainer().add("cube", MeshFactory::createCubePrimitive());
+    m_assetDb.meshContainer().add("sphere", MeshFactory::createSpherePrimitive());
+    m_assetDb.meshContainer().add("plane", MeshFactory::createPlanePrimitive());
 
-    auto wolfMeshInstances = loadGLTFModel(GetResourceDir() / "data/wolf/Wolf-Blender-2.82a.gltf", *container.get());
+    auto wolfMeshInstances = loadGLTFModel(
+        GetResourceDir() / "data/wolf/Wolf-Blender-2.82a.gltf", m_assetDb);
 
-    container->textures["checkerboard"] = loadTexture(GetTexturesDir() / "checkerboard.png");
+    m_assetDb.textureContainer().add("checkerboard", loadTexture(GetTexturesDir() / "checkerboard.png"));
 
-    auto redMaterial = std::make_unique<Material>();
-    redMaterial->name = "redMaterial";
-    redMaterial->diffuse = glm::vec3{1.0f, 0.0f, 0.0f};
-    container->materials["redMaterial"] = std::move(redMaterial);
+    m_assetDb.materialContainer().add("red", std::make_unique<Material>(Material{
+        .diffuse = glm::vec3{1.0f, 0.0f, 0.0f}
+    }));
 
-    auto yellowMaterial = std::make_unique<Material>();
-    yellowMaterial->name = "yellowMaterial";
-    yellowMaterial->diffuse = glm::vec3{1.0f, 1.0f, 0.0f};
-    container->materials["yellowMaterial"] = std::move(yellowMaterial);
+    m_assetDb.materialContainer().add("yellow", std::make_unique<Material>(Material{
+        .diffuse = glm::vec3{1.0f, 1.0f, 0.0f}
+    }));
 
-    auto blueMaterial = std::make_unique<Material>();
-    blueMaterial->name = "blueMaterial";
-    blueMaterial->diffuse = glm::vec3{0.0f, 0.0f, 1.0f};
-    container->materials["blueMaterial"] = std::move(blueMaterial);
+    m_assetDb.materialContainer().add("blue", std::make_unique<Material>(Material{
+        .diffuse = glm::vec3{0.0f, 0.0f, 1.0f}
+    }));
 
-    auto checkerboardMaterial = std::make_unique<Material>();
-    checkerboardMaterial->name = "checkerboardMaterial";
-    checkerboardMaterial->diffuseTexture = container->textures.at("checkerboard").get();
-    container->materials["checkerboardMaterial"] = std::move(checkerboardMaterial);
+    m_assetDb.materialContainer().add("checkerboard", std::make_unique<Material>(Material{
+        .diffuseTexture = m_assetDb.textureContainer().get("checkerboard")
+    }));
 
     m_world = std::make_unique<World>();
 
@@ -115,32 +111,32 @@ Application::Application()
         .setPosition(0.0f, 0.0f, 0.0f);
     m_world->addComponent<MeshRendererComponent>(cube)
         .addMeshInstance(
-            container->materials.at("redMaterial").get(), 
-            container->meshes.at("cube").get());
+            m_assetDb.materialContainer().get("red"), 
+            m_assetDb.meshContainer().get("cube"));
 
     auto cube2 = m_world->createEntity();
     m_world->addComponent<TransformComponent>(cube2)
         .setPosition(2.0f, 0.0f, 0.0f);
     m_world->addComponent<MeshRendererComponent>(cube2)
         .addMeshInstance(
-            container->materials.at("yellowMaterial").get(), 
-            container->meshes.at("cube").get());
+            m_assetDb.materialContainer().get("yellow"), 
+            m_assetDb.meshContainer().get("cube"));
 
     auto cube3 = m_world->createEntity();
     m_world->addComponent<TransformComponent>(cube3)
         .setPosition(0.0f, 0.0f, 2.0f);
     m_world->addComponent<MeshRendererComponent>(cube3)
         .addMeshInstance(
-            container->materials.at("blueMaterial").get(), 
-            container->meshes.at("cube").get());
+            m_assetDb.materialContainer().get("blue"), 
+            m_assetDb.meshContainer().get("cube"));
 
     auto sphere = m_world->createEntity();
     m_world->addComponent<TransformComponent>(sphere)
         .setPosition(10.0f, 2.0f, 5.0f);
     m_world->addComponent<MeshRendererComponent>(sphere)
         .addMeshInstance(
-            container->materials.at("blueMaterial").get(), 
-            container->meshes.at("sphere").get());
+            m_assetDb.materialContainer().get("blue"), 
+            m_assetDb.meshContainer().get("sphere"));
     m_world->addComponent<BehaviourComponent>(sphere)
         .addBehaviour(std::make_unique<OscillationAnimationBehaviour>());
 
@@ -150,18 +146,18 @@ Application::Application()
         .setScale(100.0f, 1.0f, 100.0f);
     m_world->addComponent<MeshRendererComponent>(floor)
         .addMeshInstance(
-            container->materials.at("checkerboardMaterial").get(), 
-            container->meshes.at("plane").get());
+            m_assetDb.materialContainer().get("checkerboard"), 
+            m_assetDb.meshContainer().get("plane"));
 
     if(!wolfMeshInstances.empty()) 
     {
-        auto wolf = m_world->createEntity();
-        m_world->addComponent<TransformComponent>(wolf)
-            .setPosition(0.0f, 0.0f, -2.0f)
-            .setRotation(0.0f, -45.0f, 0.0f)
-            .setScale(5.0f, 5.0f, 5.0f);
-        m_world->addComponent<MeshRendererComponent>(wolf)
-            .addMeshInstances(wolfMeshInstances);
+       auto wolf = m_world->createEntity();
+       m_world->addComponent<TransformComponent>(wolf)
+           .setPosition(0.0f, 0.0f, -2.0f)
+           .setRotation(0.0f, -45.0f, 0.0f)
+           .setScale(5.0f, 5.0f, 5.0f);
+       m_world->addComponent<MeshRendererComponent>(wolf)
+           .addMeshInstances(wolfMeshInstances);
     }
 
     auto sun = m_world->createEntity();
@@ -200,7 +196,7 @@ Application::Application()
     m_world->addComponent<BehaviourComponent>(player)
         .addBehaviour(std::make_unique<CameraMoveBehaviour>());
 
-    m_renderer->setAssets(std::move(container));
+    m_renderer->setAssets(m_assetDb);
 
     m_renderSystem = std::make_unique<RenderSystem>(*m_renderer, *m_world);
     m_behaviourSystem = std::make_unique<BehaviourSystem>(*m_inputHandler, *m_world);
@@ -210,6 +206,8 @@ Application::Application()
 Application::~Application()
 {
     m_renderer.reset(nullptr);
+
+    m_assetDb.clearAll();
 
     glfwTerminate();
 }

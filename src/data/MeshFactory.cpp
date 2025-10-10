@@ -6,10 +6,9 @@
 #include "core/Vertex.h"
 #include "data/Mesh.h"
 
-std::unique_ptr<Mesh> MeshFactory::createCubePrimitive(const std::string& name)
+std::unique_ptr<Mesh> MeshFactory::createCubePrimitive()
 {
     auto meshData = std::make_unique<MeshData>();
-    meshData->name = name;
     meshData->vertices = {
         // Front face
         {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}}, // Bottom-left
@@ -96,7 +95,7 @@ std::unique_ptr<Mesh> MeshFactory::createCubePrimitive(const std::string& name)
     return std::make_unique<Mesh>(std::move(meshData));
 }
 
-std::unique_ptr<Mesh> MeshFactory::createSpherePrimitive(const std::string& name)
+std::unique_ptr<Mesh> MeshFactory::createSpherePrimitive()
 {
     const auto segments = 16;
     const auto radius = 1.0f;
@@ -106,7 +105,6 @@ std::unique_ptr<Mesh> MeshFactory::createSpherePrimitive(const std::string& name
     const auto segmentHeight = pi / segments;
 
     auto meshData = std::make_unique<MeshData>();
-    meshData->name = name;
 
     for (auto y = 0; y <= segments; y++)
     {
@@ -143,13 +141,12 @@ std::unique_ptr<Mesh> MeshFactory::createSpherePrimitive(const std::string& name
     return std::make_unique<Mesh>(std::move(meshData));
 }
 
-std::unique_ptr<Mesh> MeshFactory::createPlanePrimitive(const std::string& name)
+std::unique_ptr<Mesh> MeshFactory::createPlanePrimitive()
 {
     float halfWidth = 0.5f;
     float halfDepth = 0.5f;
 
     auto meshData = std::make_unique<MeshData>();
-    meshData->name = name;
     meshData->vertices = {
         {{-halfWidth, 0.0f, -halfDepth}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
         {{halfWidth, 0.0f, -halfDepth}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},

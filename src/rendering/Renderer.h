@@ -15,10 +15,10 @@
 #include <memory>
 #include <vector>
 
+class AssetDatabase;
 class MeshBuffer;
 
 struct Camera;
-struct Container;
 struct SceneData;
 
 class Renderer
@@ -33,7 +33,7 @@ class Renderer
         Renderer& operator=(const Renderer& other) = delete;
         Renderer& operator=(Renderer&& other) = delete;   
 
-        void setAssets(std::unique_ptr<Container> assets);
+        void setAssets(const AssetDatabase& assetDb);
 
         void resizeDisplay(GLuint width, GLuint height);
 
@@ -60,8 +60,6 @@ class Renderer
         DirectionalLight m_directionalLight;
         std::vector<PointLight> m_pointLights;
         std::vector<DrawCommand> m_drawCommands;
-
-        std::unique_ptr<Container> m_assets{nullptr};
 
         GLuint m_width{0};
         GLuint m_height{0};

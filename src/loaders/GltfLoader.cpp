@@ -4,7 +4,7 @@
 #include "GltfLoader.h"
 
 #include "core/Vertex.h"
-#include "data/Container.h"
+#include "data/AssetDatabase.h"
 #include "data/Material.h"
 #include "data/Mesh.h"
 #include "data/Texture.h"
@@ -14,7 +14,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_gltf.h>
 
-std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, Container& container)
+std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, AssetDatabase& assetDb)
 {
     tinygltf::Model model;
     tinygltf::TinyGLTF loader;
@@ -45,18 +45,17 @@ std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, Conta
 
     for(auto& image : model.images)
     {
-        container.textures[image.name] = loadTexture(folder / image.uri);
+        assetDb.textureContainer().add(image.name, loadTexture(folder / image.uri));
     }
 
     for(auto& mat : model.materials)
     {
         auto material = std::make_unique<Material>();
-        material->name = mat.name;
 
         const auto texIndex = mat.pbrMetallicRoughness.baseColorTexture.index;
         if(texIndex >= 0)
         {
-            material->diffuseTexture = container.textures.at(model.images[model.textures[texIndex].source].name).get();
+            material->diffuseTexture = assetDb.textureContainer().get(model.images[model.textures[texIndex].source].name);
         }
 
         if(const auto col = mat.pbrMetallicRoughness.baseColorFactor; !col.empty())
@@ -67,7 +66,7 @@ std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, Conta
         {
             material->diffuse = glm::vec3{1.0f, 1.0f, 1.0f};
         }   
-        container.materials[mat.name] = std::move(material);
+        assetDb.materialContainer().add(mat.name, std::move(material));
     }
 
     for(auto& mesh : model.meshes)
@@ -83,10 +82,7 @@ std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, Conta
                 "indices" : 12,
                 "material" : 1
         */
-        auto meshData = std::make_unique<MeshData>();
-        meshData->name = mesh.name;
-
-        
+        auto meshData = std::make_unique<MeshData>();      
 
         auto& prim = mesh.primitives[0]; //for(auto& prim : mesh.primitives) // we want 1:1 - lets either take mesh.primitives[0] or change mesh structure
         
@@ -140,8 +136,12 @@ std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, Conta
         }
         
 
-        container.meshes[mesh.name] = std::make_unique<Mesh>(std::move(meshData));
-        instances.push_back(MeshInstance{.material= container.materials[model.materials[prim.material].name].get(), .mesh=container.meshes[mesh.name].get()});
+        assetDb.meshContainer().add(mesh.name, std::make_unique<Mesh>(std::move(meshData)));
+
+        instances.push_back(MeshInstance{
+            .material= assetDb.materialContainer().get(model.materials[prim.material].name), 
+            .mesh=assetDb.meshContainer().get(mesh.name)
+        });
     }
 
     return instances;

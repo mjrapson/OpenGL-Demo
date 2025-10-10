@@ -8,6 +8,6 @@
 #include <filesystem>
 #include <vector>
 
-class Container;
+class AssetDatabase;
 
-std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, Container& container);
+std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, AssetDatabase& assetDb);

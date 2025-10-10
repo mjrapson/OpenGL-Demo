@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "core/Container.h"
 #include "core/Vertex.h"
 #include "rendering/Buffer.h"
 
@@ -15,7 +16,7 @@ class VertexLayout;
 class MeshBuffer
 {
     public:
-        explicit MeshBuffer(const std::vector<Mesh*>& meshes);
+        explicit MeshBuffer(const Container<Mesh>& meshes);
         ~MeshBuffer();
 
         MeshBuffer(const MeshBuffer& other) = delete;

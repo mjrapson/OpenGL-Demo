@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "core/Vertex.h"
 #include "data/Box.h"
 
 #include <memory>
@@ -11,13 +12,11 @@
 
 #include <glad/gl.h>
 
-struct Vertex;
 
 struct MeshData
 {
-        std::string name{};
-        std::vector<Vertex> vertices;
-        std::vector<GLuint> indices;
+    std::vector<Vertex> vertices;
+    std::vector<GLuint> indices;
 };
 
 class Mesh
@@ -30,8 +29,6 @@ class Mesh
 
         Mesh& operator=(const Mesh& other) = delete;
         Mesh& operator=(Mesh&& other) = delete;
-
-        const std::string& name() const;
 
         const std::vector<Vertex>& vertices() const;
 

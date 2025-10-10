@@ -6,7 +6,7 @@
 #include "data/Mesh.h"
 #include "rendering/VertexLayout.h"
 
-MeshBuffer::MeshBuffer(const std::vector<Mesh*>& meshes)
+MeshBuffer::MeshBuffer(const Container<Mesh>& meshes)
 {
     auto vertexBufferOffset = GLuint{0};
     auto indexBufferOffset = GLuint{0};
@@ -14,7 +14,7 @@ MeshBuffer::MeshBuffer(const std::vector<Mesh*>& meshes)
     auto vertices = std::vector<Vertex>{};
     auto indices = std::vector<GLuint>{};
 
-    for (const auto& mesh : meshes)
+    for (const auto& mesh : meshes.view())
     {
         const auto meshVertices = mesh->vertices();
         const auto meshIndices = mesh->indices();

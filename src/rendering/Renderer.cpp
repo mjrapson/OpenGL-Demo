@@ -3,7 +3,7 @@
 
 #include "Renderer.h"
 
-#include "data/Container.h"
+#include "data/AssetDatabase.h"
 #include "data/Material.h"
 #include "data/Mesh.h"
 #include "data/Texture.h"
@@ -55,11 +55,9 @@ Renderer::Renderer()
 
 Renderer::~Renderer() = default;
 
-void Renderer::setAssets(std::unique_ptr<Container> assets)
+void Renderer::setAssets(const AssetDatabase& assetDb)
 {
-    m_assets = std::move(assets);
-
-    rebuildBuffers();
+    m_meshBuffer = std::make_unique<MeshBuffer>(assetDb.meshContainer());
 }
 
 void Renderer::resizeDisplay(GLuint width, GLuint height)
@@ -106,19 +104,6 @@ void Renderer::endFrame()
 {
     m_drawCommands.clear();
     m_pointLights.clear();
-}
-
-void Renderer::rebuildBuffers()
-{
-    auto meshes = std::vector<Mesh*>{};
-    meshes.reserve(m_assets->meshes.size());
-
-    for (const auto& [name, mesh] : m_assets->meshes)
-    {
-        meshes.push_back(mesh.get());
-    }
-
-    m_meshBuffer = std::make_unique<MeshBuffer>(meshes);
 }
 
 void Renderer::present() const

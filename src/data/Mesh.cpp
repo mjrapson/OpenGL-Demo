@@ -26,11 +26,6 @@ void Mesh::calculateBoundingBox()
     }
 }
 
-const std::string& Mesh::name() const
-{
-    return m_data->name;
-}
-
 const std::vector<Vertex>& Mesh::vertices() const
 {
     return m_data->vertices;

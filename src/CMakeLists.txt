@@ -13,12 +13,14 @@ PRIVATE
     behaviours/CameraMoveBehaviour.h
     behaviours/OscillationAnimationBehaviour.cpp
     behaviours/OscillationAnimationBehaviour.h
+    core/Container.h
     core/FileSystem.cpp
     core/FileSystem.h
     core/Vertex.h
+    data/AssetDatabase.cpp
+    data/AssetDatabase.h
     data/Box.cpp
     data/Box.h
-    data/Container.h
     data/DirectionalLight.h
     data/Material.h
     data/Mesh.cpp
