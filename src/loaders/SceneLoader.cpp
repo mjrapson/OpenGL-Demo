@@ -16,17 +16,22 @@
 
 using json = nlohmann::json;
 
-glm::vec3 loadXYZ(const json& json)
+glm::vec3 loadVec3(const json& json, const std::string& param1, const std::string& param2, const std::string& param3)
 {
-    auto vec3 = glm::vec3{0.0f};
-    vec3.x = json["x"];
-    vec3.y = json["y"];
-    vec3.z = json["z"];
-
-    return vec3;
+    return glm::vec3{json[param1], json[param2], json[param3]};
 }
 
-void loadTransformComponent(const json& json, Entity entity, AssetDatabase& assetDb, World& world)
+glm::vec3 loadXYZ(const json& json)
+{
+    return loadVec3(json, "x", "y", "z");
+}
+
+glm::vec3 loadRGB(const json& json)
+{
+    return loadVec3(json, "r", "g", "b");
+}
+
+void loadTransformComponent(const json& json, Entity entity, World& world)
 {
     auto& transform = world.addComponent<TransformComponent>(entity);
 
@@ -71,11 +76,43 @@ void loadBehaviourComponent(const json& json, Entity entity, AssetDatabase& asse
     }
 }
 
+void loadDirectionalLightComponent(const json& json, Entity entity, World& world)
+{
+    auto& lightComponent = world.addComponent<DirectionalLightComponent>(entity);
+
+    if(json.contains("direction"))
+    {
+        lightComponent.light.direction = loadXYZ(json["direction"]);
+    }
+    if(json.contains("color"))
+    {
+        lightComponent.light.color = loadRGB(json["color"]);
+    }
+}
+
+void loadPointLightComponent(const json& json, Entity entity, World& world)
+{
+    auto& lightComponent = world.addComponent<PointLightComponent>(entity);
+
+    if(json.contains("position"))
+    {
+        lightComponent.light.position = loadXYZ(json["position"]);
+    }
+    if(json.contains("color"))
+    {
+        lightComponent.light.color = loadRGB(json["color"]);
+    }
+    if(json.contains("radius"))
+    {
+        lightComponent.light.radius = json["radius"];
+    }
+}
+
 void loadComponents(const json& json, Entity entity, AssetDatabase& assetDb, World& world)
 {
     if(json.contains("TransformComponent"))
     {
-        loadTransformComponent(json["TransformComponent"], entity, assetDb, world);
+        loadTransformComponent(json["TransformComponent"], entity, world);
     }
     if(json.contains("MeshRendererComponent"))
     {
@@ -84,6 +121,14 @@ void loadComponents(const json& json, Entity entity, AssetDatabase& assetDb, Wor
     if(json.contains("BehaviourComponent"))
     {
         loadBehaviourComponent(json["BehaviourComponent"], entity, assetDb, world);
+    }
+    if(json.contains("DirectionalLightComponent"))
+    {
+        loadDirectionalLightComponent(json["DirectionalLightComponent"], entity, world);
+    }
+    if(json.contains("PointLightComponent"))
+    {
+        loadPointLightComponent(json["PointLightComponent"], entity, world);
     }
 }
 

@@ -3,7 +3,6 @@
 
 #include "LightingSystem.h"
 
-#include "data/PointLight.h"
 #include "rendering/Renderer.h"
 #include "world/World.h"
 
@@ -18,24 +17,11 @@ void LightingSystem::update()
     const auto worldLightComponents = m_world.getAllComponents<DirectionalLightComponent>();
     for(auto& [entity, lightComponent] : worldLightComponents)
     {
-        auto light = DirectionalLight{};
-        light.color = lightComponent.color;
-        light.direction = lightComponent.direction;
-        m_renderer.setDirectionalLight(light);
+        m_renderer.setDirectionalLight(lightComponent.light);
     }
 
     for(auto& [entity, lightComponent] : m_world.getAllComponents<PointLightComponent>())
     {
-        auto transformComponent = m_world.getComponent<TransformComponent>(entity);
-        if(!transformComponent)
-        {
-            continue;
-        }
-
-        auto pointLight = PointLight{};
-        pointLight.color = lightComponent.color;
-        pointLight.radius = lightComponent.radius;
-        pointLight.position = transformComponent->position;
-        m_renderer.addPointLight(pointLight);    
+        m_renderer.addPointLight(lightComponent.light);    
     }
 }

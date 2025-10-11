@@ -77,32 +77,6 @@ Application::Application()
            .addMeshInstances(wolfMeshInstances);
     }
 
-    auto sun = m_world->createEntity();
-    m_world->addComponent<DirectionalLightComponent>(sun)
-        .setDirection(1.0f, -1.0f, 1.0f)
-        .setColor(0.8f, 0.8f, 0.8f);
-
-    auto lamp1 = m_world->createEntity();
-    m_world->addComponent<PointLightComponent>(lamp1)
-        .setColor(0.8f, 0.8f, 0.8f)
-        .setRadius(4.0f);
-    m_world->addComponent<TransformComponent>(lamp1)
-        .setPosition(0.0f, 2.0f, 3.0f);
-
-    auto lamp2 = m_world->createEntity();
-    m_world->addComponent<PointLightComponent>(lamp2)
-        .setColor(0.8f, 0.3f, 0.8f)
-        .setRadius(2.0f);
-    m_world->addComponent<TransformComponent>(lamp2)
-        .setPosition(-1.0f, 2.0f, -4.0f);
-
-    auto lamp3 = m_world->createEntity();
-    m_world->addComponent<PointLightComponent>(lamp3)
-        .setColor(0.8f, 0.8f, 0.8f)
-        .setRadius(4.0f);
-    m_world->addComponent<TransformComponent>(lamp3)
-        .setPosition(9.0f, 5.0f, 6.0f);
-
     // Player controller
     auto player = m_world->createEntity();
 
