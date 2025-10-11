@@ -30,6 +30,9 @@ class Application
         void run();
 
     private:
+        void initGlfw();
+        void createWindow();
+        void loadGl();
         void setWindowCallbacks();
         void loadAssets();
 

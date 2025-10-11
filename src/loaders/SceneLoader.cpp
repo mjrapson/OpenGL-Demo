@@ -3,10 +3,13 @@
 
 #include "SceneLoader.h"
 
+#include "core/FileSystem.h"
 #include "data/AssetDatabase.h"
+#include "loaders/GltfLoader.h"
 #include "world/World.h"
 
 // temp
+#include "behaviours/CameraMoveBehaviour.h"
 #include "behaviours/OscillationAnimationBehaviour.h"
 
 #include <nlohmann/json.hpp>
@@ -73,6 +76,10 @@ void loadBehaviourComponent(const json& json, Entity entity, AssetDatabase& asse
         {
             behaviourComponent.behaviours.push_back(std::make_unique<OscillationAnimationBehaviour>());
         }
+        if(behaviourJson["type"] == "CameraMoveBehaviour")
+        {
+            behaviourComponent.behaviours.push_back(std::make_unique<CameraMoveBehaviour>());
+        }
     }
 }
 
@@ -108,6 +115,20 @@ void loadPointLightComponent(const json& json, Entity entity, World& world)
     }
 }
 
+void loadCameraComponent(const json& json, Entity entity, World& world)
+{
+    auto& cameraComponent = world.addComponent<CameraComponent>(entity);
+
+    if(json.contains("position"))
+    {
+        cameraComponent.setPosition(loadXYZ(json["position"]));
+    }
+    if(json.contains("pitch"))
+    {
+        cameraComponent.setPitch(json["pitch"]);
+    }
+}
+
 void loadComponents(const json& json, Entity entity, AssetDatabase& assetDb, World& world)
 {
     if(json.contains("TransformComponent"))
@@ -130,6 +151,25 @@ void loadComponents(const json& json, Entity entity, AssetDatabase& assetDb, Wor
     {
         loadPointLightComponent(json["PointLightComponent"], entity, world);
     }
+    if(json.contains("CameraComponent"))
+    {
+        loadCameraComponent(json["CameraComponent"], entity, world);
+    }
+}
+
+void loadPrefab(const std::string& path, Entity entity, AssetDatabase& assetDb, World& world)
+{
+    const auto meshInstances = loadGLTFModel(GetResourceDir() / path, assetDb);
+    if(meshInstances.empty())
+    {
+        return;
+    }
+
+    auto& mesh = world.addComponent<MeshRendererComponent>(entity);
+    for(const auto& instance : meshInstances)
+    {
+        mesh.meshInstances.push_back(instance);
+    }
 }
 
 void loadEntity(const json& json, AssetDatabase& assetDb, World& world)
@@ -139,6 +179,10 @@ void loadEntity(const json& json, AssetDatabase& assetDb, World& world)
     if(json.contains("components"))
     {
         loadComponents(json["components"], entity, assetDb, world);
+    }
+    if(json.contains("prefab"))
+    {
+        loadPrefab(json["prefab"], entity, assetDb, world);
     }
 }
 

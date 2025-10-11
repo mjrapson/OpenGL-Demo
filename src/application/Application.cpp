@@ -8,13 +8,11 @@
 #include "behaviours/OscillationAnimationBehaviour.h"
 #include "core/Container.h"
 #include "core/FileSystem.h"
-#include "core/Vertex.h"
 #include "data/Material.h"
 #include "data/Mesh.h"
 #include "data/MeshFactory.h"
 #include "data/Texture.h"
 #include "input/InputHandler.h"
-#include "loaders/GltfLoader.h"
 #include "loaders/SceneLoader.h"
 #include "loaders/TextureLoader.h"
 #include "rendering/Renderer.h"
@@ -34,59 +32,23 @@
 
 Application::Application()
     : m_inputHandler{std::make_unique<InputHandler>()}
+    , m_world{std::make_unique<World>()}
 {
-    if (!glfwInit())
-    {
-        throw std::runtime_error("Failed to initialise glfw.");
-    }
+    initGlfw();
 
-    glfwSetTime(0);
+    createWindow();
 
-    m_window = std::make_unique<Window>("OpenGL Demo", 1280, 720);
-    m_window->makeCurrent();
-
-    const auto version = gladLoadGL(glfwGetProcAddress);
-    if (version == 0)
-    {
-        throw std::runtime_error("Failed to load OpenGL");
-    }
-
-    std::cout << "Loaded OpenGL version: " << version << "\n";
+    loadGl();
 
     setWindowCallbacks();
 
-    m_renderer = std::make_unique<Renderer>();
-    m_renderer->resizeDisplay(1280, 720);
-
     loadAssets();
 
-    m_world = std::make_unique<World>();
-
-    loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world);
-
     // Demo scene
-    auto wolfMeshInstances = loadGLTFModel(GetResourceDir() / "data/wolf/Wolf-Blender-2.82a.gltf", m_assetDb);
-    if(!wolfMeshInstances.empty()) 
-    {
-       auto wolf = m_world->createEntity();
-       m_world->addComponent<TransformComponent>(wolf)
-           .setPosition(0.0f, 0.0f, -2.0f)
-           .setRotation(0.0f, -45.0f, 0.0f)
-           .setScale(5.0f, 5.0f, 5.0f);
-       m_world->addComponent<MeshRendererComponent>(wolf)
-           .addMeshInstances(wolfMeshInstances);
-    }
-
-    // Player controller
-    auto player = m_world->createEntity();
-
-    auto& cameraComponent = m_world->addComponent<CameraComponent>(player);
-    cameraComponent.setPitch(-15.0f);
-    cameraComponent.setPosition(glm::vec3{-15.0f, 8.0f, 0.0f});
-
-    m_world->addComponent<BehaviourComponent>(player)
-        .addBehaviour(std::make_unique<CameraMoveBehaviour>());
-
+    loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world);
+    
+    m_renderer = std::make_unique<Renderer>();
+    m_renderer->resizeDisplay(1280, 720);
     m_renderer->setAssets(m_assetDb);
 
     m_renderSystem = std::make_unique<RenderSystem>(*m_renderer, *m_world);
@@ -149,6 +111,33 @@ void Application::run()
     }
 }
 
+void Application::initGlfw()
+{
+    if (!glfwInit())
+    {
+        throw std::runtime_error("Failed to initialise glfw.");
+    }
+
+    glfwSetTime(0);
+}
+
+void Application::createWindow()
+{
+    m_window = std::make_unique<Window>("OpenGL Demo", 1280, 720);
+    m_window->makeCurrent();
+}
+
+void Application::loadGl()
+{
+    const auto version = gladLoadGL(glfwGetProcAddress);
+    if (version == 0)
+    {
+        throw std::runtime_error("Failed to load OpenGL");
+    }
+
+    std::cout << "Loaded OpenGL version: " << version << "\n";
+}
+
 void Application::setWindowCallbacks()
 {
     glfwSetWindowUserPointer(m_window->handle(), this);
@@ -180,23 +169,18 @@ void Application::loadAssets()
     m_assetDb.meshContainer().add("sphere", MeshFactory::createSpherePrimitive());
     m_assetDb.meshContainer().add("plane", MeshFactory::createPlanePrimitive());
 
-    m_assetDb.textureContainer().add("checkerboard", loadTexture(GetTexturesDir() / "checkerboard.png"));
+    m_assetDb.textureContainer().add("checkerboard", 
+        loadTexture(GetTexturesDir() / "checkerboard.png"));
 
     m_assetDb.materialContainer().add("red", std::make_unique<Material>(Material{
-        .diffuse = glm::vec3{1.0f, 0.0f, 0.0f}
-    }));
-
+        .diffuse = glm::vec3{1.0f, 0.0f, 0.0f}}));
     m_assetDb.materialContainer().add("yellow", std::make_unique<Material>(Material{
-        .diffuse = glm::vec3{1.0f, 1.0f, 0.0f}
-    }));
-
+        .diffuse = glm::vec3{1.0f, 1.0f, 0.0f}}));
     m_assetDb.materialContainer().add("blue", std::make_unique<Material>(Material{
-        .diffuse = glm::vec3{0.0f, 0.0f, 1.0f}
-    }));
+        .diffuse = glm::vec3{0.0f, 0.0f, 1.0f}}));
 
     m_assetDb.materialContainer().add("checkerboard", std::make_unique<Material>(Material{
-        .diffuseTexture = m_assetDb.textureContainer().get("checkerboard")
-    }));
+        .diffuseTexture = m_assetDb.textureContainer().get("checkerboard")}));
 }
 
 void Application::framebufferResizeCallback(int width, int height)

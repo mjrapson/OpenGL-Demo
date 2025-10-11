@@ -227,6 +227,49 @@
                     "radius": 4.0
                 }
             }
+        },
+        {
+            "name": "player",
+            "components": {
+                "CameraComponent": {
+                    "position": {
+                        "x": -15.0,
+                        "y": 8.0,
+                        "z": 0.0
+                    },
+                    "pitch": -15.0
+                },
+                "BehaviourComponent": {
+                    "behaviours": [
+                        {
+                            "type": "CameraMoveBehaviour"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "wolf",
+            "prefab": "data/wolf/Wolf-Blender-2.82a.gltf",
+            "components": {
+                "TransformComponent": {
+                    "position": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": -2.0
+                    },
+                    "rotation": {
+                        "x": 0.0,
+                        "y": -45.0,
+                        "z": 0.0
+                    },
+                    "scale": {
+                        "x": 5.0,
+                        "y": 5.0,
+                        "z": 5.0
+                    }
+                }
+            }
         }
     ]
 }
