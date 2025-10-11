@@ -247,29 +247,6 @@
                     ]
                 }
             }
-        },
-        {
-            "name": "wolf",
-            "prefab": "data/wolf/Wolf-Blender-2.82a.gltf",
-            "components": {
-                "TransformComponent": {
-                    "position": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": -2.0
-                    },
-                    "rotation": {
-                        "x": 0.0,
-                        "y": -45.0,
-                        "z": 0.0
-                    },
-                    "scale": {
-                        "x": 5.0,
-                        "y": 5.0,
-                        "z": 5.0
-                    }
-                }
-            }
         }
     ]
 }

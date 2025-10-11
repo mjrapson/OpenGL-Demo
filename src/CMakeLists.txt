@@ -109,7 +109,6 @@ add_custom_target(post_build ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/scenes ${CMAKE_CURRENT_BINARY_DIR}/resources/scenes
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/shaders ${CMAKE_CURRENT_BINARY_DIR}/resources/shaders
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/textures ${CMAKE_CURRENT_BINARY_DIR}/resources/textures
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/data ${CMAKE_CURRENT_BINARY_DIR}/resources/data
 )
 
 add_dependencies(post_build OpenGLDemo)
