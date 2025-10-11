@@ -127,6 +127,10 @@ void loadCameraComponent(const json& json, Entity entity, World& world)
     {
         cameraComponent.setPitch(json["pitch"]);
     }
+    if(json.contains("skybox"))
+    {
+        cameraComponent.setSkybox(json["skybox"]);
+    }
 }
 
 void loadComponents(const json& json, Entity entity, AssetDatabase& assetDb, World& world)

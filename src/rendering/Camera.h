@@ -20,6 +20,7 @@ struct Camera
     float pitch{0.0f}; // horizontal
     float yaw{0.0f};   // vertical
     float roll{0.0f};
+    bool skybox{false}; // later skybox will be a struct with parameters
 
     const glm::mat4 view() const
     {
