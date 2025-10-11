@@ -52,56 +52,12 @@ Application::Application()
 
     std::cout << "Loaded OpenGL version: " << version << "\n";
 
-    glfwSetWindowUserPointer(m_window->handle(), this);
-
-    glfwSetFramebufferSizeCallback(m_window->handle(), [](GLFWwindow* window, int width, int height) {
-        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
-        app->framebufferResizeCallback(width, height);
-    });
-
-    glfwSetCursorPosCallback(m_window->handle(), [](GLFWwindow* window, double x, double y) {
-        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
-        app->cursorPosChangeCallback(x, y);
-    });
-
-    glfwSetMouseButtonCallback(m_window->handle(), [](GLFWwindow* window, int button, int action, int modifiers) {
-        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
-        app->mouseButtonPressCallback(button, action, modifiers);
-    });
-
-    glfwSetKeyCallback(m_window->handle(), [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
-        app->keyPressCallback(key, scancode, action, mods);
-    });
+    setWindowCallbacks();
 
     m_renderer = std::make_unique<Renderer>();
     m_renderer->resizeDisplay(1280, 720);
 
-    // Demo assets
-    m_assetDb.meshContainer().add("cube", MeshFactory::createCubePrimitive());
-    m_assetDb.meshContainer().add("sphere", MeshFactory::createSpherePrimitive());
-    m_assetDb.meshContainer().add("plane", MeshFactory::createPlanePrimitive());
-
-    auto wolfMeshInstances = loadGLTFModel(
-        GetResourceDir() / "data/wolf/Wolf-Blender-2.82a.gltf", m_assetDb);
-
-    m_assetDb.textureContainer().add("checkerboard", loadTexture(GetTexturesDir() / "checkerboard.png"));
-
-    m_assetDb.materialContainer().add("red", std::make_unique<Material>(Material{
-        .diffuse = glm::vec3{1.0f, 0.0f, 0.0f}
-    }));
-
-    m_assetDb.materialContainer().add("yellow", std::make_unique<Material>(Material{
-        .diffuse = glm::vec3{1.0f, 1.0f, 0.0f}
-    }));
-
-    m_assetDb.materialContainer().add("blue", std::make_unique<Material>(Material{
-        .diffuse = glm::vec3{0.0f, 0.0f, 1.0f}
-    }));
-
-    m_assetDb.materialContainer().add("checkerboard", std::make_unique<Material>(Material{
-        .diffuseTexture = m_assetDb.textureContainer().get("checkerboard")
-    }));
+    loadAssets();
 
     m_world = std::make_unique<World>();
 
@@ -149,6 +105,7 @@ Application::Application()
             m_assetDb.materialContainer().get("checkerboard"), 
             m_assetDb.meshContainer().get("plane"));
 
+    auto wolfMeshInstances = loadGLTFModel(GetResourceDir() / "data/wolf/Wolf-Blender-2.82a.gltf", m_assetDb);
     if(!wolfMeshInstances.empty()) 
     {
        auto wolf = m_world->createEntity();
@@ -256,6 +213,56 @@ void Application::run()
             std::this_thread::sleep_for(sleepTime);
         }
     }
+}
+
+void Application::setWindowCallbacks()
+{
+    glfwSetWindowUserPointer(m_window->handle(), this);
+
+    glfwSetFramebufferSizeCallback(m_window->handle(), [](GLFWwindow* window, int width, int height) {
+        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+        app->framebufferResizeCallback(width, height);
+    });
+
+    glfwSetCursorPosCallback(m_window->handle(), [](GLFWwindow* window, double x, double y) {
+        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+        app->cursorPosChangeCallback(x, y);
+    });
+
+    glfwSetMouseButtonCallback(m_window->handle(), [](GLFWwindow* window, int button, int action, int modifiers) {
+        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+        app->mouseButtonPressCallback(button, action, modifiers);
+    });
+
+    glfwSetKeyCallback(m_window->handle(), [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+        app->keyPressCallback(key, scancode, action, mods);
+    });
+}
+
+void Application::loadAssets()
+{
+    m_assetDb.meshContainer().add("cube", MeshFactory::createCubePrimitive());
+    m_assetDb.meshContainer().add("sphere", MeshFactory::createSpherePrimitive());
+    m_assetDb.meshContainer().add("plane", MeshFactory::createPlanePrimitive());
+
+    m_assetDb.textureContainer().add("checkerboard", loadTexture(GetTexturesDir() / "checkerboard.png"));
+
+    m_assetDb.materialContainer().add("red", std::make_unique<Material>(Material{
+        .diffuse = glm::vec3{1.0f, 0.0f, 0.0f}
+    }));
+
+    m_assetDb.materialContainer().add("yellow", std::make_unique<Material>(Material{
+        .diffuse = glm::vec3{1.0f, 1.0f, 0.0f}
+    }));
+
+    m_assetDb.materialContainer().add("blue", std::make_unique<Material>(Material{
+        .diffuse = glm::vec3{0.0f, 0.0f, 1.0f}
+    }));
+
+    m_assetDb.materialContainer().add("checkerboard", std::make_unique<Material>(Material{
+        .diffuseTexture = m_assetDb.textureContainer().get("checkerboard")
+    }));
 }
 
 void Application::framebufferResizeCallback(int width, int height)

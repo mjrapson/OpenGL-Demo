@@ -30,6 +30,9 @@ class Application
         void run();
 
     private:
+        void setWindowCallbacks();
+        void loadAssets();
+
         void framebufferResizeCallback(int width, int height);
         void cursorPosChangeCallback(double x, double y);
         void mouseButtonPressCallback(int button, int action, int modifiers);
