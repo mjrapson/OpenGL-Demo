@@ -92,6 +92,7 @@ PRIVATE
 	${CMAKE_SOURCE_DIR}/src
 	${CMAKE_SOURCE_DIR}/3rd/glad/include
 	${CMAKE_SOURCE_DIR}/3rd/glm
+    ${CMAKE_SOURCE_DIR}/3rd/nlohmann/include
 	${CMAKE_SOURCE_DIR}/3rd/stb
     ${CMAKE_SOURCE_DIR}/3rd/tinygltf
 )

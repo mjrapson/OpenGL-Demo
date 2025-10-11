@@ -51,5 +51,6 @@ This project makes use of the following 3rd party libraries:
 - glad
 - glfw
 - glm
+- nlohmann (JSON parser)
 - stb
 - tinygtlf
