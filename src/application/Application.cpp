@@ -15,6 +15,7 @@
 #include "data/Texture.h"
 #include "input/InputHandler.h"
 #include "loaders/GltfLoader.h"
+#include "loaders/SceneLoader.h"
 #include "loaders/TextureLoader.h"
 #include "rendering/Renderer.h"
 #include "world/systems/BehaviourSystem.h"
@@ -61,50 +62,9 @@ Application::Application()
 
     m_world = std::make_unique<World>();
 
+    loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world);
+
     // Demo scene
-    auto cube = m_world->createEntity();
-    m_world->addComponent<TransformComponent>(cube)
-        .setPosition(0.0f, 0.0f, 0.0f);
-    m_world->addComponent<MeshRendererComponent>(cube)
-        .addMeshInstance(
-            m_assetDb.materialContainer().get("red"), 
-            m_assetDb.meshContainer().get("cube"));
-
-    auto cube2 = m_world->createEntity();
-    m_world->addComponent<TransformComponent>(cube2)
-        .setPosition(2.0f, 0.0f, 0.0f);
-    m_world->addComponent<MeshRendererComponent>(cube2)
-        .addMeshInstance(
-            m_assetDb.materialContainer().get("yellow"), 
-            m_assetDb.meshContainer().get("cube"));
-
-    auto cube3 = m_world->createEntity();
-    m_world->addComponent<TransformComponent>(cube3)
-        .setPosition(0.0f, 0.0f, 2.0f);
-    m_world->addComponent<MeshRendererComponent>(cube3)
-        .addMeshInstance(
-            m_assetDb.materialContainer().get("blue"), 
-            m_assetDb.meshContainer().get("cube"));
-
-    auto sphere = m_world->createEntity();
-    m_world->addComponent<TransformComponent>(sphere)
-        .setPosition(10.0f, 2.0f, 5.0f);
-    m_world->addComponent<MeshRendererComponent>(sphere)
-        .addMeshInstance(
-            m_assetDb.materialContainer().get("blue"), 
-            m_assetDb.meshContainer().get("sphere"));
-    m_world->addComponent<BehaviourComponent>(sphere)
-        .addBehaviour(std::make_unique<OscillationAnimationBehaviour>());
-
-    auto floor = m_world->createEntity();
-    m_world->addComponent<TransformComponent>(floor)
-        .setPosition(-8.0f, -0.5f, -8.0f)
-        .setScale(100.0f, 1.0f, 100.0f);
-    m_world->addComponent<MeshRendererComponent>(floor)
-        .addMeshInstance(
-            m_assetDb.materialContainer().get("checkerboard"), 
-            m_assetDb.meshContainer().get("plane"));
-
     auto wolfMeshInstances = loadGLTFModel(GetResourceDir() / "data/wolf/Wolf-Blender-2.82a.gltf", m_assetDb);
     if(!wolfMeshInstances.empty()) 
     {

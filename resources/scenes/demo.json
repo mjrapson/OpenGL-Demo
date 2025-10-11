@@ -1,0 +1,161 @@
+{
+    "entities": [
+        {
+            "name": "cube",
+            "components": {
+                "TransformComponent": {
+                    "position": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "scale": {
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    }
+                },
+                "MeshRendererComponent": {
+                    "meshInstances": [
+                        {
+                            "mesh": "cube",
+                            "material": "red"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "cube2",
+            "components": {
+                "TransformComponent": {
+                    "position": {
+                        "x": 2.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "scale": {
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    }
+                },
+                "MeshRendererComponent": {
+                    "meshInstances": [
+                        {
+                            "mesh": "cube",
+                            "material": "yellow"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "cube3",
+            "components": {
+                "TransformComponent": {
+                    "position": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 2.0
+                    },
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "scale": {
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    }
+                },
+                "MeshRendererComponent": {
+                    "meshInstances": [
+                        {
+                            "mesh": "cube",
+                            "material": "blue"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "sphere",
+            "components": {
+                "TransformComponent": {
+                    "position": {
+                        "x": 10.0,
+                        "y": 2.0,
+                        "z": 5.0
+                    },
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "scale": {
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    }
+                },
+                "MeshRendererComponent": {
+                    "meshInstances": [
+                        {
+                            "mesh": "sphere",
+                            "material": "blue"
+                        }
+                    ]
+                },
+                "BehaviourComponent": {
+                    "behaviours": [
+                        {
+                            "type": "OscillationAnimationBehaviour"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "floor",
+            "components": {
+                "TransformComponent": {
+                    "position": {
+                        "x": -8.0,
+                        "y": -0.5,
+                        "z": -8.0
+                    },
+                    "rotation": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "scale": {
+                        "x": 100.0,
+                        "y": 1.0,
+                        "z": 100.0
+                    }
+                },
+                "MeshRendererComponent": {
+                    "meshInstances": [
+                        {
+                            "mesh": "plane",
+                            "material": "checkerboard"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
