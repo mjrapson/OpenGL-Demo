@@ -62,7 +62,7 @@ void SkyboxRenderPass::execute(const std::vector<DrawCommand>& drawQueue,
     m_framebuffer->attachTexture(GL_COLOR_ATTACHMENT0, *inputs.targetImage, 0);
 
     glEnable(GL_BLEND);
-glBlendFuncSeparate(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA, GL_ONE, GL_ZERO);
+    glBlendFuncSeparate(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA, GL_ONE, GL_ZERO);
 
 
     glDisable(GL_DEPTH_TEST);
