@@ -40,3 +40,11 @@ const Box& Mesh::boundingBox() const
 {
     return m_boundingBox;
 }
+
+void Mesh::reverseNormals()
+{
+    for(auto& vertex : m_data->vertices)
+    {
+        vertex.normal = -vertex.normal;
+    }
+}

@@ -36,10 +36,12 @@ Renderer::Renderer()
     glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0, NULL, GL_FALSE);
     glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_PERFORMANCE, GL_DONT_CARE, 0, NULL, GL_FALSE);
 
-    m_lightingRenderPass.setInputBinding([
-        gbuffer = &m_gbufferRenderPass,
-        dirShadow = &m_directionalShadowRenderPass,
-        plShadow = &m_pointLightShadowRenderPass]
+    m_lightingRenderPass.setInputBinding(
+        [
+            gbuffer = &m_gbufferRenderPass,
+            dirShadow = &m_directionalShadowRenderPass,
+            plShadow = &m_pointLightShadowRenderPass
+        ]
         ()
         {
             auto inputs = LightingRenderPass::Inputs{};
@@ -48,6 +50,18 @@ Renderer::Renderer()
             inputs.positionImage = gbuffer->positionImage();
             inputs.directionalLightShadowMapImage = dirShadow->directionalLightShadowMapImage();
             inputs.pointLightShadowMapImage = plShadow->pointLightShadowMapImage();
+            return inputs;
+        }
+    );
+
+    m_skyboxRenderPass.setInputBinding(
+        [
+            lightingPass = &m_lightingRenderPass
+        ]
+        ()
+        {
+            auto inputs = SkyboxRenderPass::Inputs{};
+            inputs.targetImage = lightingPass->colorImage();
             return inputs;
         }
     );
@@ -67,6 +81,7 @@ void Renderer::resizeDisplay(GLuint width, GLuint height)
 
     m_gbufferRenderPass.onViewportResize(width, height);
     m_lightingRenderPass.onViewportResize(width, height);
+    m_skyboxRenderPass.onViewportResize(width, height);
 }
 
 void Renderer::setDirectionalLight(const DirectionalLight& light)
@@ -90,6 +105,7 @@ void Renderer::render(const Camera& camera)
     m_pointLightShadowRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
     m_gbufferRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
     m_lightingRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
+    m_skyboxRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
 
     present();
 }

@@ -155,7 +155,7 @@ GLuint LightingRenderPass::framebufferHandle() const
 
 void LightingRenderPass::rebuildImages()
 {
-    m_colorImage = std::make_unique<Texture2D>(GL_RGBA8, m_viewportWidth, m_viewportHeight);
+    m_colorImage = std::make_unique<Texture2D>(GL_RGBA16F, m_viewportWidth, m_viewportHeight);
     m_colorImage->setMinFilter(GL_LINEAR);
     m_colorImage->setMagFilter(GL_LINEAR);
 

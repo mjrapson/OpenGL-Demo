@@ -66,6 +66,8 @@ void GBufferRenderPass::execute(const std::vector<DrawCommand>& drawQueue,
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
+
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     glViewport(0, 0, m_viewportWidth, m_viewportHeight);
@@ -138,7 +140,7 @@ Texture2D* GBufferRenderPass::depthImage() const
 
 void GBufferRenderPass::rebuildImages()
 {
-    m_colorImage = std::make_unique<Texture2D>(GL_RGBA8, m_viewportWidth, m_viewportHeight);
+    m_colorImage = std::make_unique<Texture2D>(GL_RGBA16F, m_viewportWidth, m_viewportHeight);
     m_colorImage->setMinFilter(GL_LINEAR);
     m_colorImage->setMagFilter(GL_LINEAR);
 

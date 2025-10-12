@@ -1,0 +1,125 @@
+/// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Mark Rapson
+
+#include "SkyboxRenderPass.h"
+
+#include "core/FileSystem.h"
+#include "data/Mesh.h"
+#include "data/MeshFactory.h"
+#include "data/Texture.h"
+#include "rendering/Camera.h"
+#include "rendering/Framebuffer.h"
+#include "rendering/MeshBuffer.h"
+#include "rendering/Shader.h"
+#include "rendering/VertexLayout.h"
+
+#include <glm/glm.hpp>
+
+struct alignas(16) TransformUbo
+{
+        glm::mat4 projection;
+        glm::mat4 view;
+        glm::mat4 model;
+};
+
+SkyboxRenderPass::SkyboxRenderPass()
+    : RenderPass()
+{
+    const auto shaderDir = GetShaderDir();
+    const auto vsPath = shaderDir / "skybox_vertex.glsl";
+    const auto fsPath = shaderDir / "skybox_fragment.glsl";
+
+    m_shader = std::make_unique<Shader>(vsPath, fsPath);
+    m_shader->registerUniformBuffer("TransformBlock", sizeof(TransformUbo), 0);
+
+    m_framebuffer = std::make_unique<Framebuffer>();
+    m_framebuffer->setDrawBuffers({GL_COLOR_ATTACHMENT0});
+
+    m_vertexLayout = std::make_unique<VertexLayout>();
+    m_vertexLayout->registerAttribute(0, 3, GL_FLOAT, offsetof(Vertex, position));
+    m_vertexLayout->registerAttribute(1, 2, GL_FLOAT, offsetof(Vertex, textureUV));
+    m_vertexLayout->registerAttribute(2, 3, GL_FLOAT, offsetof(Vertex, normal));
+
+    m_skyboxSphereMesh = MeshFactory::createSpherePrimitive();
+    m_skyboxSphereMesh->reverseNormals();
+    m_vertexBuffer = std::make_unique<Buffer<Vertex>>(m_skyboxSphereMesh->vertices());
+    m_indexBuffer = std::make_unique<Buffer<GLuint>>(m_skyboxSphereMesh->indices());
+}
+
+SkyboxRenderPass::~SkyboxRenderPass() = default;
+
+
+void SkyboxRenderPass::execute(const std::vector<DrawCommand>& drawQueue, 
+                               const Camera& camera,
+                               const DirectionalLight& directionalLight,
+                               const std::vector<PointLight>& pointLights,
+                               const MeshBuffer& buffer)
+{
+    m_shader->bind();
+    m_framebuffer->bind();
+
+    const auto inputs = m_inputBinding();
+    m_framebuffer->attachTexture(GL_COLOR_ATTACHMENT0, *inputs.targetImage, 0);
+
+    glEnable(GL_BLEND);
+glBlendFuncSeparate(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA, GL_ONE, GL_ZERO);
+
+
+    glDisable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glDepthMask(GL_FALSE);
+
+    glViewport(0, 0, m_viewportWidth, m_viewportHeight);
+    m_vertexLayout->bind();
+    m_vertexLayout->bindVertexBuffer(0, m_vertexBuffer->handle(), 0, sizeof(Vertex));
+    m_vertexLayout->bindElementBuffer(m_indexBuffer->handle());
+
+    const auto modelMatrix = glm::translate(glm::mat4(1.0f), camera.position);
+
+    auto transformUbo = TransformUbo{};
+    transformUbo.model = modelMatrix;
+    transformUbo.projection = camera.projection();
+    transformUbo.view = camera.view();
+
+    m_shader->writeUniformData("TransformBlock", sizeof(TransformUbo), &transformUbo);
+
+    glDrawElementsBaseVertex(
+            GL_TRIANGLES,
+            static_cast<GLsizei>(m_skyboxSphereMesh->indices().size()),
+            GL_UNSIGNED_INT,
+            0,
+            0);
+
+}
+
+void SkyboxRenderPass::onViewportResize(GLuint width, GLuint height)
+{
+    m_viewportWidth = width;
+    m_viewportHeight = height;
+
+    rebuildImages();
+}
+
+void SkyboxRenderPass::setInputBinding(InputBinding binding)
+{
+    m_inputBinding = std::move(binding);
+}
+
+Texture2D* SkyboxRenderPass::colorImage() const
+{
+    return m_colorImage.get();
+}
+
+GLuint SkyboxRenderPass::framebufferHandle() const
+{
+    return m_framebuffer->handle();
+}
+
+void SkyboxRenderPass::rebuildImages()
+{
+    m_colorImage = std::make_unique<Texture2D>(GL_RGBA8, m_viewportWidth, m_viewportHeight);
+    m_colorImage->setMinFilter(GL_LINEAR);
+    m_colorImage->setMagFilter(GL_LINEAR);
+
+    m_framebuffer->attachTexture(GL_COLOR_ATTACHMENT0, *m_colorImage.get(), 0);
+}
