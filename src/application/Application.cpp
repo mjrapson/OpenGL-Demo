@@ -169,8 +169,27 @@ void Application::loadAssets()
     m_assetDb.meshContainer().add("sphere", MeshFactory::createSpherePrimitive());
     m_assetDb.meshContainer().add("plane", MeshFactory::createPlanePrimitive());
 
-    m_assetDb.textureContainer().add("checkerboard", 
-        loadTexture(GetTexturesDir() / "checkerboard.png"));
+    auto checkerboard = loadTexture(GetTexturesDir() / "checkerboard.png");
+    checkerboard->setMinFilter(GL_NEAREST);
+    checkerboard->setMagFilter(GL_NEAREST);
+    checkerboard->setWrapS(GL_REPEAT);
+    checkerboard->setWrapT(GL_REPEAT);
+    m_assetDb.textureContainer().add("checkerboard", std::move(checkerboard));
+
+    auto starsFileInfo = CubemapFileInfo{};
+    starsFileInfo.px = GetTexturesDir() / "stars/px.png";
+    starsFileInfo.py = GetTexturesDir() / "stars/py.png";
+    starsFileInfo.pz = GetTexturesDir() / "stars/pz.png";
+    starsFileInfo.nx = GetTexturesDir() / "stars/nx.png";
+    starsFileInfo.ny = GetTexturesDir() / "stars/ny.png";
+    starsFileInfo.nz = GetTexturesDir() / "stars/nz.png";
+    auto stars = loadCubemapTexture(starsFileInfo);
+    stars->setMinFilter(GL_LINEAR);
+    stars->setMagFilter(GL_LINEAR);
+    stars->setWrapS(GL_CLAMP_TO_EDGE);
+    stars->setWrapT(GL_CLAMP_TO_EDGE);
+    stars->setWrapR(GL_CLAMP_TO_EDGE);
+    m_assetDb.textureContainer().add("stars", std::move(stars));
 
     m_assetDb.materialContainer().add("red", std::make_unique<Material>(Material{
         .diffuse = glm::vec3{1.0f, 0.0f, 0.0f}}));

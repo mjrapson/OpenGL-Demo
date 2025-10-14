@@ -44,6 +44,16 @@ class Texture2D : public Texture
         Texture2D(GLenum format, GLsizei width, GLsizei height);
 };
 
+class TextureCubeMap : public Texture
+{
+    public:
+        TextureCubeMap(GLenum format, GLsizei width, GLsizei height);
+
+        void writeImageData(GLsizei width, GLsizei height, GLsizei face, const void* data);
+
+        void setWrapR(GLenum value);
+};
+
 class TextureCubeMapArray : public Texture
 {
     public:

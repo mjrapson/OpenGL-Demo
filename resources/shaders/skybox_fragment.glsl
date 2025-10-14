@@ -1,10 +1,13 @@
-#version 450
+#version 450 core
 
-in vec3 vertexDirection;
+layout(binding = 1) uniform samplerCube skyboxCubemap;
 
+in vec3 fragDirection;
 out vec4 FragColor;
 
 void main()
 {
-    FragColor = vec4(vertexDirection, 1.0);
+    vec3 dir = normalize(fragDirection);
+    vec3 color = texture(skyboxCubemap, dir).rgb;
+    FragColor = vec4(color, 1.0);
 }

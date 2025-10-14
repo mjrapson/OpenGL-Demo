@@ -1,21 +1,21 @@
 #version 450 core
 
+layout(location = 0) in vec2 vertexPosition;
+
+out vec3 fragDirection;
+
 layout(std140, binding = 0) uniform TransformBlock {
     mat4 projection;
     mat4 view;
-    mat4 model;
 };
-
-layout (location = 0) in vec3 vertexPosition;
-layout (location = 1) in vec2 vertexTextureUV;
-layout (location = 2) in vec3 vertexNormal;
-
-out vec3 vertexDirection;
 
 void main()
 {
-    vec4 position = mat4(mat3(view)) * vec4(vertexPosition, 1.0);
-    vertexDirection = vertexPosition;
-    
-    gl_Position = projection * position;
+    vec4 clipPos = vec4(vertexPosition, 0.0, 1.0);
+
+    vec4 viewPos = inverse(projection) * clipPos;
+    viewPos /= viewPos.w;
+
+    fragDirection = (mat3(view) * normalize(viewPos.xyz));
+    gl_Position = vec4(vertexPosition, 0.0, 1.0); // full screen quad
 }

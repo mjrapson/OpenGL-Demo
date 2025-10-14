@@ -106,7 +106,7 @@ void Renderer::render(const Camera& camera)
     m_gbufferRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
     m_lightingRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
 
-    if(camera.skybox)
+    if(camera.skyboxTexture)
     {
         m_skyboxRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
     }

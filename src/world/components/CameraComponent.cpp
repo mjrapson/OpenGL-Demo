@@ -48,11 +48,6 @@ bool CameraComponent::active() const
     return m_active;
 }
 
-bool CameraComponent::skybox() const
-{
-    return m_camera.skybox;
-}
-
 void CameraComponent::setPosition(const glm::vec3& position)
 {
     m_camera.position = position;
@@ -95,9 +90,9 @@ void CameraComponent::setActive(bool active)
     m_active = active;
 }
 
-void CameraComponent::setSkybox(bool active)
+void CameraComponent::setSkyboxTexture(Texture* texture)
 {
-    m_camera.skybox = active;
+    m_camera.skyboxTexture = texture;
 }
 
 void CameraComponent::normalize()

@@ -60,6 +60,22 @@ Texture2D::Texture2D(GLenum format, GLsizei width, GLsizei height)
     glTextureStorage2D(handle(), 1, format, width, height);
 }
 
+TextureCubeMap::TextureCubeMap(GLenum format, GLsizei width, GLsizei height)
+    : Texture(GL_TEXTURE_CUBE_MAP)
+{
+    glTextureStorage2D(handle(), 1, format, width, height);
+}
+
+void TextureCubeMap::writeImageData(GLsizei width, GLsizei height, GLsizei face, const void* data)
+{
+    glTextureSubImage3D(handle(), 0, 0, 0, face, width, height, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+}
+
+void TextureCubeMap::setWrapR(GLenum value)
+{
+    glTextureParameteri(handle(), GL_TEXTURE_WRAP_R, value);
+}
+
 TextureCubeMapArray::TextureCubeMapArray(GLenum format, GLsizei width, GLsizei height, GLsizei depth)
     : Texture(GL_TEXTURE_CUBE_MAP_ARRAY)
 {

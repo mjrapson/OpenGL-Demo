@@ -53,9 +53,7 @@ class SkyboxRenderPass : public RenderPass
         std::unique_ptr<Framebuffer> m_framebuffer{nullptr};
         std::unique_ptr<VertexLayout> m_vertexLayout{nullptr};
         std::unique_ptr<Texture2D> m_colorImage{nullptr};
-        std::unique_ptr<Mesh> m_skyboxSphereMesh{nullptr};
-        std::unique_ptr<Buffer<Vertex>> m_vertexBuffer{nullptr};
-        std::unique_ptr<Buffer<GLuint>> m_indexBuffer{nullptr};
+        std::unique_ptr<Buffer<float>> m_vertexBuffer{nullptr};
 
         InputBinding m_inputBinding;
 
