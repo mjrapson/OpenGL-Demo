@@ -36,7 +36,7 @@ unsigned int loadShader(const std::filesystem::path& path, unsigned int type)
     {
         char infoLog[512];
         glGetShaderInfoLog(id, 512, nullptr, infoLog);
-        throw std::runtime_error{"Failed to load shader: " + std::string{infoLog}};
+        throw std::runtime_error{"Failed to load shader (" + path.string() + "): "  + std::string{infoLog}};
     }
 
     return id;

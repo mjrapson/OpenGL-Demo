@@ -36,7 +36,15 @@ out vec4 FragColor;
 void main()
 {
     // Sample the G-buffer textures
-    vec3 color = texture(colorTexture, fragmentTextureUV).rgb;
+    vec4 texels = texture(colorTexture, fragmentTextureUV);
+    float alpha = texels.a;
+    if(alpha < 0.1)
+    {
+        FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+        return;
+    }
+
+    vec3 color = texels.rgb;
     vec3 normal = normalize(texture(normalTexture, fragmentTextureUV).rgb);
 
     // Normalize the normal vector

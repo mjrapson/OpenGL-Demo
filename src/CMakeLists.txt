@@ -52,6 +52,8 @@ PRIVATE
     rendering/renderpasses/LightingRenderPass.h
     rendering/renderpasses/PointLightShadowRenderPass.cpp
     rendering/renderpasses/PointLightShadowRenderPass.h
+    rendering/renderpasses/SkyboxRenderPass.cpp
+    rendering/renderpasses/SkyboxRenderPass.h
     rendering/Buffer.h
     rendering/Camera.h
     rendering/DrawCommand.h

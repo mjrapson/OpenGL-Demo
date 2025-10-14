@@ -115,7 +115,7 @@ void loadPointLightComponent(const json& json, Entity entity, World& world)
     }
 }
 
-void loadCameraComponent(const json& json, Entity entity, World& world)
+void loadCameraComponent(const json& json, Entity entity, AssetDatabase& assetDb, World& world)
 {
     auto& cameraComponent = world.addComponent<CameraComponent>(entity);
 
@@ -126,6 +126,10 @@ void loadCameraComponent(const json& json, Entity entity, World& world)
     if(json.contains("pitch"))
     {
         cameraComponent.setPitch(json["pitch"]);
+    }
+    if(json.contains("skybox"))
+    {
+        cameraComponent.setSkyboxTexture(assetDb.textureContainer().get(json["skybox"]));
     }
 }
 
@@ -153,7 +157,7 @@ void loadComponents(const json& json, Entity entity, AssetDatabase& assetDb, Wor
     }
     if(json.contains("CameraComponent"))
     {
-        loadCameraComponent(json["CameraComponent"], entity, world);
+        loadCameraComponent(json["CameraComponent"], entity, assetDb, world);
     }
 }
 

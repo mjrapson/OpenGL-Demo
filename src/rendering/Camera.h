@@ -3,10 +3,13 @@
 
 #pragma once
 
-
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
+
+#include <optional>
+
+class Texture;
 
 struct Camera
 {
@@ -20,6 +23,7 @@ struct Camera
     float pitch{0.0f}; // horizontal
     float yaw{0.0f};   // vertical
     float roll{0.0f};
+    std::optional<Texture*> skyboxTexture;
 
     const glm::mat4 view() const
     {

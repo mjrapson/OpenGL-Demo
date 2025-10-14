@@ -237,7 +237,8 @@
                         "y": 8.0,
                         "z": 0.0
                     },
-                    "pitch": -15.0
+                    "pitch": -15.0,
+                    "skybox": "stars"
                 },
                 "BehaviourComponent": {
                     "behaviours": [

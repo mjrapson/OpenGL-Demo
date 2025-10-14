@@ -36,6 +36,8 @@ class Mesh
 
         const Box& boundingBox() const;
 
+        void reverseNormals();
+
     private:
         void calculateBoundingBox();
 

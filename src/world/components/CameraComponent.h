@@ -7,6 +7,8 @@
 
 #include <glm/glm.hpp>
 
+class Texture;
+
 class CameraComponent
 {
     public:
@@ -27,6 +29,7 @@ class CameraComponent
         void setPitch(float pitch);
         void setAspectRatio(float val);
         void setActive(bool active);
+        void setSkyboxTexture(Texture* texture);
 
     private:
         void normalize();

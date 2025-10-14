@@ -90,6 +90,11 @@ void CameraComponent::setActive(bool active)
     m_active = active;
 }
 
+void CameraComponent::setSkyboxTexture(Texture* texture)
+{
+    m_camera.skyboxTexture = texture;
+}
+
 void CameraComponent::normalize()
 {
     glm::vec3 front;

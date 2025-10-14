@@ -11,6 +11,7 @@
 #include "rendering/renderpasses/GBufferRenderPass.h"
 #include "rendering/renderpasses/LightingRenderPass.h"
 #include "rendering/renderpasses/PointLightShadowRenderPass.h"
+#include "rendering/renderpasses/SkyboxRenderPass.h"
 
 #include <memory>
 #include <vector>
@@ -51,6 +52,7 @@ class Renderer
         void present() const;
 
     private:
+        SkyboxRenderPass m_skyboxRenderPass;
         DirectionalShadowRenderPass m_directionalShadowRenderPass;
         PointLightShadowRenderPass m_pointLightShadowRenderPass;
         GBufferRenderPass m_gbufferRenderPass;
