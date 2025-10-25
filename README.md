@@ -5,9 +5,11 @@ This is a hobby 3D graphics project, primarily for learning more about rendering
 
 ## Showcase
 Bouncing ball behaviour with shadows
+
 ![Demo gif image showing scene with bouncing ball casting shadows on tiled floor](demo.gif)
 
 Terrain mesh with shadows and skybox
+
 ![Image showing scene with a textured terrain mesh, simple cube and sphere objects casting shadows, and starry skybox background](demo2.png)
 
 ## Requirements
