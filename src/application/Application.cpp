@@ -4,8 +4,6 @@
 #include "Application.h"
 
 #include "application/Window.h"
-#include "behaviours/CameraMoveBehaviour.h"
-#include "behaviours/OscillationAnimationBehaviour.h"
 #include "core/Container.h"
 #include "core/FileSystem.h"
 #include "data/Material.h"
@@ -14,8 +12,11 @@
 #include "data/Texture.h"
 #include "input/InputHandler.h"
 #include "loaders/SceneLoader.h"
+#include "loaders/ScriptLoader.h"
 #include "loaders/TextureLoader.h"
 #include "rendering/Renderer.h"
+#include "scripting/LuaScript.h"
+#include "scripting/LuaState.h"
 #include "world/systems/BehaviourSystem.h"
 #include "world/systems/LightingSystem.h"
 #include "world/systems/RenderSystem.h"
@@ -32,6 +33,7 @@
 
 Application::Application()
     : m_inputHandler{std::make_unique<InputHandler>()}
+    , m_lua{std::make_unique<LuaState>()}
     , m_world{std::make_unique<World>()}
 {
     initGlfw();
@@ -42,10 +44,12 @@ Application::Application()
 
     setWindowCallbacks();
 
+    createLuaTypes();
+
     loadAssets();
 
     // Demo scene
-    loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world);
+    loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world, *m_lua);
     
     m_renderer = std::make_unique<Renderer>();
     m_renderer->resizeDisplay(1280, 720);
@@ -161,6 +165,71 @@ void Application::setWindowCallbacks()
         auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
         app->keyPressCallback(key, scancode, action, mods);
     });
+}
+
+void Application::createLuaTypes()
+{
+    auto& state = m_lua->lua();
+
+    sol::table keyMap = state.create_table();
+    keyMap["W"] = GLFW_KEY_W;
+    keyMap["A"] = GLFW_KEY_A;
+    keyMap["S"] = GLFW_KEY_S;
+    keyMap["D"] = GLFW_KEY_D;
+    keyMap["Q"] = GLFW_KEY_Q;
+    keyMap["E"] = GLFW_KEY_E;
+
+    state["Keys"] = keyMap;
+
+    state.new_usertype<glm::vec3>("Vec3",
+        sol::constructors<glm::vec3(), glm::vec3(float, float, float)>(),
+        "x", &glm::vec3::x,
+        "y", &glm::vec3::y,
+        "z", &glm::vec3::z,
+        "cross",  [](const glm::vec3& a, const glm::vec3& b) {
+            return glm::cross(a, b);
+        },
+        "normalize",  [](const glm::vec3& a) {
+            return glm::normalize(a);
+        },
+        "length",  [](const glm::vec3& a) {
+            return glm::length(a);
+        },
+        sol::meta_function::addition, [](const glm::vec3& a, const glm::vec3& b) {
+            return a + b;
+        },
+        sol::meta_function::subtraction, [](const glm::vec3& a, const glm::vec3& b) {
+            return a - b;
+        },
+        sol::meta_function::multiplication, [](const glm::vec3& a, float b) {
+            return a * b;
+        }
+    );
+    state.new_usertype<TransformComponent>("TransformComponent",
+        "position", &TransformComponent::position,
+        "rotation", &TransformComponent::rotation,
+        "scale", &TransformComponent::scale
+    );
+
+    state.new_usertype<CameraComponent>("CameraComponent",
+        "front", &CameraComponent::front,
+        "up", &CameraComponent::up,
+        "position", &CameraComponent::position,
+        "setPosition", &CameraComponent::setPosition
+    );
+
+    state.new_usertype<InputHandler>("InputHandler", 
+        "isKeyPressed", &InputHandler::isKeyPressed
+    );
+
+    state.new_usertype<World>("World",
+        "get_transform", [](World& w, Entity e) {
+            return w.getComponent<TransformComponent>(e); 
+        },
+        "get_camera", [](World& w, Entity e) {
+            return w.getComponent<CameraComponent>(e); 
+        }
+    );
 }
 
 void Application::loadAssets()

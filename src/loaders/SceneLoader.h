@@ -6,6 +6,7 @@
 #include <filesystem>
 
 class AssetDatabase;
+class LuaState;
 class World;
 
-bool loadScene(const std::filesystem::path& path, AssetDatabase& assetDb, World& world);
+bool loadScene(const std::filesystem::path& path, AssetDatabase& assetDb, World& world, LuaState& lua);

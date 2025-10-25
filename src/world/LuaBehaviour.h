@@ -5,14 +5,22 @@
 
 #include "world/Behaviour.h"
 
-class OscillationAnimationBehaviour : public Behaviour
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol/sol.hpp>
+
+#include <memory>
+
+class LuaScript;
+
+class LuaBehaviour : public Behaviour
 {
     public:
+        LuaBehaviour(std::unique_ptr<LuaScript> script);
+
         void init(Entity entity, World& world) override;
 
         void update(Entity entity, World& world, float deltaTime, const InputHandler& inputHandler) override;
 
     private:
-        float m_startY{0.0f};
-        float m_elapsedTime{0.0f};
+        std::unique_ptr<LuaScript> m_script;
 };

@@ -121,7 +121,8 @@
                 "BehaviourComponent": {
                     "behaviours": [
                         {
-                            "type": "OscillationAnimationBehaviour"
+                            "type": "lua",
+                            "script": "BounceAnimation.lua"
                         }
                     ]
                 }
@@ -243,7 +244,8 @@
                 "BehaviourComponent": {
                     "behaviours": [
                         {
-                            "type": "CameraMoveBehaviour"
+                            "type": "lua",
+                            "script": "CameraMove.lua"
                         }
                     ]
                 }

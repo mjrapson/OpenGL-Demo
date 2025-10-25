@@ -9,10 +9,6 @@ PRIVATE
     application/Application.h
     application/Window.cpp
     application/Window.h
-    behaviours/CameraMoveBehaviour.cpp
-    behaviours/CameraMoveBehaviour.h
-    behaviours/OscillationAnimationBehaviour.cpp
-    behaviours/OscillationAnimationBehaviour.h
     core/Container.h
     core/FileSystem.cpp
     core/FileSystem.h
@@ -40,6 +36,8 @@ PRIVATE
     loaders/GltfLoader.h
     loaders/SceneLoader.cpp
     loaders/SceneLoader.h
+    loaders/ScriptLoader.cpp
+    loaders/ScriptLoader.h
     loaders/TextureLoader.cpp
     loaders/TextureLoader.h
     physics/Collision.cpp
@@ -70,6 +68,10 @@ PRIVATE
     rendering/Shader.h
     rendering/VertexLayout.cpp
     rendering/VertexLayout.h
+    scripting/LuaScript.cpp
+    scripting/LuaScript.h
+    scripting/LuaState.cpp
+    scripting/LuaState.h
     world/components/BehaviourComponent.h
     world/components/CameraComponent.cpp
     world/components/CameraComponent.h
@@ -85,6 +87,8 @@ PRIVATE
     world/systems/RenderSystem.h
     world/Behaviour.h
     world/Entity.h
+    world/LuaBehaviour.cpp
+    world/LuaBehaviour.h
     world/SpatialTree.cpp
     world/SpatialTree.h
     world/World.h
@@ -96,7 +100,9 @@ PRIVATE
 	${CMAKE_SOURCE_DIR}/src
 	${CMAKE_SOURCE_DIR}/3rd/glad/include
 	${CMAKE_SOURCE_DIR}/3rd/glm
+    ${CMAKE_SOURCE_DIR}/3rd/lua
     ${CMAKE_SOURCE_DIR}/3rd/nlohmann/include
+    ${CMAKE_SOURCE_DIR}/3rd/sol2/include
 	${CMAKE_SOURCE_DIR}/3rd/stb
     ${CMAKE_SOURCE_DIR}/3rd/tinygltf
 )
@@ -105,11 +111,13 @@ target_link_libraries(OpenGLDemo
 PRIVATE
 	OpenGL::GL
 	glfw
+    lua
 )
 
 add_custom_target(post_build ALL 
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/prefabs ${CMAKE_CURRENT_BINARY_DIR}/resources/prefabs
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/scenes ${CMAKE_CURRENT_BINARY_DIR}/resources/scenes
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/scripts ${CMAKE_CURRENT_BINARY_DIR}/resources/scripts
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/shaders ${CMAKE_CURRENT_BINARY_DIR}/resources/shaders
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/textures ${CMAKE_CURRENT_BINARY_DIR}/resources/textures
 )

@@ -13,10 +13,4 @@ class Behaviour;
 struct BehaviourComponent
 {
     std::vector<std::unique_ptr<Behaviour>> behaviours;
-
-    BehaviourComponent& addBehaviour(std::unique_ptr<Behaviour> behaviour)
-    {
-        behaviours.push_back(std::move(behaviour));
-        return *this;
-    }
 };
