@@ -173,16 +173,51 @@ void Application::createLuaTypes()
 {
     auto& state = m_lua->lua();
 
-    state.new_usertype<glm::vec3>("Vec3", 
+    sol::table keyMap = state.create_table();
+    keyMap["W"] = GLFW_KEY_W;
+    keyMap["A"] = GLFW_KEY_A;
+    keyMap["S"] = GLFW_KEY_S;
+    keyMap["D"] = GLFW_KEY_D;
+    keyMap["Q"] = GLFW_KEY_Q;
+    keyMap["E"] = GLFW_KEY_E;
+
+    state["Keys"] = keyMap;
+
+    state.new_usertype<glm::vec3>("Vec3",
+        sol::constructors<glm::vec3(), glm::vec3(float, float, float)>(),
         "x", &glm::vec3::x,
         "y", &glm::vec3::y,
-        "z", &glm::vec3::z
+        "z", &glm::vec3::z,
+        "cross",  [](const glm::vec3& a, const glm::vec3& b) {
+            return glm::cross(a, b);
+        },
+        "normalize",  [](const glm::vec3& a) {
+            return glm::normalize(a);
+        },
+        "length",  [](const glm::vec3& a) {
+            return glm::length(a);
+        },
+        sol::meta_function::addition, [](const glm::vec3& a, const glm::vec3& b) {
+            return a + b;
+        },
+        sol::meta_function::subtraction, [](const glm::vec3& a, const glm::vec3& b) {
+            return a - b;
+        },
+        sol::meta_function::multiplication, [](const glm::vec3& a, float b) {
+            return a * b;
+        }
     );
-
     state.new_usertype<TransformComponent>("TransformComponent",
         "position", &TransformComponent::position,
         "rotation", &TransformComponent::rotation,
         "scale", &TransformComponent::scale
+    );
+
+    state.new_usertype<CameraComponent>("CameraComponent",
+        "front", &CameraComponent::front,
+        "up", &CameraComponent::up,
+        "position", &CameraComponent::position,
+        "setPosition", &CameraComponent::setPosition
     );
 
     state.new_usertype<InputHandler>("InputHandler", 
@@ -192,6 +227,9 @@ void Application::createLuaTypes()
     state.new_usertype<World>("World",
         "get_transform", [](World& w, Entity e) {
             return w.getComponent<TransformComponent>(e); 
+        },
+        "get_camera", [](World& w, Entity e) {
+            return w.getComponent<CameraComponent>(e); 
         }
     );
 }
