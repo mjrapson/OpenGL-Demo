@@ -14,60 +14,9 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_gltf.h>
 
-std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, AssetDatabase& assetDb)
+std::vector<MeshInstance> loadMeshes(tinygltf::Model& model, AssetDatabase& assetDb)
 {
-    tinygltf::Model model;
-    tinygltf::TinyGLTF loader;
-    std::string err;
-    std::string warn;
-
-    const auto ret = loader.LoadASCIIFromFile(&model, &err, &warn, path);
-
-    if (!warn.empty()) 
-    {
-        printf("Warn: %s\n", warn.c_str());
-    }
-
-    if (!err.empty()) 
-    {
-        printf("Err: %s\n", err.c_str());
-    }
-
-    if (!ret) 
-    {
-        printf("Failed to parse glTF\n");
-        return{};
-    }
-
-    auto folder = path.parent_path();
-
     auto instances = std::vector<MeshInstance>{};
-
-    for(auto& image : model.images)
-    {
-        assetDb.textureContainer().add(image.name, loadTexture(folder / image.uri));
-    }
-
-    for(auto& mat : model.materials)
-    {
-        auto material = std::make_unique<Material>();
-
-        const auto texIndex = mat.pbrMetallicRoughness.baseColorTexture.index;
-        if(texIndex >= 0)
-        {
-            material->diffuseTexture = assetDb.textureContainer().get(model.images[model.textures[texIndex].source].name);
-        }
-
-        if(const auto col = mat.pbrMetallicRoughness.baseColorFactor; !col.empty())
-        {
-            material->diffuse = glm::vec3(col.at(0), col.at(1), col.at(2));
-        }
-        else
-        {
-            material->diffuse = glm::vec3{1.0f, 1.0f, 1.0f};
-        }   
-        assetDb.materialContainer().add(mat.name, std::move(material));
-    }
 
     for(auto& mesh : model.meshes)
     {
@@ -145,4 +94,125 @@ std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, Asset
     }
 
     return instances;
+}
+
+void loadMaterials(tinygltf::Model& model, AssetDatabase& assetDb)
+{
+    for(auto& mat : model.materials)
+    {
+        auto material = std::make_unique<Material>();
+
+        const auto texIndex = mat.pbrMetallicRoughness.baseColorTexture.index;
+        if(texIndex >= 0)
+        {
+            material->diffuseTexture = assetDb.textureContainer().get(model.images[model.textures[texIndex].source].name);
+        }
+
+        if(const auto col = mat.pbrMetallicRoughness.baseColorFactor; !col.empty())
+        {
+            material->diffuse = glm::vec3(col.at(0), col.at(1), col.at(2));
+        }
+        else
+        {
+            material->diffuse = glm::vec3{1.0f, 1.0f, 1.0f};
+        }   
+        assetDb.materialContainer().add(mat.name, std::move(material));
+    }
+}
+
+void loadAsciiTextures(const std::filesystem::path& path, tinygltf::Model& model, AssetDatabase& assetDb)
+{
+    auto folder = path.parent_path();
+
+    for(auto& image : model.images)
+    {
+        assetDb.textureContainer().add(image.name, loadTexture(folder / image.uri));
+    }
+}
+
+void loadBinaryTextures(tinygltf::Model& model, AssetDatabase& assetDb)
+{
+    for(auto& image : model.images)
+    {
+        assetDb.textureContainer().add(image.name, loadTexture(image.width, image.height, image.image));
+    }
+}
+
+std::vector<MeshInstance> loadBinaryModel(const std::filesystem::path& path, AssetDatabase& assetDb)
+{
+    tinygltf::Model model;
+    tinygltf::TinyGLTF loader;
+    std::string err;
+    std::string warn;
+
+    const auto ret = loader.LoadBinaryFromFile(&model, &err, &warn, path);
+
+    if (!warn.empty()) 
+    {
+        printf("Warn: %s\n", warn.c_str());
+    }
+
+    if (!err.empty()) 
+    {
+        printf("Err: %s\n", err.c_str());
+    }
+
+    if (!ret) 
+    {
+        printf("Failed to parse glTF\n");
+        return{};
+    }
+
+    loadBinaryTextures(model, assetDb);
+
+    loadMaterials(model, assetDb);
+
+    return loadMeshes(model, assetDb);
+}
+
+std::vector<MeshInstance> loadAsciiModel(const std::filesystem::path& path, AssetDatabase& assetDb)
+{
+    tinygltf::Model model;
+    tinygltf::TinyGLTF loader;
+    std::string err;
+    std::string warn;
+
+    const auto ret = loader.LoadASCIIFromFile(&model, &err, &warn, path);
+
+    if (!warn.empty()) 
+    {
+        printf("Warn: %s\n", warn.c_str());
+    }
+
+    if (!err.empty()) 
+    {
+        printf("Err: %s\n", err.c_str());
+    }
+
+    if (!ret) 
+    {
+        printf("Failed to parse glTF\n");
+        return{};
+    }
+
+    loadAsciiTextures(path, model, assetDb);
+
+    loadMaterials(model, assetDb);
+
+    return loadMeshes(model, assetDb);
+}
+
+std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, AssetDatabase& assetDb)
+{
+    if (path.extension() == ".glb")
+    {
+        return loadBinaryModel(path, assetDb);
+    }
+    
+    if (path.extension() == ".gltf")
+    {
+        return loadAsciiModel(path, assetDb);
+    }
+
+    return {};
 }

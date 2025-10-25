@@ -13,6 +13,13 @@
 #include <memory>
 #include <vector>
 
+std::unique_ptr<Texture> loadTexture(int width, int height, const std::vector<unsigned char>& data)
+{
+    auto texture = std::make_unique<Texture2D>(GL_RGBA8, width, height);
+    texture->writeImageData(width, height, data.data());
+    return texture;
+}
+
 std::unique_ptr<Texture> loadTexture(const std::filesystem::path& path)
 {
     int width;

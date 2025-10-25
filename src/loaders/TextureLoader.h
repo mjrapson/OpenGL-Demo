@@ -5,10 +5,12 @@
 
 #include <filesystem>
 #include <memory>
+#include <vector>
 
 class Texture;
 class TextureCubeMap;
 
+std::unique_ptr<Texture> loadTexture(int width, int height, const std::vector<unsigned char>& data);
 std::unique_ptr<Texture> loadTexture(const std::filesystem::path& path);
 
 struct CubemapFileInfo 
