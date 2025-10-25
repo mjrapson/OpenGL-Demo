@@ -19,9 +19,10 @@ Terrain mesh with shadows and skybox
 - Modern OpenGL backend using Direct State Access (DSA)
 - Efficient rendering pipeline with shared buffer access and draw batching to limit state switching
 - Multiple rendering passes for deferring lighting and shadows
-- GLTF model support with tinygltf (WIP)
+- GLTF model support with tinygltf
 - ECS architecture
 - Behaviour components for adding scripts to objects
+- Lua script support
 
 ## Building
 This project uses CMake without any special requirements, and can be built for example:
