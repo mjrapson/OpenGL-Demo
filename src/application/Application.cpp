@@ -4,8 +4,6 @@
 #include "Application.h"
 
 #include "application/Window.h"
-#include "behaviours/CameraMoveBehaviour.h"
-#include "behaviours/OscillationAnimationBehaviour.h"
 #include "core/Container.h"
 #include "core/FileSystem.h"
 #include "data/Material.h"

@@ -9,10 +9,6 @@ PRIVATE
     application/Application.h
     application/Window.cpp
     application/Window.h
-    behaviours/CameraMoveBehaviour.cpp
-    behaviours/CameraMoveBehaviour.h
-    behaviours/OscillationAnimationBehaviour.cpp
-    behaviours/OscillationAnimationBehaviour.h
     core/Container.h
     core/FileSystem.cpp
     core/FileSystem.h
