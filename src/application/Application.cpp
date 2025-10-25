@@ -16,6 +16,7 @@
 #include "loaders/SceneLoader.h"
 #include "loaders/TextureLoader.h"
 #include "rendering/Renderer.h"
+#include "scripting/LuaState.h"
 #include "world/systems/BehaviourSystem.h"
 #include "world/systems/LightingSystem.h"
 #include "world/systems/RenderSystem.h"
@@ -33,6 +34,7 @@
 Application::Application()
     : m_inputHandler{std::make_unique<InputHandler>()}
     , m_world{std::make_unique<World>()}
+    , m_lua{std::make_unique<LuaState>()}
 {
     initGlfw();
 

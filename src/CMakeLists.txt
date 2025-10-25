@@ -70,6 +70,8 @@ PRIVATE
     rendering/Shader.h
     rendering/VertexLayout.cpp
     rendering/VertexLayout.h
+    scripting/LuaState.cpp
+    scripting/LuaState.h
     world/components/BehaviourComponent.h
     world/components/CameraComponent.cpp
     world/components/CameraComponent.h

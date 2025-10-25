@@ -10,6 +10,7 @@
 class BehaviourSystem;
 class InputHandler;
 class LightingSystem;
+class LuaState;
 class Renderer;
 class RenderSystem;
 class Window;
@@ -49,6 +50,7 @@ class Application
         std::unique_ptr<RenderSystem> m_renderSystem{nullptr};
         std::unique_ptr<BehaviourSystem> m_behaviourSystem{nullptr};
         std::unique_ptr<LightingSystem> m_lightingSystem{nullptr};
+        std::unique_ptr<LuaState> m_lua{nullptr};
 
         AssetDatabase m_assetDb;
 };
