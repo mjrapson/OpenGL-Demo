@@ -35,6 +35,7 @@ class Application
         void createWindow();
         void loadGl();
         void setWindowCallbacks();
+        void createLuaTypes();
         void loadAssets();
 
         void framebufferResizeCallback(int width, int height);
@@ -45,12 +46,12 @@ class Application
     private:
         std::unique_ptr<Window> m_window{nullptr};
         std::unique_ptr<Renderer> m_renderer{nullptr};
+        std::unique_ptr<LuaState> m_lua{nullptr};
         std::unique_ptr<World> m_world{nullptr};
         std::unique_ptr<InputHandler> m_inputHandler{nullptr};
         std::unique_ptr<RenderSystem> m_renderSystem{nullptr};
         std::unique_ptr<BehaviourSystem> m_behaviourSystem{nullptr};
         std::unique_ptr<LightingSystem> m_lightingSystem{nullptr};
-        std::unique_ptr<LuaState> m_lua{nullptr};
-
+        
         AssetDatabase m_assetDb;
 };

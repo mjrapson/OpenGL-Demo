@@ -14,8 +14,10 @@
 #include "data/Texture.h"
 #include "input/InputHandler.h"
 #include "loaders/SceneLoader.h"
+#include "loaders/ScriptLoader.h"
 #include "loaders/TextureLoader.h"
 #include "rendering/Renderer.h"
+#include "scripting/LuaScript.h"
 #include "scripting/LuaState.h"
 #include "world/systems/BehaviourSystem.h"
 #include "world/systems/LightingSystem.h"
@@ -33,8 +35,8 @@
 
 Application::Application()
     : m_inputHandler{std::make_unique<InputHandler>()}
-    , m_world{std::make_unique<World>()}
     , m_lua{std::make_unique<LuaState>()}
+    , m_world{std::make_unique<World>()}
 {
     initGlfw();
 
@@ -44,10 +46,12 @@ Application::Application()
 
     setWindowCallbacks();
 
+    createLuaTypes();
+
     loadAssets();
 
     // Demo scene
-    loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world);
+    loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world, *m_lua);
     
     m_renderer = std::make_unique<Renderer>();
     m_renderer->resizeDisplay(1280, 720);
@@ -163,6 +167,33 @@ void Application::setWindowCallbacks()
         auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
         app->keyPressCallback(key, scancode, action, mods);
     });
+}
+
+void Application::createLuaTypes()
+{
+    auto& state = m_lua->lua();
+
+    state.new_usertype<glm::vec3>("Vec3", 
+        "x", &glm::vec3::x,
+        "y", &glm::vec3::y,
+        "z", &glm::vec3::z
+    );
+
+    state.new_usertype<TransformComponent>("TransformComponent",
+        "position", &TransformComponent::position,
+        "rotation", &TransformComponent::rotation,
+        "scale", &TransformComponent::scale
+    );
+
+    state.new_usertype<InputHandler>("InputHandler", 
+        "isKeyPressed", &InputHandler::isKeyPressed
+    );
+
+    state.new_usertype<World>("World",
+        "get_transform", [](World& w, Entity e) {
+            return w.getComponent<TransformComponent>(e); 
+        }
+    );
 }
 
 void Application::loadAssets()

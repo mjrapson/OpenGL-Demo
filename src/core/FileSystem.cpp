@@ -43,6 +43,11 @@ std::filesystem::path GetResourceDir()
     return GetRootDir() / "resources";
 }
 
+std::filesystem::path GetScriptsDir()
+{
+    return GetResourceDir() / "scripts";
+}
+
 std::filesystem::path GetShaderDir()
 {
     return GetResourceDir() / "shaders";

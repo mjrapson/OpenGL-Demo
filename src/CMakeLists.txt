@@ -40,6 +40,8 @@ PRIVATE
     loaders/GltfLoader.h
     loaders/SceneLoader.cpp
     loaders/SceneLoader.h
+    loaders/ScriptLoader.cpp
+    loaders/ScriptLoader.h
     loaders/TextureLoader.cpp
     loaders/TextureLoader.h
     physics/Collision.cpp
@@ -70,6 +72,8 @@ PRIVATE
     rendering/Shader.h
     rendering/VertexLayout.cpp
     rendering/VertexLayout.h
+    scripting/LuaScript.cpp
+    scripting/LuaScript.h
     scripting/LuaState.cpp
     scripting/LuaState.h
     world/components/BehaviourComponent.h
@@ -87,6 +91,8 @@ PRIVATE
     world/systems/RenderSystem.h
     world/Behaviour.h
     world/Entity.h
+    world/LuaBehaviour.cpp
+    world/LuaBehaviour.h
     world/SpatialTree.cpp
     world/SpatialTree.h
     world/World.h
@@ -115,6 +121,7 @@ PRIVATE
 add_custom_target(post_build ALL 
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/prefabs ${CMAKE_CURRENT_BINARY_DIR}/resources/prefabs
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/scenes ${CMAKE_CURRENT_BINARY_DIR}/resources/scenes
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/scripts ${CMAKE_CURRENT_BINARY_DIR}/resources/scripts
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/shaders ${CMAKE_CURRENT_BINARY_DIR}/resources/shaders
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources/textures ${CMAKE_CURRENT_BINARY_DIR}/resources/textures
 )

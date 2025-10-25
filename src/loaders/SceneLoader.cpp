@@ -6,11 +6,10 @@
 #include "core/FileSystem.h"
 #include "data/AssetDatabase.h"
 #include "loaders/GltfLoader.h"
+#include "loaders/ScriptLoader.h"
+#include "scripting/LuaScript.h"
+#include "world/LuaBehaviour.h"
 #include "world/World.h"
-
-// temp
-#include "behaviours/CameraMoveBehaviour.h"
-#include "behaviours/OscillationAnimationBehaviour.h"
 
 #include <nlohmann/json.hpp>
 
@@ -65,20 +64,17 @@ void loadMeshRendererComponent(const json& json, Entity entity, AssetDatabase& a
     }
 }
 
-void loadBehaviourComponent(const json& json, Entity entity, AssetDatabase& assetDb, World& world)
+void loadBehaviourComponent(const json& json, Entity entity, AssetDatabase& assetDb, World& world, LuaState& lua)
 {
     auto& behaviourComponent = world.addComponent<BehaviourComponent>(entity);
 
     for(const auto& behaviourJson : json["behaviours"])
     {
-        // TODO - store scripts (or behaviour construction functions in assetDb) and lookup
-        if(behaviourJson["type"] == "OscillationAnimationBehaviour")
+        if(behaviourJson["type"] == "lua")
         {
-            behaviourComponent.behaviours.push_back(std::make_unique<OscillationAnimationBehaviour>());
-        }
-        if(behaviourJson["type"] == "CameraMoveBehaviour")
-        {
-            behaviourComponent.behaviours.push_back(std::make_unique<CameraMoveBehaviour>());
+            const auto path = GetScriptsDir() / behaviourJson["script"];
+
+            behaviourComponent.behaviours.push_back(std::make_unique<LuaBehaviour>(loadScript(path, lua)));
         }
     }
 }
@@ -133,7 +129,7 @@ void loadCameraComponent(const json& json, Entity entity, AssetDatabase& assetDb
     }
 }
 
-void loadComponents(const json& json, Entity entity, AssetDatabase& assetDb, World& world)
+void loadComponents(const json& json, Entity entity, AssetDatabase& assetDb, World& world, LuaState& lua)
 {
     if(json.contains("TransformComponent"))
     {
@@ -145,7 +141,7 @@ void loadComponents(const json& json, Entity entity, AssetDatabase& assetDb, Wor
     }
     if(json.contains("BehaviourComponent"))
     {
-        loadBehaviourComponent(json["BehaviourComponent"], entity, assetDb, world);
+        loadBehaviourComponent(json["BehaviourComponent"], entity, assetDb, world, lua);
     }
     if(json.contains("DirectionalLightComponent"))
     {
@@ -176,13 +172,13 @@ void loadPrefab(const std::string& path, Entity entity, AssetDatabase& assetDb, 
     }
 }
 
-void loadEntity(const json& json, AssetDatabase& assetDb, World& world)
+void loadEntity(const json& json, AssetDatabase& assetDb, World& world, LuaState& lua)
 {
     const auto entity = world.createEntity();
 
     if(json.contains("components"))
     {
-        loadComponents(json["components"], entity, assetDb, world);
+        loadComponents(json["components"], entity, assetDb, world, lua);
     }
     if(json.contains("prefab"))
     {
@@ -190,7 +186,7 @@ void loadEntity(const json& json, AssetDatabase& assetDb, World& world)
     }
 }
 
-bool loadScene(const std::filesystem::path& path, AssetDatabase& assetDb, World& world)
+bool loadScene(const std::filesystem::path& path, AssetDatabase& assetDb, World& world, LuaState& lua)
 {
     auto filestream = std::ifstream{path};
 
@@ -198,7 +194,7 @@ bool loadScene(const std::filesystem::path& path, AssetDatabase& assetDb, World&
 
     for(const auto& entityJson : sceneJson["entities"])
     {
-        loadEntity(entityJson, assetDb, world);
+        loadEntity(entityJson, assetDb, world, lua);
     }
 
     return true;
