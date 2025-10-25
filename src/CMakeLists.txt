@@ -96,7 +96,9 @@ PRIVATE
 	${CMAKE_SOURCE_DIR}/src
 	${CMAKE_SOURCE_DIR}/3rd/glad/include
 	${CMAKE_SOURCE_DIR}/3rd/glm
+    ${CMAKE_SOURCE_DIR}/3rd/lua
     ${CMAKE_SOURCE_DIR}/3rd/nlohmann/include
+    ${CMAKE_SOURCE_DIR}/3rd/sol2/include
 	${CMAKE_SOURCE_DIR}/3rd/stb
     ${CMAKE_SOURCE_DIR}/3rd/tinygltf
 )
@@ -105,6 +107,7 @@ target_link_libraries(OpenGLDemo
 PRIVATE
 	OpenGL::GL
 	glfw
+    lua
 )
 
 add_custom_target(post_build ALL 

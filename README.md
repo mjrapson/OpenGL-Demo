@@ -56,5 +56,7 @@ This project makes use of the following 3rd party libraries:
 - glfw
 - glm
 - nlohmann (JSON parser)
+- sol2 (LUA library)
+- lua
 - stb
 - tinygtlf
