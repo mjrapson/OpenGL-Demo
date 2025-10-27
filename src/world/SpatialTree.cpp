@@ -3,8 +3,7 @@
 
 #include "SpatialTree.h"
 
-#include "data/Mesh.h"
-#include "data/MeshInstance.h"
+#include "data/Prefab.h"
 #include "data/Ray.h"
 #include "physics/Collision.h"
 
@@ -17,23 +16,20 @@ SpatialTree::SpatialTree(const Box& bounds, World& world)
 
     for(auto& [entity, meshComponent] : world.getAllComponents<MeshRendererComponent>())
     {
+        if(!meshComponent.prefab)
+        {
+            continue;
+        }
+
         auto transformComponent = world.getComponent<TransformComponent>(entity);
         if(!transformComponent)
         {
             continue;
         }
 
-        if(meshComponent.meshInstances.empty())
-        {
-            continue;
-        }
+        auto prefab = meshComponent.prefab;
 
-        auto entityBB = meshComponent.meshInstances.at(0).mesh->boundingBox();
-
-        for(int i = 1; i < meshComponent.meshInstances.size(); ++i)
-        {
-            entityBB.expandToFit(meshComponent.meshInstances.at(i).mesh->boundingBox());
-        }
+        auto entityBB = prefab->boundingBox();
 
         insertEntity(m_root.get(), entity, entityBB);
     }

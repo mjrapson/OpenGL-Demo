@@ -9,7 +9,7 @@
 
 #include <optional>
 
-class Texture;
+class Skybox;
 
 struct Camera
 {
@@ -23,7 +23,7 @@ struct Camera
     float pitch{0.0f}; // horizontal
     float yaw{0.0f};   // vertical
     float roll{0.0f};
-    std::optional<Texture*> skyboxTexture;
+    std::optional<Skybox*> skybox;
 
     const glm::mat4 view() const
     {

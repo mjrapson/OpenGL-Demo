@@ -5,7 +5,7 @@
 
 #include "core/FileSystem.h"
 #include "data/Mesh.h"
-#include "data/MeshFactory.h"
+#include "data/Skybox.h"
 #include "data/Texture.h"
 #include "rendering/Camera.h"
 #include "rendering/Framebuffer.h"
@@ -56,7 +56,7 @@ void SkyboxRenderPass::execute(const std::vector<DrawCommand>& drawQueue,
                                const std::vector<PointLight>& pointLights,
                                const MeshBuffer& buffer)
 {
-    if(!camera.skyboxTexture)
+    if(!camera.skybox)
     {
         return;
     }
@@ -67,7 +67,7 @@ void SkyboxRenderPass::execute(const std::vector<DrawCommand>& drawQueue,
     const auto inputs = m_inputBinding();
     m_framebuffer->attachTexture(GL_COLOR_ATTACHMENT0, *inputs.targetImage, 0);
 
-    m_shader->bindTexture("skyboxTexture", camera.skyboxTexture.value());
+    m_shader->bindTexture("skyboxTexture", camera.skybox.value()->cubemapTexture.get());
 
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_ONE_MINUS_DST_ALPHA, GL_DST_ALPHA, GL_ONE, GL_ZERO);

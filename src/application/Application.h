@@ -36,7 +36,6 @@ class Application
         void loadGl();
         void setWindowCallbacks();
         void createLuaTypes();
-        void loadAssets();
 
         void framebufferResizeCallback(int width, int height);
         void cursorPosChangeCallback(double x, double y);

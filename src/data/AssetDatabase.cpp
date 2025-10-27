@@ -3,48 +3,32 @@
 
 #include "AssetDatabase.h"
 
-#include "data/Material.h"
-#include "data/Mesh.h"
-#include "data/Texture.h"
-
 AssetDatabase::~AssetDatabase()
 {
     clearAll();
 }
 
-Container<Material>& AssetDatabase::materialContainer()
+void AssetDatabase::addPrefab(const std::string& name, std::unique_ptr<Prefab> prefab)
 {
-    return m_materialContainer;
+    m_prefabs[name] = std::move(prefab);
+}
+void AssetDatabase::addSkybox(const std::string& name, std::unique_ptr<Skybox> skybox)
+{
+    m_skyboxes[name] = std::move(skybox);
 }
 
-const Container<Material>& AssetDatabase::materialContainer() const
+const std::unordered_map<std::string, std::unique_ptr<Prefab>>& AssetDatabase::prefabs() const
 {
-    return m_materialContainer;
+    return m_prefabs;
 }
 
-Container<Mesh>& AssetDatabase::meshContainer()
+const std::unordered_map<std::string, std::unique_ptr<Skybox>>& AssetDatabase::skyboxes() const
 {
-    return m_meshContainer;
-}
-
-const Container<Mesh>& AssetDatabase::meshContainer() const
-{
-    return m_meshContainer;
-}
-
-Container<Texture>& AssetDatabase::textureContainer()
-{
-    return m_textureContainer;
-}
-
-const Container<Texture>& AssetDatabase::textureContainer() const
-{
-    return m_textureContainer;
+    return m_skyboxes;
 }
 
 void AssetDatabase::clearAll()
 {
-    m_materialContainer.clear();
-    m_meshContainer.clear();
-    m_textureContainer.clear();
+    m_prefabs.clear();
+    m_skyboxes.clear();
 }

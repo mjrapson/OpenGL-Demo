@@ -9,7 +9,6 @@ PRIVATE
     application/Application.h
     application/Window.cpp
     application/Window.h
-    core/Container.h
     core/FileSystem.cpp
     core/FileSystem.h
     core/Vertex.h
@@ -19,13 +18,12 @@ PRIVATE
     data/Box.h
     data/DirectionalLight.h
     data/Material.h
-    data/Mesh.cpp
     data/Mesh.h
-    data/MeshFactory.cpp
-    data/MeshFactory.h
-    data/MeshInstance.h
     data/PointLight.h
+    data/Prefab.cpp
+    data/Prefab.h
     data/Ray.h
+    data/Skybox.h
     data/Sphere.cpp
     data/Sphere.h
     data/Texture.cpp

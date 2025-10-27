@@ -3,11 +3,9 @@
 
 #pragma once
 
-#include "data/MeshInstance.h"
-
 #include <filesystem>
-#include <vector>
+#include <memory>
 
-class AssetDatabase;
+class Prefab;
 
-std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, AssetDatabase& assetDb);
+std::unique_ptr<Prefab> loadGLTFModel(const std::filesystem::path& path);

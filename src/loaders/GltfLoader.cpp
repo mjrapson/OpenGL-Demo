@@ -4,9 +4,9 @@
 #include "GltfLoader.h"
 
 #include "core/Vertex.h"
-#include "data/AssetDatabase.h"
 #include "data/Material.h"
 #include "data/Mesh.h"
+#include "data/Prefab.h"
 #include "data/Texture.h"
 #include "loaders/TextureLoader.h"
 
@@ -14,131 +14,98 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_gltf.h>
 
-std::vector<MeshInstance> loadMeshes(tinygltf::Model& model, AssetDatabase& assetDb)
+glm::vec3 readBaseColor(tinygltf::Material& material)
 {
-    auto instances = std::vector<MeshInstance>{};
+    const auto col = material.pbrMetallicRoughness.baseColorFactor;
 
-    for(auto& mesh : model.meshes)
+    if(col.empty())
     {
-        /*
-                "attributes" : {
-                "POSITION" : 7,
-                    "NORMAL" : 8,
-                    "TEXCOORD_0" : 9,
-                    "JOINTS_0" : 10,
-                    "WEIGHTS_0" : 11
-                },
-                "indices" : 12,
-                "material" : 1
-        */
-        auto meshData = std::make_unique<MeshData>();      
-
-        auto& prim = mesh.primitives[0]; //for(auto& prim : mesh.primitives) // we want 1:1 - lets either take mesh.primitives[0] or change mesh structure
+        return glm::vec3{1.0f, 1.0f, 1.0f};
         
-        const auto& posAcessor = model.accessors[prim.attributes.at("POSITION")];
-        const auto& posBufferView = model.bufferViews[posAcessor.bufferView];
-        const auto& posBuffer = model.buffers[posBufferView.buffer];
-
-        const float* positions = reinterpret_cast<const float*>(&posBuffer.data[posBufferView.byteOffset + posAcessor.byteOffset]);
-
-        const auto& normalAcessor = model.accessors[prim.attributes.at("NORMAL")];
-        const auto& normalBufferView = model.bufferViews[normalAcessor.bufferView];
-        const auto& normalBuffer = model.buffers[normalBufferView.buffer];
-
-        const float* normals = reinterpret_cast<const float*>(&normalBuffer.data[normalBufferView.byteOffset + normalAcessor.byteOffset]);
-
-        const auto& texAcessor = model.accessors[prim.attributes.at("TEXCOORD_0")];
-        const auto& texBufferView = model.bufferViews[texAcessor.bufferView];
-        const auto& texBuffer = model.buffers[texBufferView.buffer];
-
-        const float* texcoords = reinterpret_cast<const float*>(&texBuffer.data[texBufferView.byteOffset + texAcessor.byteOffset]);
-
-        for (size_t i = 0; i < posAcessor.count; ++i) 
-        {
-            Vertex v;
-            v.position = glm::vec3(positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
-            v.normal = glm::vec3(normals[i * 3 + 0], normals[i * 3 + 1], normals[i * 3 + 2]);
-            v.textureUV = glm::vec2(texcoords[i * 2 + 0], 1.0f - texcoords[i * 2 + 1]);
-            meshData->vertices.push_back(v);
-        }
-
-        const auto& indexAcessor = model.accessors[prim.indices];
-        const auto& indexBufferView = model.bufferViews[indexAcessor.bufferView];
-        const auto& indexBuffer = model.buffers[indexBufferView.buffer];
-
-        
-        if(indexAcessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
-        {
-            const auto* indices = reinterpret_cast<const uint16_t*>(&indexBuffer.data[indexBufferView.byteOffset + indexAcessor.byteOffset]);
-            for (size_t i = 0; i < indexAcessor.count; ++i) 
-            {
-                meshData->indices.push_back(static_cast<GLuint>(indices[i]));
-            }
-        }
-        else
-        {
-            const auto* indices = reinterpret_cast<const uint32_t*>(&indexBuffer.data[indexBufferView.byteOffset + indexAcessor.byteOffset]);
-            for (size_t i = 0; i < indexAcessor.count; ++i) 
-            {
-                meshData->indices.push_back(static_cast<GLuint>(indices[i]));
-            }
-        }
-        
-
-        assetDb.meshContainer().add(mesh.name, std::make_unique<Mesh>(std::move(meshData)));
-
-        instances.push_back(MeshInstance{
-            .material= assetDb.materialContainer().get(model.materials[prim.material].name), 
-            .mesh=assetDb.meshContainer().get(mesh.name)
-        });
     }
-
-    return instances;
+    
+    return glm::vec3(col.at(0), col.at(1), col.at(2));  
 }
 
-void loadMaterials(tinygltf::Model& model, AssetDatabase& assetDb)
+std::optional<Texture*> readBaseColorTexture(tinygltf::Material& material, tinygltf::Model& model, Prefab& prefab)
 {
-    for(auto& mat : model.materials)
+    const auto texIndex = material.pbrMetallicRoughness.baseColorTexture.index;
+    if(texIndex < 0)
     {
-        auto material = std::make_unique<Material>();
-
-        const auto texIndex = mat.pbrMetallicRoughness.baseColorTexture.index;
-        if(texIndex >= 0)
-        {
-            material->diffuseTexture = assetDb.textureContainer().get(model.images[model.textures[texIndex].source].name);
-        }
-
-        if(const auto col = mat.pbrMetallicRoughness.baseColorFactor; !col.empty())
-        {
-            material->diffuse = glm::vec3(col.at(0), col.at(1), col.at(2));
-        }
-        else
-        {
-            material->diffuse = glm::vec3{1.0f, 1.0f, 1.0f};
-        }   
-        assetDb.materialContainer().add(mat.name, std::move(material));
+        return std::nullopt;
     }
+
+    auto texture = prefab.getTexture(model.images[model.textures[texIndex].source].name);
+    if(!texture)
+    {
+        return std::nullopt;
+    }
+
+    return texture;
 }
 
-void loadAsciiTextures(const std::filesystem::path& path, tinygltf::Model& model, AssetDatabase& assetDb)
+std::vector<GLuint> readIndices(tinygltf::Primitive& primitive, tinygltf::Model& model)
 {
-    auto folder = path.parent_path();
+    const auto& indexAcessor = model.accessors[primitive.indices];
+    const auto& indexBufferView = model.bufferViews[indexAcessor.bufferView];
+    const auto& indexBuffer = model.buffers[indexBufferView.buffer];
 
-    for(auto& image : model.images)
+    auto indices = std::vector<GLuint>{};
+
+    if(indexAcessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
     {
-        assetDb.textureContainer().add(image.name, loadTexture(folder / image.uri));
+        const auto* indexData = reinterpret_cast<const uint16_t*>(&indexBuffer.data[indexBufferView.byteOffset + indexAcessor.byteOffset]);
+        for (auto i = 0; i < indexAcessor.count; ++i) 
+        {
+            indices.push_back(static_cast<GLuint>(indexData[i]));
+        }
     }
+    else
+    {
+        const auto* indexData = reinterpret_cast<const uint32_t*>(&indexBuffer.data[indexBufferView.byteOffset + indexAcessor.byteOffset]);
+        for (auto i = 0; i < indexAcessor.count; ++i) 
+        {
+            indices.push_back(static_cast<GLuint>(indexData[i]));
+        }
+    }
+
+    return indices;
 }
 
-void loadBinaryTextures(tinygltf::Model& model, AssetDatabase& assetDb)
+std::vector<Vertex> readVertices(tinygltf::Primitive& primitive, tinygltf::Model& model)
 {
-    for(auto& image : model.images)
+    const auto& posAcessor = model.accessors[primitive.attributes.at("POSITION")];
+    const auto& posBufferView = model.bufferViews[posAcessor.bufferView];
+    const auto& posBuffer = model.buffers[posBufferView.buffer];
+
+    const float* positions = reinterpret_cast<const float*>(&posBuffer.data[posBufferView.byteOffset + posAcessor.byteOffset]);
+
+    const auto& normalAcessor = model.accessors[primitive.attributes.at("NORMAL")];
+    const auto& normalBufferView = model.bufferViews[normalAcessor.bufferView];
+    const auto& normalBuffer = model.buffers[normalBufferView.buffer];
+
+    const float* normals = reinterpret_cast<const float*>(&normalBuffer.data[normalBufferView.byteOffset + normalAcessor.byteOffset]);
+
+    const auto& texAcessor = model.accessors[primitive.attributes.at("TEXCOORD_0")];
+    const auto& texBufferView = model.bufferViews[texAcessor.bufferView];
+    const auto& texBuffer = model.buffers[texBufferView.buffer];
+
+    const float* texcoords = reinterpret_cast<const float*>(&texBuffer.data[texBufferView.byteOffset + texAcessor.byteOffset]);
+
+    auto vertices = std::vector<Vertex>{};
+    for (auto i = 0; i < posAcessor.count; ++i) 
     {
-        assetDb.textureContainer().add(image.name, loadTexture(image.width, image.height, image.image));
+        auto v = Vertex{};
+        v.position = glm::vec3(positions[i * 3 + 0], positions[i * 3 + 1], positions[i * 3 + 2]);
+        v.normal = glm::vec3(normals[i * 3 + 0], normals[i * 3 + 1], normals[i * 3 + 2]);
+        v.textureUV = glm::vec2(texcoords[i * 2 + 0], 1.0f - texcoords[i * 2 + 1]);
+        vertices.push_back(v);
     }
+
+    return vertices;
 }
 
-std::vector<MeshInstance> loadBinaryModel(const std::filesystem::path& path, AssetDatabase& assetDb)
+std::unique_ptr<Prefab> loadBinaryModel(const std::filesystem::path& path)
 {
     tinygltf::Model model;
     tinygltf::TinyGLTF loader;
@@ -163,56 +130,42 @@ std::vector<MeshInstance> loadBinaryModel(const std::filesystem::path& path, Ass
         return{};
     }
 
-    loadBinaryTextures(model, assetDb);
+    auto prefab = std::make_unique<Prefab>();
 
-    loadMaterials(model, assetDb);
+    for(auto& image : model.images)
+    {
+        prefab->addTexture(image.name, loadTexture(image.width, image.height, image.image));
+    }
 
-    return loadMeshes(model, assetDb);
+    for(auto& gltfMaterial : model.materials)
+    {
+        auto material = std::make_unique<Material>();
+        material->diffuse = readBaseColor(gltfMaterial);
+        material->diffuseTexture = readBaseColorTexture(gltfMaterial, model, *prefab);     
+        prefab->addMaterial(gltfMaterial.name, std::move(material));
+    }
+
+    for(auto& gltfMesh : model.meshes)
+    {
+        for(auto& primitive : gltfMesh.primitives)
+        {
+            auto mesh = std::make_unique<Mesh>();
+            mesh->vertices = readVertices(primitive, model);
+            mesh->indices = readIndices(primitive, model);
+            mesh->material = prefab->getMaterial(model.materials[primitive.material].name);
+            prefab->addMesh(std::move(mesh));   
+        }
+    }
+
+    return prefab;
 }
 
-std::vector<MeshInstance> loadAsciiModel(const std::filesystem::path& path, AssetDatabase& assetDb)
-{
-    tinygltf::Model model;
-    tinygltf::TinyGLTF loader;
-    std::string err;
-    std::string warn;
-
-    const auto ret = loader.LoadASCIIFromFile(&model, &err, &warn, path);
-
-    if (!warn.empty()) 
-    {
-        printf("Warn: %s\n", warn.c_str());
-    }
-
-    if (!err.empty()) 
-    {
-        printf("Err: %s\n", err.c_str());
-    }
-
-    if (!ret) 
-    {
-        printf("Failed to parse glTF\n");
-        return{};
-    }
-
-    loadAsciiTextures(path, model, assetDb);
-
-    loadMaterials(model, assetDb);
-
-    return loadMeshes(model, assetDb);
-}
-
-std::vector<MeshInstance> loadGLTFModel(const std::filesystem::path& path, AssetDatabase& assetDb)
+std::unique_ptr<Prefab> loadGLTFModel(const std::filesystem::path& path)
 {
     if (path.extension() == ".glb")
     {
-        return loadBinaryModel(path, assetDb);
-    }
-    
-    if (path.extension() == ".gltf")
-    {
-        return loadAsciiModel(path, assetDb);
+        return loadBinaryModel(path);
     }
 
-    return {};
+    return nullptr;
 }

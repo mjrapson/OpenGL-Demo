@@ -91,3 +91,19 @@ std::vector<glm::vec3> Box::vertices() const
         glm::vec3(m_max.x, m_max.y, m_min.z),
         glm::vec3(m_max.x, m_max.y, m_max.z)};
 }
+
+Box Box::enclose(const std::vector<Vertex>& vertices)
+{
+    if(vertices.empty() || vertices.size() < 2)
+    {
+        return Box{};
+    }
+
+    auto box = Box{vertices.at(0).position, vertices.at(1).position};
+    for(auto i = 2; i < vertices.size(); ++i)
+    {
+        box.expandToFit(vertices.at(i).position);
+    }
+
+    return box;
+}

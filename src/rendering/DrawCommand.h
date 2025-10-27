@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "data/MeshInstance.h"
-
 #include <glm/glm.hpp>
+
+class Mesh;
 
 struct DrawCommand
 {
-    MeshInstance instance;
+    Mesh* mesh;
     glm::mat4 transform;
 };

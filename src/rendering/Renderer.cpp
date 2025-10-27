@@ -71,7 +71,16 @@ Renderer::~Renderer() = default;
 
 void Renderer::setAssets(const AssetDatabase& assetDb)
 {
-    m_meshBuffer = std::make_unique<MeshBuffer>(assetDb.meshContainer());
+    auto meshes = std::vector<Mesh*>{};
+    for(const auto& [id, prefab] : assetDb.prefabs())
+    {
+        for(const auto& mesh : prefab->meshes())
+        {
+            meshes.push_back(mesh.get());
+        }
+    }
+
+    m_meshBuffer = std::make_unique<MeshBuffer>(meshes);
 }
 
 void Renderer::resizeDisplay(GLuint width, GLuint height)
@@ -106,7 +115,7 @@ void Renderer::render(const Camera& camera)
     m_gbufferRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
     m_lightingRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
 
-    if(camera.skyboxTexture)
+    if(camera.skybox)
     {
         m_skyboxRenderPass.execute(m_drawCommands, camera, m_directionalLight, m_pointLights, *m_meshBuffer);
     }

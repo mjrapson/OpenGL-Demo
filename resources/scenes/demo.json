@@ -1,4 +1,35 @@
 {
+    "prefabs": [
+        {
+            "id": "terrain1",
+            "path": "terrain1.glb"
+        },
+        {
+            "id": "cube",
+            "path": "cube.glb"
+        },
+        {
+            "id": "sphere",
+            "path": "sphere.glb"
+        },
+        {
+            "id": "plane",
+            "path": "plane.glb"
+        }
+    ],
+    "skyboxes": [
+        {
+            "id": "stars",
+            "textures": {
+                "px": "stars/px.png",
+                "py": "stars/py.png",
+                "pz": "stars/pz.png",
+                "nx": "stars/nx.png",
+                "ny": "stars/ny.png",
+                "nz": "stars/nz.png"
+            }
+        }
+    ],
     "entities": [
         {
             "name": "cube",
@@ -6,8 +37,8 @@
                 "TransformComponent": {
                     "position": {
                         "x": 0.0,
-                        "y": 2.0,
-                        "z": 0.0
+                        "y": 3.0,
+                        "z": -4.0
                     },
                     "rotation": {
                         "x": 0.0,
@@ -21,12 +52,7 @@
                     }
                 },
                 "MeshRendererComponent": {
-                    "meshInstances": [
-                        {
-                            "mesh": "cube",
-                            "material": "red"
-                        }
-                    ]
+                    "prefab": "cube"
                 }
             }
         },
@@ -51,42 +77,7 @@
                     }
                 },
                 "MeshRendererComponent": {
-                    "meshInstances": [
-                        {
-                            "mesh": "cube",
-                            "material": "yellow"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "name": "cube3",
-            "components": {
-                "TransformComponent": {
-                    "position": {
-                        "x": 0.0,
-                        "y": 2.0,
-                        "z": 2.0
-                    },
-                    "rotation": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 0.0
-                    },
-                    "scale": {
-                        "x": 1.0,
-                        "y": 1.0,
-                        "z": 1.0
-                    }
-                },
-                "MeshRendererComponent": {
-                    "meshInstances": [
-                        {
-                            "mesh": "cube",
-                            "material": "blue"
-                        }
-                    ]
+                    "prefab": "cube"
                 }
             }
         },
@@ -111,12 +102,7 @@
                     }
                 },
                 "MeshRendererComponent": {
-                    "meshInstances": [
-                        {
-                            "mesh": "sphere",
-                            "material": "blue"
-                        }
-                    ]
+                    "prefab": "sphere"
                 },
                 "BehaviourComponent": {
                     "behaviours": [
@@ -149,12 +135,7 @@
                     }
                 },
                 "MeshRendererComponent": {
-                    "meshInstances": [
-                        {
-                            "mesh": "plane",
-                            "material": "checkerboard"
-                        }
-                    ]
+                    "prefab": "plane"
                 }
             }
         },
@@ -270,9 +251,11 @@
                         "y": 50.0,
                         "z": 100.0
                     }
+                },
+                "MeshRendererComponent": {
+                    "prefab": "terrain1"
                 }
-            },
-            "prefab": "prefabs/terrain1.glb"
+            }
         }
     ]
 }

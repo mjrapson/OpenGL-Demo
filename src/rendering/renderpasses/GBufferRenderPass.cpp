@@ -76,11 +76,15 @@ void GBufferRenderPass::execute(const std::vector<DrawCommand>& drawQueue,
 
     for (const auto& drawCommand : drawQueue)
     {
-        const auto indexCount = drawCommand.instance.mesh->indices().size();
-        const auto indexOffset = buffer.indexOffsetOfMesh(drawCommand.instance.mesh);
-        const auto vertexOffset = buffer.vertexOffsetOfMesh(drawCommand.instance.mesh);
+        const auto indexCount = drawCommand.mesh->indices.size();
+        const auto indexOffset = buffer.indexOffsetOfMesh(drawCommand.mesh);
+        const auto vertexOffset = buffer.vertexOffsetOfMesh(drawCommand.mesh);
 
-        const auto* material = drawCommand.instance.material;
+        const auto* material = drawCommand.mesh->material;
+        if(!material)
+        {
+            continue;
+        }
 
         auto transformUbo = TransformUbo{};
         transformUbo.projection = camera.projection();

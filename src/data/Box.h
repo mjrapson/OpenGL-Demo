@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "core/Vertex.h"
+
 #include <glm/glm.hpp>
 
 #include <vector>
@@ -27,6 +29,8 @@ class Box
         bool intersects(const Box& box) const;
 
         std::vector<glm::vec3> vertices() const;
+
+        static Box enclose(const std::vector<Vertex>& vertices);
 
     private:
         glm::vec3 m_min;

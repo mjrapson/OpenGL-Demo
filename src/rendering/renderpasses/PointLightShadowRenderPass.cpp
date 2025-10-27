@@ -106,9 +106,9 @@ void PointLightShadowRenderPass::execute(const std::vector<DrawCommand>& drawQue
 
             for (const auto& drawCommand : drawQueue)
             {
-                const auto indexCount = drawCommand.instance.mesh->indices().size();
-                const auto indexOffset = buffer.indexOffsetOfMesh(drawCommand.instance.mesh);
-                const auto vertexOffset = buffer.vertexOffsetOfMesh(drawCommand.instance.mesh);
+                const auto indexCount = drawCommand.mesh->indices.size();
+                const auto indexOffset = buffer.indexOffsetOfMesh(drawCommand.mesh);
+                const auto vertexOffset = buffer.vertexOffsetOfMesh(drawCommand.mesh);
 
                 auto pointLightTransformUbo = LightTransformUbo{};
                 pointLightTransformUbo.lightSpaceMatrix = lightTransforms.at(i);

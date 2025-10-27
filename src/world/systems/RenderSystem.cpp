@@ -3,6 +3,7 @@
 
 #include "RenderSystem.h"
 
+#include "data/Prefab.h"
 #include "rendering/Renderer.h"
 #include "world/World.h"
 
@@ -21,6 +22,11 @@ void RenderSystem::update()
 {
     for(auto& [entity, meshComponent] : m_world.getAllComponents<MeshRendererComponent>())
     {
+        if(!meshComponent.prefab)
+        {
+            continue;
+        }
+
         auto transformComponent = m_world.getComponent<TransformComponent>(entity);
         if(!transformComponent)
         {
@@ -31,10 +37,10 @@ void RenderSystem::update()
                                   * glm::toMat4(glm::quat(glm::radians(transformComponent->rotation)))
                                   * glm::scale(glm::mat4(1.0f), transformComponent->scale);
 
-        for(auto& instance : meshComponent.meshInstances)
+        for(auto& mesh : meshComponent.prefab->meshes())
         {
             auto cmd = DrawCommand{};
-            cmd.instance = instance;
+            cmd.mesh = mesh.get();
             cmd.transform = transformMatrix;
             
             m_renderer.queueDrawCommand(cmd);

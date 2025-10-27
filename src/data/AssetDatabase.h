@@ -3,30 +3,23 @@
 
 #pragma once
 
-#include "core/Container.h"
-
-class Material;
-class Mesh;
-class Texture;
+#include "data/Prefab.h"
+#include "data/Skybox.h"
 
 class AssetDatabase
 {
     public:
         ~AssetDatabase();
-        
-        Container<Material>& materialContainer();
-        const Container<Material>& materialContainer() const;
 
-        Container<Mesh>& meshContainer();
-        const Container<Mesh>& meshContainer() const;
+        void addPrefab(const std::string& name, std::unique_ptr<Prefab> prefab);
+        void addSkybox(const std::string& name, std::unique_ptr<Skybox> skybox);
 
-        Container<Texture>& textureContainer();
-        const Container<Texture>& textureContainer() const;
+        const std::unordered_map<std::string, std::unique_ptr<Prefab>>& prefabs() const;
+        const std::unordered_map<std::string, std::unique_ptr<Skybox>>& skyboxes() const;
 
         void clearAll();
 
     private:
-        Container<Material> m_materialContainer;
-        Container<Mesh> m_meshContainer;
-        Container<Texture> m_textureContainer;
+        std::unordered_map<std::string, std::unique_ptr<Prefab>> m_prefabs;
+        std::unordered_map<std::string, std::unique_ptr<Skybox>> m_skyboxes;
 };

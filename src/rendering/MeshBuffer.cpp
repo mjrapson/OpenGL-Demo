@@ -4,9 +4,10 @@
 #include "MeshBuffer.h"
 
 #include "data/Mesh.h"
+#include "data/Prefab.h"
 #include "rendering/VertexLayout.h"
 
-MeshBuffer::MeshBuffer(const Container<Mesh>& meshes)
+MeshBuffer::MeshBuffer(const std::vector<Mesh*>& meshes)
 {
     auto vertexBufferOffset = GLuint{0};
     auto indexBufferOffset = GLuint{0};
@@ -14,19 +15,16 @@ MeshBuffer::MeshBuffer(const Container<Mesh>& meshes)
     auto vertices = std::vector<Vertex>{};
     auto indices = std::vector<GLuint>{};
 
-    for (const auto& mesh : meshes.view())
+    for (const auto& mesh : meshes)
     {
-        const auto meshVertices = mesh->vertices();
-        const auto meshIndices = mesh->indices();
-
-        const auto vertexCount = static_cast<GLuint>(meshVertices.size());
-        const auto indexCount = static_cast<GLuint>(meshIndices.size());
+        const auto vertexCount = static_cast<GLuint>(mesh->vertices.size());
+        const auto indexCount = static_cast<GLuint>(mesh->indices.size());
 
         m_vertexOffsets[mesh] = vertexBufferOffset;
         m_indexOffsets[mesh] = indexBufferOffset;
 
-        vertices.insert(vertices.end(),meshVertices.begin(), meshVertices.end());
-        indices.insert(indices.end(), meshIndices.begin(), meshIndices.end());
+        vertices.insert(vertices.end(),mesh->vertices.begin(), mesh->vertices.end());
+        indices.insert(indices.end(), mesh->indices.begin(), mesh->indices.end());
 
         vertexBufferOffset += vertexCount;
         indexBufferOffset += indexCount;

@@ -90,9 +90,9 @@ void CameraComponent::setActive(bool active)
     m_active = active;
 }
 
-void CameraComponent::setSkyboxTexture(Texture* texture)
+void CameraComponent::setSkybox(Skybox* skybox)
 {
-    m_camera.skyboxTexture = texture;
+    m_camera.skybox = skybox;
 }
 
 void CameraComponent::normalize()

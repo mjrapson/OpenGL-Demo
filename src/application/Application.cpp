@@ -4,18 +4,10 @@
 #include "Application.h"
 
 #include "application/Window.h"
-#include "core/Container.h"
 #include "core/FileSystem.h"
-#include "data/Material.h"
-#include "data/Mesh.h"
-#include "data/MeshFactory.h"
-#include "data/Texture.h"
 #include "input/InputHandler.h"
 #include "loaders/SceneLoader.h"
-#include "loaders/ScriptLoader.h"
-#include "loaders/TextureLoader.h"
 #include "rendering/Renderer.h"
-#include "scripting/LuaScript.h"
 #include "scripting/LuaState.h"
 #include "world/systems/BehaviourSystem.h"
 #include "world/systems/LightingSystem.h"
@@ -45,8 +37,6 @@ Application::Application()
     setWindowCallbacks();
 
     createLuaTypes();
-
-    loadAssets();
 
     // Demo scene
     loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world, *m_lua);
@@ -230,45 +220,6 @@ void Application::createLuaTypes()
             return w.getComponent<CameraComponent>(e); 
         }
     );
-}
-
-void Application::loadAssets()
-{
-    m_assetDb.meshContainer().add("cube", MeshFactory::createCubePrimitive());
-    m_assetDb.meshContainer().add("sphere", MeshFactory::createSpherePrimitive());
-    m_assetDb.meshContainer().add("plane", MeshFactory::createPlanePrimitive());
-
-    auto checkerboard = loadTexture(GetTexturesDir() / "checkerboard.png");
-    checkerboard->setMinFilter(GL_NEAREST);
-    checkerboard->setMagFilter(GL_NEAREST);
-    checkerboard->setWrapS(GL_REPEAT);
-    checkerboard->setWrapT(GL_REPEAT);
-    m_assetDb.textureContainer().add("checkerboard", std::move(checkerboard));
-
-    auto starsFileInfo = CubemapFileInfo{};
-    starsFileInfo.px = GetTexturesDir() / "stars/px.png";
-    starsFileInfo.py = GetTexturesDir() / "stars/py.png";
-    starsFileInfo.pz = GetTexturesDir() / "stars/pz.png";
-    starsFileInfo.nx = GetTexturesDir() / "stars/nx.png";
-    starsFileInfo.ny = GetTexturesDir() / "stars/ny.png";
-    starsFileInfo.nz = GetTexturesDir() / "stars/nz.png";
-    auto stars = loadCubemapTexture(starsFileInfo);
-    stars->setMinFilter(GL_LINEAR);
-    stars->setMagFilter(GL_LINEAR);
-    stars->setWrapS(GL_CLAMP_TO_EDGE);
-    stars->setWrapT(GL_CLAMP_TO_EDGE);
-    stars->setWrapR(GL_CLAMP_TO_EDGE);
-    m_assetDb.textureContainer().add("stars", std::move(stars));
-
-    m_assetDb.materialContainer().add("red", std::make_unique<Material>(Material{
-        .diffuse = glm::vec3{1.0f, 0.0f, 0.0f}}));
-    m_assetDb.materialContainer().add("yellow", std::make_unique<Material>(Material{
-        .diffuse = glm::vec3{1.0f, 1.0f, 0.0f}}));
-    m_assetDb.materialContainer().add("blue", std::make_unique<Material>(Material{
-        .diffuse = glm::vec3{0.0f, 0.0f, 1.0f}}));
-
-    m_assetDb.materialContainer().add("checkerboard", std::make_unique<Material>(Material{
-        .diffuseTexture = m_assetDb.textureContainer().get("checkerboard")}));
 }
 
 void Application::framebufferResizeCallback(int width, int height)

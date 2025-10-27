@@ -3,11 +3,9 @@
 
 #pragma once
 
-#include "data/MeshInstance.h"
-
-#include <vector>
+#include "data/Prefab.h"
 
 struct MeshRendererComponent
 {
-    std::vector<MeshInstance> meshInstances;
+    Prefab* prefab;
 };

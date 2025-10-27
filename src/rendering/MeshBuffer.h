@@ -3,12 +3,12 @@
 
 #pragma once
 
-#include "core/Container.h"
 #include "core/Vertex.h"
 #include "rendering/Buffer.h"
 
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 class Mesh;
 class VertexLayout;
@@ -16,7 +16,7 @@ class VertexLayout;
 class MeshBuffer
 {
     public:
-        explicit MeshBuffer(const Container<Mesh>& meshes);
+        explicit MeshBuffer(const std::vector<Mesh*>& meshes);
         ~MeshBuffer();
 
         MeshBuffer(const MeshBuffer& other) = delete;

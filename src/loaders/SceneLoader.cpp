@@ -5,8 +5,10 @@
 
 #include "core/FileSystem.h"
 #include "data/AssetDatabase.h"
+#include "data/Texture.h"
 #include "loaders/GltfLoader.h"
 #include "loaders/ScriptLoader.h"
+#include "loaders/TextureLoader.h"
 #include "scripting/LuaScript.h"
 #include "world/LuaBehaviour.h"
 #include "world/World.h"
@@ -55,12 +57,14 @@ void loadMeshRendererComponent(const json& json, Entity entity, AssetDatabase& a
 {
     auto& meshComponent = world.addComponent<MeshRendererComponent>(entity);
 
-    for(const auto& meshInstanceJson : json["meshInstances"])
+    if(json.contains("prefab"))
     {
-        auto meshInstance = MeshInstance{};
-        meshInstance.material = assetDb.materialContainer().get(meshInstanceJson["material"]);
-        meshInstance.mesh =  assetDb.meshContainer().get(meshInstanceJson["mesh"]);
-        meshComponent.meshInstances.push_back(meshInstance);
+        if(!assetDb.prefabs().contains(json["prefab"]))
+        {
+            return;
+        }
+
+        meshComponent.prefab = assetDb.prefabs().at(json["prefab"]).get();
     }
 }
 
@@ -125,7 +129,10 @@ void loadCameraComponent(const json& json, Entity entity, AssetDatabase& assetDb
     }
     if(json.contains("skybox"))
     {
-        cameraComponent.setSkyboxTexture(assetDb.textureContainer().get(json["skybox"]));
+        if(assetDb.skyboxes().contains(json["skybox"]))
+        {
+            cameraComponent.setSkybox(assetDb.skyboxes().at(json["skybox"]).get());
+        }
     }
 }
 
@@ -157,21 +164,6 @@ void loadComponents(const json& json, Entity entity, AssetDatabase& assetDb, Wor
     }
 }
 
-void loadPrefab(const std::string& path, Entity entity, AssetDatabase& assetDb, World& world)
-{
-    const auto meshInstances = loadGLTFModel(GetResourceDir() / path, assetDb);
-    if(meshInstances.empty())
-    {
-        return;
-    }
-
-    auto& mesh = world.addComponent<MeshRendererComponent>(entity);
-    for(const auto& instance : meshInstances)
-    {
-        mesh.meshInstances.push_back(instance);
-    }
-}
-
 void loadEntity(const json& json, AssetDatabase& assetDb, World& world, LuaState& lua)
 {
     const auto entity = world.createEntity();
@@ -180,10 +172,60 @@ void loadEntity(const json& json, AssetDatabase& assetDb, World& world, LuaState
     {
         loadComponents(json["components"], entity, assetDb, world, lua);
     }
-    if(json.contains("prefab"))
+}
+
+void loadPrefab(const json& json, AssetDatabase& assetDb)
+{
+    if(!json.contains("id") || !json.contains("path"))
     {
-        loadPrefab(json["prefab"], entity, assetDb, world);
+        return;
     }
+
+    auto prefab = loadGLTFModel(GetPrefabsDir() / json["path"]);
+    if(!prefab)
+    {
+        return;
+    }
+
+    assetDb.addPrefab(json["id"], std::move(prefab));
+}
+
+std::unique_ptr<TextureCubeMap> loadSkyboxCubemap(const json& json)
+{
+    auto cmInfo = CubemapFileInfo{};
+    cmInfo.px = GetTexturesDir() / json["px"];
+    cmInfo.py = GetTexturesDir() / json["py"];
+    cmInfo.pz = GetTexturesDir() / json["pz"];
+    cmInfo.nx = GetTexturesDir() / json["nx"];
+    cmInfo.ny = GetTexturesDir() / json["ny"];
+    cmInfo.nz = GetTexturesDir() / json["nz"];
+
+    auto cubemap = loadCubemapTexture(cmInfo);
+    cubemap->setMinFilter(GL_LINEAR);
+    cubemap->setMagFilter(GL_LINEAR);
+    cubemap->setWrapS(GL_CLAMP_TO_EDGE);
+    cubemap->setWrapT(GL_CLAMP_TO_EDGE);
+    cubemap->setWrapR(GL_CLAMP_TO_EDGE);
+
+    return cubemap;
+}
+
+void loadSkybox(const json& json, AssetDatabase& assetDb)
+{
+    if(!json.contains("id") || !json.contains("textures"))
+    {
+        return;
+    }
+
+    auto cubemap = loadSkyboxCubemap(json["textures"]);
+    if(!cubemap)
+    {
+        return;
+    }
+
+    auto skybox = std::make_unique<Skybox>();
+    skybox->cubemapTexture = std::move(cubemap);
+    assetDb.addSkybox(json["id"], std::move(skybox));
 }
 
 bool loadScene(const std::filesystem::path& path, AssetDatabase& assetDb, World& world, LuaState& lua)
@@ -191,6 +233,16 @@ bool loadScene(const std::filesystem::path& path, AssetDatabase& assetDb, World&
     auto filestream = std::ifstream{path};
 
     auto sceneJson = json::parse(filestream);
+
+    for(const auto& prefabJson : sceneJson["prefabs"])
+    {
+        loadPrefab(prefabJson, assetDb);
+    }
+
+    for(const auto& skyboxJson : sceneJson["skyboxes"])
+    {
+        loadSkybox(skyboxJson, assetDb);
+    }
 
     for(const auto& entityJson : sceneJson["entities"])
     {
