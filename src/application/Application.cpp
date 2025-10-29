@@ -27,12 +27,11 @@ constexpr auto initialWindowWidth = 1280;
 constexpr auto initialWindowHeight = 720;
 
 Application::Application()
-    : m_inputHandler{std::make_unique<InputHandler>()}
+    : m_window{std::make_unique<Window>("OpenGL Demo", initialWindowWidth, initialWindowHeight)}
     , m_lua{std::make_unique<LuaState>()}
     , m_world{std::make_unique<World>()}
+    , m_inputHandler{std::make_unique<InputHandler>()}
 {
-    createWindow();
-
     loadGl();
 
     setWindowCallbacks();
@@ -105,12 +104,6 @@ void Application::run()
             std::this_thread::sleep_for(maxFps - frameDuration);
         }
     }
-}
-
-void Application::createWindow()
-{
-    m_window = std::make_unique<Window>("OpenGL Demo", initialWindowWidth, initialWindowHeight);
-    m_window->makeCurrent();
 }
 
 void Application::loadGl()

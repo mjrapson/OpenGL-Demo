@@ -38,18 +38,15 @@ Window::Window(const std::string& title, int width, int height)
     }
 
     glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
+
+    glfwMakeContextCurrent(m_window);
+    glfwSwapInterval(1);
 }
 
 Window::~Window()
 {
     glfwDestroyWindow(m_window);
     glfwTerminate();
-}
-
-void Window::makeCurrent() const
-{
-    glfwMakeContextCurrent(m_window);
-    glfwSwapInterval(1);
 }
 
 bool Window::shouldClose() const

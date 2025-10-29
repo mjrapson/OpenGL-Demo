@@ -31,7 +31,6 @@ class Application
         void run();
 
     private:
-        void createWindow();
         void loadGl();
         void setWindowCallbacks();
         void createLuaTypes();
