@@ -33,9 +33,5 @@ std::unique_ptr<LuaScript> loadScript(const std::filesystem::path& path, LuaStat
     }
 
     sol::table table = result;
-    for (auto& kv : table) {
-    std::cout << sol::type_name(lua.lua(), kv.first.get_type()) 
-              << " = " << kv.first.as<std::string>() << "\n";
-}
     return std::make_unique<LuaScript>(table);
 }
