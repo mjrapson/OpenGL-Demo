@@ -4,9 +4,7 @@
 #include "Renderer.h"
 
 #include "data/AssetDatabase.h"
-#include "data/Material.h"
 #include "data/Mesh.h"
-#include "data/Texture.h"
 #include "rendering/Camera.h"
 #include "rendering/MeshBuffer.h"
 
