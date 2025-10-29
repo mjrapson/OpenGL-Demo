@@ -55,19 +55,16 @@ Application::~Application() = default;
 
 void Application::run()
 {
-    auto deltaTime = 0.0f;
-    auto currTime = 0.0f;
-    auto lastTime = 0.0f;
-    constexpr auto maxFps = std::chrono::duration<double, std::milli>(1000.0 / 60);
+    constexpr auto maxFps = std::chrono::duration<double>(1.0 / 60.0);
+    auto lastTime = std::chrono::steady_clock::now();
 
     m_behaviourSystem->init();
 
     while (!m_window->shouldClose())
     {
-        const auto frameStartTime = std::chrono::high_resolution_clock::now();
-        currTime = glfwGetTime();
-        deltaTime = (currTime - lastTime);
-        lastTime = currTime;
+        const auto frameStartTime = std::chrono::steady_clock::now();
+        const auto deltaTime = std::chrono::duration<double>(frameStartTime - lastTime).count();
+        lastTime = frameStartTime;
 
         glfwPollEvents();
 
@@ -88,13 +85,11 @@ void Application::run()
 
         m_window->swapBuffers();
 
-        const auto frameFinishTime = std::chrono::high_resolution_clock::now();
-        const auto frameDuration = std::chrono::duration<double, std::milli>(frameFinishTime - frameStartTime);
-        const auto sleepTime = std::chrono::duration<double, std::milli>(maxFps - frameDuration);
-
-        if (sleepTime.count() > 0)
+        const auto frameFinishTime = std::chrono::steady_clock::now();
+        const auto frameDuration = frameFinishTime - frameStartTime;
+        if (frameDuration < maxFps)
         {
-            std::this_thread::sleep_for(sleepTime);
+            std::this_thread::sleep_for(maxFps - frameDuration);
         }
     }
 }
