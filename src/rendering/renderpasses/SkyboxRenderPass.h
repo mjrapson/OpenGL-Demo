@@ -59,4 +59,5 @@ class SkyboxRenderPass : public RenderPass
 
         GLuint m_viewportWidth{0};
         GLuint m_viewportHeight{0};
+        float m_aspectRatio{0.0f};
 };

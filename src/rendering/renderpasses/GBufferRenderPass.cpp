@@ -14,6 +14,8 @@
 #include "rendering/Shader.h"
 #include "rendering/VertexLayout.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
 
 struct alignas(16) TransformUbo
@@ -87,8 +89,8 @@ void GBufferRenderPass::execute(const std::vector<DrawCommand>& drawQueue,
         }
 
         auto transformUbo = TransformUbo{};
-        transformUbo.projection = camera.projection();
-        transformUbo.view = camera.view();
+        transformUbo.projection = glm::perspective(camera.fieldOfView, m_aspectRatio, camera.nearPlane, camera.farPlane);
+        transformUbo.view = glm::lookAt(camera.position, camera.position + camera.front, camera.up);
         transformUbo.model = drawCommand.transform;
 
         auto materialUbo = MaterialUbo{};
@@ -118,6 +120,8 @@ void GBufferRenderPass::onViewportResize(GLuint width, GLuint height)
 {
     m_viewportWidth = width;
     m_viewportHeight = height;
+
+    m_aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
     rebuildImages();
 }

@@ -13,6 +13,8 @@
 #include "rendering/Shader.h"
 #include "rendering/VertexLayout.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
 
 const auto quadVertices =
@@ -80,8 +82,8 @@ void SkyboxRenderPass::execute(const std::vector<DrawCommand>& drawQueue,
     m_vertexLayout->bind();
 
     auto transformUbo = TransformUbo{};
-    transformUbo.projection = camera.projection();
-    transformUbo.view = camera.view();
+    transformUbo.projection = glm::perspective(camera.fieldOfView, m_aspectRatio, camera.nearPlane, camera.farPlane);
+    transformUbo.view = glm::lookAt(camera.position, camera.position + camera.front, camera.up);
 
     m_shader->writeUniformData("TransformBlock", sizeof(TransformUbo), &transformUbo);
 
@@ -92,6 +94,8 @@ void SkyboxRenderPass::onViewportResize(GLuint width, GLuint height)
 {
     m_viewportWidth = width;
     m_viewportHeight = height;
+
+    m_aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
     rebuildImages();
 }

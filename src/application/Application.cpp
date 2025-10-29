@@ -23,6 +23,9 @@
 #include <stdexcept>
 #include <thread>
 
+constexpr auto initialWindowWidth = 1280;
+constexpr auto initialWindowHeight = 720;
+
 Application::Application()
     : m_inputHandler{std::make_unique<InputHandler>()}
     , m_lua{std::make_unique<LuaState>()}
@@ -42,7 +45,7 @@ Application::Application()
     loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world, *m_lua);
     
     m_renderer = std::make_unique<Renderer>();
-    m_renderer->resizeDisplay(1280, 720);
+    m_renderer->resizeDisplay(initialWindowWidth, initialWindowHeight);
     m_renderer->setAssets(m_assetDb);
 
     m_renderSystem = std::make_unique<RenderSystem>(*m_renderer, *m_world);
@@ -117,7 +120,7 @@ void Application::initGlfw()
 
 void Application::createWindow()
 {
-    m_window = std::make_unique<Window>("OpenGL Demo", 1280, 720);
+    m_window = std::make_unique<Window>("OpenGL Demo", initialWindowWidth, initialWindowHeight);
     m_window->makeCurrent();
 }
 
@@ -225,11 +228,6 @@ void Application::createLuaTypes()
 void Application::framebufferResizeCallback(int width, int height)
 {
     m_renderer->resizeDisplay(width, height);
-
-    for(auto& [entity, cameraComponent] : m_world->getAllComponents<CameraComponent>())
-    {
-        cameraComponent.setAspectRatio(static_cast<float>(width) / static_cast<float>(height));
-    }
 }
 
 void Application::cursorPosChangeCallback(double x, double y)

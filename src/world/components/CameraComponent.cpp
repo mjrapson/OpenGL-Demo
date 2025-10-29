@@ -80,11 +80,6 @@ void CameraComponent::setPitch(float pitch)
     normalize();
 }
 
-void CameraComponent::setAspectRatio(float val)
-{
-    m_camera.aspectRatio = val;
-}
-
 void CameraComponent::setActive(bool active)
 {
     m_active = active;

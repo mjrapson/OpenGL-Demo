@@ -27,7 +27,6 @@ class CameraComponent
         void setYaw(float yaw);
         void setRoll(float roll);
         void setPitch(float pitch);
-        void setAspectRatio(float val);
         void setActive(bool active);
         void setSkybox(Skybox* skybox);
 
