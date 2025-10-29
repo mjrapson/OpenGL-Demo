@@ -9,6 +9,13 @@
 
 Window::Window(const std::string& title, int width, int height)
 {
+    if (!glfwInit())
+    {
+        throw std::runtime_error("Failed to initialise glfw.");
+    }
+
+    glfwSetTime(0);
+
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -35,6 +42,7 @@ Window::Window(const std::string& title, int width, int height)
 Window::~Window()
 {
     glfwDestroyWindow(m_window);
+    glfwTerminate();
 }
 
 void Window::makeCurrent() const

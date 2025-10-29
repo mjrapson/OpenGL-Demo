@@ -31,8 +31,6 @@ Application::Application()
     , m_lua{std::make_unique<LuaState>()}
     , m_world{std::make_unique<World>()}
 {
-    initGlfw();
-
     createWindow();
 
     loadGl();
@@ -41,26 +39,19 @@ Application::Application()
 
     createLuaTypes();
 
-    // Demo scene
-    loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world, *m_lua);
-    
     m_renderer = std::make_unique<Renderer>();
     m_renderer->resizeDisplay(initialWindowWidth, initialWindowHeight);
-    m_renderer->setAssets(m_assetDb);
-
+    
     m_renderSystem = std::make_unique<RenderSystem>(*m_renderer, *m_world);
     m_behaviourSystem = std::make_unique<BehaviourSystem>(*m_inputHandler, *m_world);
     m_lightingSystem = std::make_unique<LightingSystem>(*m_renderer, *m_world);
+
+    // Demo scene
+    loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world, *m_lua);
+    m_renderer->setAssets(m_assetDb);
 }
 
-Application::~Application()
-{
-    m_renderer.reset(nullptr);
-
-    m_assetDb.clearAll();
-
-    glfwTerminate();
-}
+Application::~Application() = default;
 
 void Application::run()
 {
@@ -106,16 +97,6 @@ void Application::run()
             std::this_thread::sleep_for(sleepTime);
         }
     }
-}
-
-void Application::initGlfw()
-{
-    if (!glfwInit())
-    {
-        throw std::runtime_error("Failed to initialise glfw.");
-    }
-
-    glfwSetTime(0);
 }
 
 void Application::createWindow()
@@ -211,18 +192,17 @@ void Application::createLuaTypes()
         "setPosition", &CameraComponent::setPosition
     );
 
-    state.new_usertype<InputHandler>("InputHandler", 
-        "isKeyPressed", &InputHandler::isKeyPressed
-    );
+    auto inputHandlerType = state.new_usertype<InputHandler>("InputHandler");
+    inputHandlerType["isKeyPressed"] = &InputHandler::isKeyPressed;
 
-    state.new_usertype<World>("World",
-        "get_transform", [](World& w, Entity e) {
-            return w.getComponent<TransformComponent>(e); 
-        },
-        "get_camera", [](World& w, Entity e) {
-            return w.getComponent<CameraComponent>(e); 
-        }
-    );
+    auto worldType = state.new_usertype<World>("World");
+    worldType["get_transform"] = [](World& w, Entity e) {
+        return w.getComponent<TransformComponent>(e); 
+    };
+    worldType["get_camera"] = [](World& w, Entity e) { 
+        return w.getComponent<CameraComponent>(e);
+    };
+    
 }
 
 void Application::framebufferResizeCallback(int width, int height)
