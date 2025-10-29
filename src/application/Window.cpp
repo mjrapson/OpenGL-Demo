@@ -8,6 +8,7 @@
 #include <stdexcept>
 
 Window::Window(const std::string& title, int width, int height)
+    : m_windowTitle{title}
 {
     if (!glfwInit())
     {
@@ -59,4 +60,10 @@ bool Window::shouldClose() const
 void Window::swapBuffers() const
 {
      glfwSwapBuffers(m_window);
+}
+
+void Window::setFpsCounter(float fps)
+{
+    auto title = m_windowTitle + " | FPS: " + std::to_string(fps);
+    glfwSetWindowTitle(m_window, title.c_str());
 }

@@ -58,12 +58,26 @@ void Application::run()
 {
     constexpr auto maxFps = std::chrono::duration<double>(1.0 / 60.0);
     auto lastTime = std::chrono::steady_clock::now();
+    auto lastFpsUpdate = std::chrono::steady_clock::now();
+
+    auto framesSinceLastFpsUpdate = 0;
 
     while (!m_window->shouldClose())
     {
         const auto frameStartTime = std::chrono::steady_clock::now();
         const auto deltaTime = std::chrono::duration<double>(frameStartTime - lastTime).count();
         lastTime = frameStartTime;
+
+        framesSinceLastFpsUpdate++;
+        auto deltaTimeSinceLastFpsUpdate = std::chrono::duration<double>(frameStartTime - lastFpsUpdate).count();
+        if(deltaTimeSinceLastFpsUpdate >= 1.0) 
+        {
+            const auto fps = framesSinceLastFpsUpdate / deltaTimeSinceLastFpsUpdate;
+            m_window->setFpsCounter(fps);
+
+            framesSinceLastFpsUpdate = 0;
+            lastFpsUpdate = frameStartTime;
+        }
 
         glfwPollEvents();
 

@@ -25,6 +25,8 @@ class Window
 
         void swapBuffers() const;
 
+        void setFpsCounter(float fps);
+
         inline GLFWwindow* handle() const
         {
             return m_window;
@@ -32,4 +34,5 @@ class Window
 
     private:
         GLFWwindow* m_window{nullptr};
+        std::string m_windowTitle{};
 };
