@@ -49,6 +49,7 @@ Application::Application()
     // Demo scene
     loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world, *m_lua);
     m_renderer->setAssets(m_assetDb);
+    m_behaviourSystem->init();
 }
 
 Application::~Application() = default;
@@ -57,8 +58,6 @@ void Application::run()
 {
     constexpr auto maxFps = std::chrono::duration<double>(1.0 / 60.0);
     auto lastTime = std::chrono::steady_clock::now();
-
-    m_behaviourSystem->init();
 
     while (!m_window->shouldClose())
     {
