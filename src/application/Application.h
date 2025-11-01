@@ -11,6 +11,7 @@ class BehaviourSystem;
 class InputHandler;
 class LightingSystem;
 class LuaState;
+class ParticleSystem;
 class Renderer;
 class RenderSystem;
 class Window;
@@ -49,6 +50,7 @@ class Application
         std::unique_ptr<RenderSystem> m_renderSystem{nullptr};
         std::unique_ptr<BehaviourSystem> m_behaviourSystem{nullptr};
         std::unique_ptr<LightingSystem> m_lightingSystem{nullptr};
+        std::unique_ptr<ParticleSystem> m_particleSystem{nullptr};
         
         AssetDatabase m_assetDb;
 };

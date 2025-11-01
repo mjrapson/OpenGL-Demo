@@ -8,6 +8,7 @@
 #include "world/components/CameraComponent.h"
 #include "world/components/DirectionalLightComponent.h"
 #include "world/components/MeshRenderingComponent.h"
+#include "world/components/ParticleEmitterComponent.h"
 #include "world/components/PointLightComponent.h"
 #include "world/components/TransformComponent.h"
 
@@ -28,6 +29,7 @@ class World
             m_cameraComponents.erase(entity);
             m_directionalLightComponents.erase(entity);
             m_meshRendererComponents.erase(entity);
+            m_particleEmitterComponents.erase(entity);
             m_pointLightComponents.erase(entity);
             m_transformComponents.erase(entity);
         }
@@ -76,6 +78,10 @@ class World
             {
                 return m_meshRendererComponents;
             }
+            if constexpr(std::is_same_v<Component, ParticleEmitterComponent>)
+            {
+                return m_particleEmitterComponents;
+            }
             if constexpr(std::is_same_v<Component, PointLightComponent>)
             {
                 return m_pointLightComponents;
@@ -93,6 +99,7 @@ class World
         std::unordered_map<Entity, CameraComponent> m_cameraComponents;
         std::unordered_map<Entity, DirectionalLightComponent> m_directionalLightComponents;
         std::unordered_map<Entity, MeshRendererComponent> m_meshRendererComponents;
+        std::unordered_map<Entity, ParticleEmitterComponent> m_particleEmitterComponents;
         std::unordered_map<Entity, PointLightComponent> m_pointLightComponents;
         std::unordered_map<Entity, TransformComponent> m_transformComponents;
 

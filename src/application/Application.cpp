@@ -11,6 +11,7 @@
 #include "scripting/LuaState.h"
 #include "world/systems/BehaviourSystem.h"
 #include "world/systems/LightingSystem.h"
+#include "world/systems/ParticleSystem.h"
 #include "world/systems/RenderSystem.h"
 #include "world/World.h"
 
@@ -44,6 +45,7 @@ Application::Application()
     m_renderSystem = std::make_unique<RenderSystem>(*m_renderer, *m_world);
     m_behaviourSystem = std::make_unique<BehaviourSystem>(*m_inputHandler, *m_world);
     m_lightingSystem = std::make_unique<LightingSystem>(*m_renderer, *m_world);
+    m_particleSystem = std::make_unique<ParticleSystem>(*m_renderer, *m_world);
 
     // Demo scene
     loadScene(GetResourceDir() / "scenes/demo.json", m_assetDb, *m_world, *m_lua);
@@ -85,6 +87,8 @@ void Application::run()
         m_renderer->beginFrame();
 
         m_lightingSystem->update();
+
+        m_particleSystem->update(deltaTime);
 
         m_renderSystem->update();
 

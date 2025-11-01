@@ -19,6 +19,7 @@ PRIVATE
     data/DirectionalLight.h
     data/Material.h
     data/Mesh.h
+    data/Particle.h
     data/PointLight.h
     data/Prefab.cpp
     data/Prefab.h
@@ -75,12 +76,15 @@ PRIVATE
     world/components/CameraComponent.h
     world/components/DirectionalLightComponent.h
     world/components/MeshRenderingComponent.h
+    world/components/ParticleEmitterComponent.h
     world/components/PointLightComponent.h
     world/components/TransformComponent.h
     world/systems/BehaviourSystem.cpp    
     world/systems/BehaviourSystem.h
     world/systems/LightingSystem.cpp
     world/systems/LightingSystem.h
+    world/systems/ParticleSystem.cpp
+    world/systems/ParticleSystem.h
     world/systems/RenderSystem.cpp
     world/systems/RenderSystem.h
     world/Behaviour.h
